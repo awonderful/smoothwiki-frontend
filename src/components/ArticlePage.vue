@@ -1,8 +1,8 @@
 <template>
-  <div class="page">
+  <div class="page" ref="page">
     <v-container fluid v-if="nodeId > 0">
-      <v-row class="my-7 mx-2" :key="article.uniqId" v-for="article of articles">
-        <v-col class="pa-0" cols="12">
+      <v-row class="mx-2 flex-column flex-nowrap">
+        <v-col class="pa-0 mt-5" cols="12" :style="{order: article.order}" :key="article.uniqId" v-for="article of articleMap">
           <component
             :ref="'article-' + article.uniqId"
             :is="articleComponentMap[article.type]"
@@ -13,9 +13,9 @@
       </v-row>
       <v-row>
         <v-col cols="12">
-          <v-btn @click="addFreshNewArticle(articleType.MARKDOWN)">+ Markdown</v-btn>
-          <v-btn @click="addFreshNewArticle(articleType.RICHTEXT)">+ 富文本</v-btn>
-          <v-btn @click="addFreshNewAttachment()">+ 附件</v-btn>
+          <v-btn @click="addFreshArticle(articleType.MARKDOWN)">+ Markdown</v-btn>
+          <v-btn @click="addFreshArticle(articleType.RICHTEXT)">+ 富文本</v-btn>
+          <v-btn @click="addFreshAttachment()">+ 附件</v-btn>
         </v-col>
       </v-row>
     </v-container>
@@ -30,7 +30,6 @@ import AttachmentArticle from '@/components/Article/AttachmentArticle.vue'
 import MindArticle from '@/components/Article/MindArticle.vue'
 import PdfArticle from '@/components/Article/PdfArticle.vue'
 import * as API from '@/common/API.js'
-import { generateUniqId } from '@/common/util.js'
 
 export default {
   components: {
@@ -42,10 +41,8 @@ export default {
   },
   data: function () {
     return {
-      treeId: 1,
       articleComponentMap: ARTICLE_COMPONENT_MAP,
       articleType: ARTICLE_TYPE,
-      uniqIdCounter : 0
     }
   },
   computed: {
@@ -57,8 +54,13 @@ export default {
         ? parseInt(this.$route.params.nodeId)
         : 0
     },
-    articles () {
-      return this.$store.getters.getArticles(this.nodeId)
+    articleMap () {
+      return this.$state.page.getArticleMap(this.nodeId)
+    },
+    scrollTo () {
+      const page = this.$state.page.getPage(this.nodeId)
+
+      return page.scrollTo
     }
   },
   watch: {
@@ -66,18 +68,17 @@ export default {
       immediate: true,
       handler: function(newVal) {
         let nodeId = newVal
-        const page = this.$store.getters.getPage(nodeId)
+        const page = this.$state.page.getPage(nodeId)
 
         if (page === undefined) {
-          this.$store.commit('ENSURE_ARTICLE_PAGE', {
-            nodeId: nodeId
-          })
-          this.$store.dispatch('pullArticlePage', {
-            spaceId: this.spaceId,
-            nodeId: nodeId
-          })
+          this.$state.page.ensureArticlePage(nodeId)
+          this.$state.pageAction.pullArticlePage(this.spaceId, nodeId)
         }
       }
+    },
+    scrollTo(newVal) {
+      const uniqId = newVal
+      this.scrollToArticle(uniqId)
     }
   },
   methods: {
@@ -85,46 +86,25 @@ export default {
       console.log(error)
     },
     saveArticle (uniqId) {
-      this.$store.dispatch('saveArticle', {
-        spaceId: this.spaceId,
-        nodeId:  this.nodeId,
-        uniqId:  uniqId
-      })
+      this.$state.pageAction.saveArticle(this.spaceId, this.nodeId, uniqId)
     },
     removeArticle (uniqId) {
-      this.$store.dispatch('removeArticle', {
-        spaceId: this.spaceId,
-        nodeId:  this.nodeId,
-        uniqId:  uniqId
+      this.$state.pageAction.removeArticle(this.spaceId, this.nodeId, uniqId)
+    },
+    addFreshArticle(type) {
+      this.$state.page.appendArticle(this.nodeId, {
+        spaceId:  this.spaceId,
+        nodeId:   this.nodeId,
+        id:       0,
+        type:     type,
+        title:    '',
+        body:     '',
+        search:   '',
+        isEditing: true
       })
     },
-    addFreshNewArticle(type) {
-      const uniqId = generateUniqId()
-      this.$store.commit('PUT_ARTICLE', {
-        nodeId: this.nodeId,
-        article: {
-          uniqId:   uniqId,
-          spaceId:  this.spaceId,
-          nodeId:   this.nodeId,
-          id:       0,
-          type:     type,
-          title:    '',
-          body:     '',
-          search:   '',
-          isEditing: true
-        }
-      })
-      this.$store.commit('APPEND_ARTICLE', {
-        nodeId: this.nodeId,
-        uniqId: uniqId
-      })
-    },
-    addFreshNewAttachment() {
-      const uniqId = generateUniqId()
-      this.$store.commit('PUT_ARTICLE', {
-        nodeId: this.nodeId,
-        article: {
-          uniqId:   uniqId,
+    addFreshAttachment() {
+      this.$state.page.appendArticle(this.nodeId, {
           spaceId:  this.spaceId,
           nodeId:   this.nodeId,
           id:       0,
@@ -135,13 +115,15 @@ export default {
           }),
           search:   '',
           isEditing: false
-        }
       })
-      this.$store.commit('APPEND_ARTICLE', {
-        nodeId: this.nodeId,
-        uniqId: uniqId
-      })
-     
+    },
+    getArticleElement(uniqId) {
+      const ref = 'article-' + uniqId
+      return this.$refs[ref][0].$el
+    },
+    scrollToArticle(uniqId) {
+      const el = this.getArticleElement(uniqId)
+      window.scrollTo({top: el.offsetTop - 40})
     }
   }
 }

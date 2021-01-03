@@ -1,56 +1,55 @@
 <template>
   <v-app id="inspire">
     <v-navigation-drawer
-      v-model="drawer"
+      v-model="left"
       app
-      class="drawer"
-    >
-      <Tree />
+      clipped
+      left
+      class="drawer">
+      <Left/>
     </v-navigation-drawer>
 
-    <v-app-bar dense app>
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+    <v-navigation-drawer
+      v-model="right"
+      app
+      clipped
+      right
+      class="drawer">
+      <ArticleList></ArticleList>
+    </v-navigation-drawer>
+
+    <v-app-bar 
+      dense 
+      app
+      clipped-right
+      clipped-left>
+      <v-app-bar-nav-icon @click="left = !left"></v-app-bar-nav-icon>
 
       <v-toolbar-title>Application</v-toolbar-title>
+      <v-app-bar-nav-icon @click="right = !right"></v-app-bar-nav-icon>
     </v-app-bar>
 
     <v-main>
       <ArticlePage/>
     </v-main>
 
-    <v-alert v-if="showMessage" class="alert" type="error" dense :dismissible="true" elevation="4">
-      {{ message }}
-    </v-alert>
-
   </v-app>
 </template>
 
 <script>
-import Tree from '@/components/Tree'
+import Left from '@/components/Left/Index'
 import ArticlePage from '@/components/ArticlePage'
+import ArticleList from '@/components/Right/ArticleList'
 import { API_CODE_SUCC, NODE_TYPE } from '@/common/constants.js'
 import * as API from '@/common/API.js'
 
 export default {
-  components: { Tree, ArticlePage },
+  components: { Left, ArticlePage, ArticleList },
   data: function () {
     return {
-      drawer: null,
-      spaceId: 0,
-      treeId: 1,
-      nodeId: 0,
-
-      message: '',
-      showMessage: false,
+      left: null,
+      right: null
     }
-  },
-  methods: {
-    viewPage (node) {
-      this.nodeId = node.id
-    }
-  },
-  mounted () {
-    this.spaceId = parseInt(this.$route.params.id)
   }
 }
 </script>

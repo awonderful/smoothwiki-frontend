@@ -1,0 +1,175 @@
+import Vue from 'vue'
+import * as API from '@/common/API.js'
+import { PAGE_STATUS } from '@/common/constants'
+import { PageState } from './page.js'
+
+export const PageAction = new Vue({
+  methods: {
+    async pullArticlePage(spaceId, nodeId) {
+      const res = await API.getArticles({
+        spaceId: spaceId,
+        nodeId:  nodeId
+      })
+    
+      let articles = res.data.data.articles
+      for (let article of articles) {
+        PageState.putArticle(nodeId, article)
+      }
+      PageState.setPageProps(nodeId, {
+        spaceId: spaceId,
+        status: PAGE_STATUS.SUCC_PULL
+      })
+    },
+    async removeArticle(spaceId, nodeId, uniqId) {
+      const article = PageState.getArticle(nodeId, uniqId)
+
+      if (article === null) {
+        console.log("article doesn't exists")
+        return
+      }
+
+      if (article.id === 0) {
+        PageState.removeArticle(nodeId, uniqId)
+        return
+      }
+
+      PageState.setArticleProps(nodeId, uniqId, {isRequesting: true})
+      try {
+        const res = await API.removeArticle({
+          spaceId:        spaceId,
+          nodeId:         nodeId,
+          articleId:      article.id,
+          articleVersion: article.version
+        })
+        PageState.removeArticle(nodeId, uniqId)
+      } finally {
+        if (PageState.getArticle(nodeId, uniqId) !== undefined) {
+          PageState.setArticleProps(nodeId, uniqId, {isRequesting: false})
+        }
+      }
+    },
+    async saveFreshArticle(spaceId, nodeId, uniqId) {
+      const article = PageState.getArticle(nodeId, uniqId)
+
+      let prevArticleId = 0
+      if (article.order > 0) {
+        const articleMap = PageState.getArticleMap(nodeId)
+        let order = -1
+        for (let tmpUniqId in articleMap) {
+          const tmpArticle = articleMap[tmpUniqId]
+          if (tmpArticle.id > 0 && tmpArticle.order < article.order && tmpArticle.order > order) {
+            order = tmpArticle.order
+            prevArticleId = tmpArticle.id
+          }
+        }
+      }
+
+      PageState.setArticleProps(nodeId, uniqId, {isRequesting: true})
+      try {
+        const res = await API.addArticle({
+          spaceId:       spaceId,
+          nodeId:        nodeId,
+          type:          article.type,
+          title:         article.editingTitle,
+          body:          article.editingBody,
+          search:        article.editingSearch,
+          prevArticleId: prevArticleId
+        })
+        PageState.setArticleProps(nodeId, uniqId, {
+          id:        res.data.data.id,
+          version:   res.data.data.version,
+          title:     article.editingTitle,
+          body:      article.editingBody,
+          search:    article.editingSearch,
+          isEditing: false
+        })
+      } finally {
+        PageState.setArticleProps(nodeId, uniqId, {isRequesting: false})
+      }
+    },
+    async saveUpdatedArticle(spaceId, nodeId, uniqId) {
+      const article = PageState.getArticle(nodeId, uniqId)
+
+      PageState.setArticleProps(nodeId, uniqId, {isRequesting: true})
+      try {
+        let res = await API.updateArticle({
+          spaceId:        spaceId,
+          nodeId:         nodeId,
+          articleId:      article.id,
+          articleVersion: article.version,
+          title:          article.editingTitle,
+          body:           article.editingBody,
+          search:         article.editingSearch,
+        })
+        PageState.setArticleProps(nodeId, uniqId, {
+          version:   res.data.data.version,
+          title:     article.editingTitle,
+          body:      article.editingBody,
+          search:    article.editingSearch,
+          isEditing: false
+        })
+      } finally {
+        PageState.setArticleProps(nodeId, uniqId, {isRequesting: false})
+      }
+    },
+    async saveArticle(spaceId, nodeId, uniqId) {
+      const article = PageState.getArticle(nodeId, uniqId)
+
+      if (article === null) {
+        throw "article doesn't exist!"
+      }
+
+      if (article.id === 0) {
+        this.saveFreshArticle(spaceId, nodeId, uniqId)
+      } else {
+        this.saveUpdatedArticle(spaceId, nodeId, uniqId)
+      }
+    },
+    async moveArticle(spaceId, nodeId, uniqId, newOrder) {
+      const article = PageState.getArticle(nodeId, uniqId)
+
+      //move a fresh article
+      if (article.id === 0) {
+        PageState.moveArticle(nodeId, uniqId, newOrder)
+        return
+      } 
+
+      //move an old article
+      let prevArticleId = 0
+      const oldOrder = article.order
+      if (newOrder > 0) {
+        const articleMap = PageState.getArticleMap(nodeId)
+        let order = -1
+        for (let tmpUniqId in articleMap) {
+          const tmpArticle = articleMap[tmpUniqId]
+          if (tmpArticle.uniqId !== uniqId && tmpArticle.id > 0 && tmpArticle.order <= newOrder && tmpArticle.order > order 
+            && ( (newOrder > oldOrder && tmpArticle.order <= newOrder) || (newOrder < oldOrder && tmpArticle.order < newOrder) )) {
+            order = tmpArticle.order
+            prevArticleId = tmpArticle.id
+          }
+        }
+      }
+      const res = await API.moveArticle({
+          spaceId:        spaceId,
+          nodeId:         nodeId,
+          articleId:      article.id,
+          prevArticleId:  prevArticleId
+      })
+      PageState.moveArticle(nodeId, uniqId, newOrder)
+    },
+    async addAttachmentToArticle(spaceId, nodeId, uniqId, file) {
+      const article = PageState.getArticle(nodeId, uniqId)
+
+      let form = new FormData()
+      form.append('spaceId',   spaceId)
+      form.append('nodeId',    nodeId)
+      form.append('articleId', article.id)
+      form.append('file',      file)
+
+      const res = await API.uploadAttachment(form)
+      article.attachments.push(res.data.data.id)
+
+      return res
+    }
+  }
+})

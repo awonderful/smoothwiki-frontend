@@ -5,13 +5,14 @@
       :isEditing    = "article.isEditing"
       :isFreshNew   = "article.id === 0"
       :isFullScreen = "article.isFullScreen"
-      :title.sync   = "editingTitle"
+      :title.sync   = "article.editingTitle"
       @clickButton  = "clickButton"
       ref           = "window">
       <template v-slot:editor>
         <mavon-editor 
           :boxShadow        = "false"
           :toolbars         = "toolbars"
+          @imgAdd           = "addImage"
           v-model           = "article.editingBody"
           class             = "markdown-editor" 
           previewBackground = "#ffffff"
@@ -24,6 +25,19 @@
           :editable     = "false" 
           :subfield     = "false" 
           :toolbarsFlag = "false"
+          :ishljs       = "true"
+          :externalLink = "{
+            hljs_js: function() {
+              return '/highlightjs/highlight.min.js';
+            },
+            hljs_css: function(css) {
+              return '/highlightjs/styles/' + css + '.min.css';
+            },
+            hljs_lang: function(lang) {
+              return '/highlightjs/languages/' + lang + '.min.js';
+            }
+          }"
+          codeStyle     = "github"
           class         = "markdown-viewer" 
           defaultOpen   = "preview" 
           previewBackground = "#ffffff"
@@ -45,34 +59,6 @@ export default {
     ArticleWindow,
     mavonEditor
   },
-  computed: {
-    editingTitle: {
-      get () {
-        return this.article.editingTitle
-      },
-      set (val) {
-        this.$store.commit('SET_ARTICLE_PROPS', {
-          uniqId: this.article.uniqId,
-          props: {
-            editingTitle: val
-          }
-        })
-      }
-    },
-    editingBody: {
-      get () {
-        return this.article.editingBody
-      },
-      set (val) {
-        this.$store.commit('SET_ARTICLE_PROPS', {
-          uniqId: this.article.uniqId,
-          props: {
-            editingBody: val
-          }
-        })
-      }
-    }
-  },
   data: function () {
     return {
       toolbars: {
@@ -93,12 +79,17 @@ export default {
         table:         true,
         undo:          true,
         redo:          true,
-        alignleft:     true,
-        aligncenter:   true,
-        alignright:    true,
         subfield:      true,
         preview:       true
       }
+    }
+  },
+  methods: {
+    async addImage(pos, file) {
+      const res = await this.$state.pageAction.addAttachmentToArticle(this.article.spaceId, this.article.nodeId, this.article.uniqId, file)
+      const id  = res.data.data.id
+      const url = `http://www.smoothwiki.com/api/attachment/download?attachmentId=${id}`
+      this.$refs.editor.$img2Url(pos, url)
     }
   }
 }
@@ -111,5 +102,20 @@ export default {
 }
 .markdown-editor >>> .v-show-content, .markdown-viewer >>> .v-show-content {
   font-size: 14px;
+}
+.markdown-editor >>> code, .markdown-viewer >>> code {
+  font-size: 12px;
+  line-height: 1.6;
+  font-family: Menlo,Monaco,Consolas,Courier,monospace;
+  font-weight: normal;
+  background-color: #f6f8fa;
+}
+.markdown-editor >>> pre, .markdown-viewer >>> pre {
+  border-radius: 5px;
+  padding: 0.7rem 1rem;
+}
+.markdown-editor >>> .hljs, .markdown-viewer >>> .hljs {
+  padding: 0;
+  background-color: #f6f8fa;
 }
 </style>

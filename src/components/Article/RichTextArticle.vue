@@ -9,6 +9,70 @@
       @clickButton  = "clickButton"
       ref="window">
       <template v-slot:editor>
+        <!-- 链接窗口 -->
+        <v-dialog
+          v-model="linkDialog.show"
+          persistent
+          max-width="600px">
+          <v-card>
+            <v-card-title>
+              <span class="headline">链接</span>
+              <v-spacer></v-spacer>
+              <v-btn icon dense elevation="0" @click="hideLinkDialog()">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="12">
+                    <v-text-field v-model="linkDialog.title" placeholder="title" required></v-text-field>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-text-field v-model="linkDialog.url" placeholder="https://" required></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="hideLinkDialog">取消</v-btn>
+              <v-btn color="blue darken-1" text @click="applyLink()">确定</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <!-- 网络图片窗口 -->
+        <v-dialog
+          v-model="networkImageDialog.show"
+          persistent
+          max-width="600px">
+          <v-card>
+            <v-card-title>
+              <span class="headline">图片</span>
+              <v-spacer></v-spacer>
+              <v-btn icon dense elevation="0" @click="hideNetworkImageDialog()">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="12">
+                    <v-text-field v-model="networkImageDialog.url" placeholder="https://" required></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="hideNetworkImageDialog">取消</v-btn>
+              <v-btn color="blue darken-1" text @click="insertNetworkImage()">确定</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+       
         <editor-menu-bar dense :editor="editor" v-slot="{ commands, isActive }">
           <v-toolbar dense class="toolbar elevation-0">
               <v-btn
@@ -17,9 +81,47 @@
                 :color="item.isActive(isActive) ? 'grey lighten-1': 'white'"
                 v-for="item of menuBarButtons"
                 :key="item.name"
-                :class="['editor-button', 'elevation-0', {'active': item.isActive(isActive)}]"
+                :class="[item.name, 'editor-button', 'elevation-0', {'active': item.isActive(isActive)}]"
                 @click="item.exec(commands)">
                 <v-icon small color="grey darken-1">{{item.icon}}</v-icon>
+              </v-btn>
+              <v-menu
+                :offset-y="true"
+                open-on-hover
+                bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    dense
+                    small
+                    v-bind="attrs"
+                    v-on="on"
+                    color="white"
+                    class="editor-button elevation-0">
+                    <v-icon small color="grey darken-1">mdi-image</v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item-group>
+                    <v-list-item @click="showNetworkImageDialog()">
+                      <v-list-item-content>
+                        <v-list-item-title>插入网络图片</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item @click="uploadLocalImage()">
+                      <v-list-item-content>
+                        <v-list-item-title>上传本地图片</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list-item-group>
+                </v-list>
+              </v-menu>
+              <v-btn
+                dense
+                small
+                color="white"
+                class="editor-button elevation-0"
+                @click="insertTable()">
+                <v-icon small color="grey darken-1">mdi-table-plus</v-icon>
               </v-btn>
               <template v-if="isActive.table()">
                 <v-btn
@@ -47,8 +149,8 @@
 
 
 <script>
-import BaseArticle from './BaseArticle'
-import ArticleWindow from './ArticleWindow'
+import BaseArticle from '@/components/Article/BaseArticle'
+import ArticleWindow from '@/components/Article/ArticleWindow'
 import javascript from 'highlight.js/lib/languages/javascript'
 import css from 'highlight.js/lib/languages/css'
 import scss from 'highlight.js/lib/languages/scss'
@@ -89,7 +191,8 @@ import {
   Strike,
   Underline,
   History,
-  CodeBlockHighlight
+  CodeBlockHighlight,
+  Image
 } from 'tiptap-extensions'
 
 export default {
@@ -101,6 +204,18 @@ export default {
   },
   data() {
     return {
+      linkDialog: {
+        show: false,
+        title: '',
+        url: ''
+      },
+
+      networkImageDialog: {
+        show: false,
+        url: ''
+      },
+
+      editor: null,
       extensions: [
           new Blockquote(),
           new BulletList(),
@@ -111,7 +226,7 @@ export default {
           new OrderedList(),
           new TodoItem(),
           new TodoList(),
-          new Link(),
+          new Link({openOnClick: false}),
           new Bold(),
           new Code(),
           new Italic(),
@@ -122,6 +237,7 @@ export default {
           new TableHeader(),
           new TableCell(),
           new TableRow(),
+          new Image(),
           new CodeBlockHighlight({
             languages: {
               javascript,
@@ -143,7 +259,6 @@ export default {
             }
           })
       ],
-      editor: null,
       menuBarButtons: [
         {
           name:     'undo',
@@ -276,17 +391,24 @@ export default {
           }
         },
         {
-          name:     'table',
-          icon:     'mdi-table-plus',
-          isActive: function () {
+          name:     'link',
+          icon:     'mdi-link-variant',
+          isActive: function (isActive) {
+            return isActive.link()
+          },
+          exec:     function () {
+            this.showLinkDialog()
+          }.bind(this)
+        },
+        {
+          name:     'unlink',
+          icon:     'mdi-link-variant-off',
+          isActive: function (isActive) {
             return false
           },
           exec:     function (commands) {
-            commands.createTable({
-              rowsCount:     3,
-              colsCount:     3,
-              withHeaderRow: true})
-          }
+            commands.link({href: ''})
+          }.bind(this)
         }
       ],
       menuBarTableButtons: [
@@ -350,19 +472,6 @@ export default {
     }
   },
   computed: {
-    editingTitle: {
-      get () {
-        return this.article.editingTitle
-      },
-      set (val) {
-        this.$store.commit('SET_ARTICLE_PROPS', {
-          uniqId: this.article.uniqId,
-          props: {
-            editingTitle: val
-          }
-        })
-      }
-    },
     isEditing () {
       return this.article.isEditing
     }
@@ -376,6 +485,93 @@ export default {
       let search = body.replace(/<[^>]*>?/gm, '')
 
       return search
+    },
+
+    //--------------------------link-------------------------
+    linkAround(state, pos) {
+      const $pos = state.doc.resolve(pos)
+
+      const { parent, parentOffset } = $pos;
+      const start = parent.childAfter(parentOffset)
+      if (!start.node) return null
+
+      const link = start.node.marks.find((mark) => mark.type === state.schema.marks.link)
+      if (!link) return null
+
+      let startIndex = $pos.index()
+      let startPos = $pos.start() + start.offset
+      let endIndex = startIndex + 1
+      let endPos = startPos + start.node.nodeSize
+      while (startIndex > 0 && link.isInSet(parent.child(startIndex - 1).marks)) {
+        startIndex -= 1
+        startPos -= parent.child(startIndex).nodeSize
+      }
+      while (endIndex < parent.childCount && link.isInSet(parent.child(endIndex).marks)) {
+        endPos += parent.child(endIndex).nodeSize
+        endIndex += 1
+      }
+      return { from: startPos, to: endPos }
+    },
+    showLinkDialog() {
+      this.linkDialog.title = ''
+      this.linkDialog.url   = ''
+      if (this.editor.isActive.link()) {
+        const around = this.linkAround(this.editor.state, this.editor.selection.from)
+        this.editor.setSelection(around.from, around.to)
+        const attrs = this.editor.getMarkAttrs('link')
+        this.linkDialog.url = attrs.href
+      }
+
+      const title = this.editor.state.doc.textBetween(this.editor.selection.from, this.editor.selection.to)
+      this.linkDialog.title = title
+      this.linkDialog.show = true
+    },
+    hideLinkDialog() {
+      this.linkDialog.show = false
+    },
+    applyLink() {
+      this.hideLinkDialog()
+
+      const selectionTitle = this.editor.state.doc.textBetween(this.editor.selection.from, this.editor.selection.to)
+      if (this.linkDialog.title !== selectionTitle) {
+        const mark = this.editor.schema.marks.link.create({ href: this.linkDialog.url, target: '_blank' })
+        const from = this.editor.state.selection.from
+        const transaction = this.editor.state.tr.deleteSelection()
+        transaction.insertText(this.linkDialog.title)
+        transaction.addMark(from, from + this.linkDialog.title.length, mark)
+        this.editor.view.dispatch(transaction)
+      } else {
+        this.editor.commands.link({href: this.linkDialog.url, target: '_blank'})
+      }
+    },
+    unlink() {
+      this.editor.commands.link({href: ''})
+    },
+
+
+
+    //--------------------------network image-------------------------
+    showNetworkImageDialog () {
+      this.networkImageDialog.url  = ''
+      this.networkImageDialog.show = true
+    },
+    hideNetworkImageDialog () {
+      this.networkImageDialog.show = false
+    },
+    insertNetworkImage () {
+      this.editor.commands.image({src: this.networkImageDialog.url})
+      this.hideNetworkImageDialog()
+    },
+
+    //--------------------------local image-------------------------
+    
+    //----------------------------table-----------------------------
+    insertTable() {
+      this.editor.commands.createTable({
+        rowsCount:     3,
+        colsCount:     3,
+        withHeaderRow: true
+      })
     }
   },
   created () {
@@ -407,6 +603,9 @@ export default {
 </script>
 
 <style scoped>
+  .editor-button {
+    min-width: 2em;
+  }
   .content {
     text-align: left;
     padding: 8px 25px;

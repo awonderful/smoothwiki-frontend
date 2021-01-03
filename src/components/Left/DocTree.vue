@@ -7,13 +7,22 @@
     :fnBeforeContextMenu="beforeContextMenu"
     :autoHideContextMenu="false"
     :default-attrs="{
+      directoryState: 'collapsed',
       style:{
+        fontSize: '12px',
+        height: '2.1em',
         titleMaxWidth: '-5%', 
         titleOverflow: 'ellipsis'
     }}"
     @click="viewPage"
     @blur="inputBlur"
   >
+    <template v-slot:icon="{node}">
+      <v-icon small color="green" v-if="node.__.parent === null">mdi-pine-tree</v-icon>
+      <v-icon small color="teal" v-else-if="node.hasChild === true && node.directoryState === 'collapsed'">mdi-folder</v-icon>
+      <v-icon small color="teal" v-else-if="node.hasChild === true && node.directoryState === 'expanded'">mdi-folder-open</v-icon>
+      <v-icon small color="teal" v-else>mdi-file-document</v-icon>
+    </template>
     <template v-slot:contextmenu="{node}">
       <v-menu
         v-model="contextMenu.show" 
@@ -63,15 +72,24 @@
 </template>
 
 <script>
-import TWTree from './TWTree'
+import TWTree from 'twtree'
 import { API_CODE_SUCC, NODE_TYPE } from '@/common/constants.js'
 import * as API from '@/common/API.js'
 
 export default {
   components: { TWTree },
+  computed: {
+    spaceId () {
+      return parseInt(this.$route.params.spaceId)
+    },
+    nodeId () {
+      return this.$route.params.nodeId !== undefined
+        ? parseInt(this.$route.params.nodeId)
+        : 0
+    }
+  },
   data: function () {
     return {
-      spaceId: null,
       treeId: 1,
       tree: [],
       treeVersion: null,
@@ -103,6 +121,8 @@ export default {
         spaceId: this.spaceId,
         treeId: this.treeId
       }).then((res) => {
+        res.data.data.tree.directoryState = "expanded"
+        res.data.data.tree.style = { showSwitcher: false, showIcon: true}
         this.tree = [res.data.data.tree]
         this.treeVersion = res.data.data.treeVersion
         this.$nextTick(() => {
@@ -111,15 +131,14 @@ export default {
             let selectedNode = this.$refs.tree.getSelectedOne()
             let routerNode   = this.$refs.tree.getById(routerNodeId)
             if (selectedNode === null && routerNode !== null) {
+              this.$refs.tree.expandAncestors(routerNode)
               this.$refs.tree.select(routerNode)
             }
           }
         })
-      }).catch ((error) => {
-        this.handleApiFailure(error)
       })
     },
-    generateFreshNewId () {
+    generateFreshId () {
       this.freshIdCounter += 1
       return `fresh_new_${this.freshIdCounter}`
     },
@@ -133,13 +152,13 @@ export default {
     clickContextMenu (action, node) {
       switch (action) {
         case 'create': {
-          const freshNewId = this.generateFreshNewId()
+          const freshId = this.generateFreshId()
           this.$refs.tree.createAndEdit({
-            id: freshNewId,
+            id: freshId,
             title: 'UNTITLED',
             type: NODE_TYPE.ARTICLE_PAGE,
             hasChild: false,
-            freshNew: true
+            fresh: true
           }, node)
           break
         }
@@ -160,8 +179,7 @@ export default {
             }).then((res) => {
               this.treeVersion = res.data.data.treeVersion
               this.$refs.tree.remove(node)
-            }).catch((error) => {
-              this.handleApiFailure(error)
+              this.$emit('node-removed', node.id)
             })
           }
           break
@@ -172,7 +190,7 @@ export default {
       this.$refs.tree.quitEdit(node)
 
       // create a node
-      if (node.freshNew) {
+      if (node.fresh) {
         const title = this.$refs.tree.getNewTitle(node)
         API.appendTreeNode({
           spaceId:     this.spaceId,
@@ -183,7 +201,7 @@ export default {
           treeVersion: this.treeVersion
         }).then((res) => {
           this.treeVersion = res.data.data.treeVersion
-          this.$refs.tree.setAttr(node, 'freshNew', false)
+          this.$refs.tree.setAttr(node, 'fresh', false)
           this.$refs.tree.setAttr(node, 'title', title)
           this.$refs.tree.setAttr(node, 'id', res.data.data.nodeId)
         }).catch((error) => {
@@ -250,11 +268,12 @@ export default {
       }
     },
     viewPage (node) {
-      this.$router.push({name: 'space-node', params: {spaceId: this.spaceId, nodeId: node.id}})
+      if (this.nodeId !== node.id) {
+        this.$router.push({name: 'space-node', params: {spaceId: this.spaceId, nodeId: node.id}})
+      }
     }
   },
   mounted () {
-    this.spaceId = parseInt(this.$route.params.spaceId)
     this.getTree()
   }
 }
@@ -263,12 +282,19 @@ export default {
 <style scoped>
 .tree {
   width: 100%;
-  height: 500px;
+  height: auto;
 }
 .menu-item:hover {
   background-color: lightblue;
 }
 .contextmenu {
   z-index: 999;
+}
+.tree >>> .twtree-title {
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+  font-weight: normal;
+}
+.tree >>> .twtree-switcher-icon {
+  color: grey;
 }
 </style>

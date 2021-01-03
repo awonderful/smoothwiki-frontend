@@ -25,6 +25,15 @@ export const getTree = function (params) {
   return axios.request(config)
 }
 
+export const getTrashTree = function (params) {
+  const config = {
+    url:    '/api/tree/trash/get',
+    method: 'GET',
+    params: params
+  }
+  return axios.request(config)
+}
+
 export const appendTreeNode = function (params) {
   const config = {
     url:    '/api/tree/node/append',
@@ -76,7 +85,7 @@ export const getArticles = function (params) {
 }
 
 export const updateArticle = function (data) {
-   const config = {
+  const config = {
     url:    '/api/article-page/article/update',
     method: 'POST',
     data:   data
@@ -86,7 +95,7 @@ export const updateArticle = function (data) {
 }
 
 export const addArticle = function (data) {
-   const config = {
+  const config = {
     url:    '/api/article-page/article/add',
     method: 'POST',
     data:   data
@@ -96,7 +105,7 @@ export const addArticle = function (data) {
 }
 
 export const removeArticle = function (params) {
-   const config = {
+  const config = {
     url:    '/api/article-page/article/remove',
     method: 'GET',
     params: params
@@ -106,10 +115,20 @@ export const removeArticle = function (params) {
 }
 
 export const moveArticle = function (params) {
-   const config = {
+  const config = {
     url:    '/api/article-page/article/move',
     method: 'GET',
     params: params
+  }
+
+  return axios.request(config)
+}
+
+export const uploadAttachment = function (data) {
+  const config = {
+    url:    '/api/attachment/upload',
+    method: 'POST',
+    data:   data
   }
 
   return axios.request(config)

@@ -8,10 +8,7 @@ export default {
   },
   methods: {
     setArticleProps (props) {
-      this.$store.commit('SET_ARTICLE_PROPS', {
-        uniqId:  this.article.uniqId,
-        props:   props
-       })
+      this.$state.page.setArticleProps(this.article.nodeId, this.article.uniqId, props)
     },
     getEditingTitle () {
       return this.article.editingTitle
@@ -20,7 +17,7 @@ export default {
       return this.article.editingBody
     },
     getEditingSearch () {
-      return this.article.editingBody
+      return this.article.editingSearch
     },
     hasChanged () {
       return (this.getEditingTitle() !== this.article.title || this.getEditingBody() !== this.article.body)
