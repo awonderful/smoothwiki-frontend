@@ -20,18 +20,21 @@ export default {
       return this.article.editingSearch
     },
     hasChanged () {
-      return (this.getEditingTitle() !== this.article.title || this.getEditingBody() !== this.article.body)
+      return (this.getEditingTitle() !== this.article.title || this.getEditingBody() !== this.article.body || this.getEditingSearch() !== this.article.search)
+    },
+    refresh () {
+      this.$state.pageAction.refreshArticle(this.article.spaceId, this.article.nodeId, this.article.uniqId)
     },
     save () {
-      if (!this.hasChanged()) {
-        this.exitEditing()
-      } else {
-        this.setArticleProps({
+      if (this.article.id === 0 || this.hasChanged()) {
+         this.setArticleProps({
           editingTitle:  this.getEditingTitle(),
           editingBody:   this.getEditingBody(),
           editingSearch: this.getEditingSearch()
         })
         this.$emit('save', this.article.uniqId)
+      } else {
+        this.exitEditing()
       }
     },
     remove() {

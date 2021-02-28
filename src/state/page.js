@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { generateUniqId } from '@/common/util.js'
-import { PAGE_STATUS } from '../common/constants'
+import { PAGE_STATUS, PAGE_TYPE } from '../common/constants'
 
 
 export const PageState = new Vue({
@@ -37,7 +37,10 @@ export const PageState = new Vue({
       const page = this.getPage(nodeId)
 
       if (page.articleMap === undefined) {
-        this.setPageProps(nodeId, {articleMap: {}})
+        this.setPageProps(nodeId, {
+          type: PAGE_TYPE.ARTICLE_PAGE,
+          articleMap: {}
+        })
       }
     },
     getArticleMap(nodeId) {
@@ -47,6 +50,11 @@ export const PageState = new Vue({
     },
     getArticle(nodeId, uniqId) {
       const articleMap = this.getArticleMap(nodeId)
+
+      if (!articleMap.hasOwnProperty(uniqId)) {
+        console.log(`article doesn't exist! (nodeId=${nodeId}, uniqId={$uniqId})`)
+      }
+
       return articleMap[uniqId]
     },
     setArticleProps (nodeId, uniqId, props) {
@@ -66,7 +74,7 @@ export const PageState = new Vue({
         isRequesting:  false,
         isFullScreen:  false,
         isReadOnly:    false,
-        attachments:   []
+        attachmentIds: []
       }
       for (let key in defaultArticleProp) {
         if (article[key] === undefined) {

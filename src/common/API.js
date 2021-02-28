@@ -124,11 +124,43 @@ export const moveArticle = function (params) {
   return axios.request(config)
 }
 
+export const getArticle = function (params) {
+  const config = {
+    url:    '/api/article-page/article/get',
+    method: 'GET',
+    params: params
+  }
+
+  return axios.request(config)
+}
+
+
+
 export const uploadAttachment = function (data) {
   const config = {
     url:    '/api/attachment/upload',
     method: 'POST',
     data:   data
+  }
+
+  return axios.request(config)
+}
+
+export const downloadAttachment = function (params) {
+  const config = {
+    url:    '/api/attachment/download',
+    method: 'GET',
+    params: params
+  }
+
+  return axios.request(config)
+}
+
+export const getAttachments = function (params) {
+   const config = {
+    url:    '/api/attachment/list',
+    method: 'GET',
+    params: params
   }
 
   return axios.request(config)

@@ -40,3 +40,12 @@ export const humanFileSize = function (bytes, si=false, dp=1) {
 
   return bytes.toFixed(dp) + ' ' + units[u];
 }
+
+/**
+ * check if a extension is a kind of image
+ */
+export const isImageExtension = function (extension) {
+  const imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'tif', 'bmp', 'pcx', 'svg', 'ico', 'icon', 'webp'];
+
+  return imageExtensions.includes(extension)
+}

@@ -1,5 +1,8 @@
-export const API_BASE_URL = 'http://www.smoothwiki.com'
+export const API_BASE_URL = ''
 export const API_CODE_SUCC = 100
+
+export const ATTACHMENT_DOWNLOAD_URL = 'http://www.smoothwiki.com/api/attachment/download?forceDownload=1&attachmentId='
+export const ATTACHMENT_SHOW_URL = 'http://www.smoothwiki.com/api/attachment/download?attachmentId='
 
 export const TREE_ID = {
   MAIN:  1,
@@ -9,6 +12,10 @@ export const TREE_ID = {
 export const NODE_TYPE = {
   ARTICLE_PAGE: 0,
   DISCUSSTION_PAGE: 1
+}
+
+export const PAGE_TYPE = {
+  ARTICLE_PAGE: 1
 }
 
 export const ARTICLE_TYPE = {

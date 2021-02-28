@@ -72,6 +72,13 @@
           </v-card>
         </v-dialog>
 
+        <!--上传本地图片-->
+        <input
+          type="file"
+          ref="file"
+          @change=uploadLocalImage()
+          accept="image/*"
+          :style="{display: 'none'}" />
        
         <editor-menu-bar dense :editor="editor" v-slot="{ commands, isActive }">
           <v-toolbar dense class="toolbar elevation-0">
@@ -107,7 +114,7 @@
                         <v-list-item-title>插入网络图片</v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
-                    <v-list-item @click="uploadLocalImage()">
+                    <v-list-item @click="showUploadDialog()">
                       <v-list-item-content>
                         <v-list-item-title>上传本地图片</v-list-item-title>
                       </v-list-item-content>
@@ -169,6 +176,7 @@ import python from 'highlight.js/lib/languages/python'
 import ini from 'highlight.js/lib/languages/ini'
 import json from 'highlight.js/lib/languages/json'
 
+import { ATTACHMENT_SHOW_URL } from '@/common/constants.js'
 import { Editor, EditorContent, EditorMenuBar } from 'tiptap'
 import {
   Blockquote,
@@ -255,7 +263,8 @@ export default {
               xml,
               yaml,
               ini,
-              json
+              json,
+              shell
             }
           })
       ],
@@ -564,7 +573,18 @@ export default {
     },
 
     //--------------------------local image-------------------------
-    
+    showUploadDialog () {
+      const input = this.$refs.file
+      input.focus()
+      input.click()
+    },
+    async uploadLocalImage() {
+      const input = this.$refs.file
+      const res = await this.$state.pageAction.addAttachmentToArticle(this.article.spaceId, this.article.nodeId, this.article.uniqId, input.files[0])
+      const url = ATTACHMENT_SHOW_URL + res.data.data.id
+      this.editor.commands.image({src: url})
+    },
+
     //----------------------------table-----------------------------
     insertTable() {
       this.editor.commands.createTable({

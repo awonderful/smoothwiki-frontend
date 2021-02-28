@@ -277,6 +277,12 @@ export default {
   .article-container:hover .button {
     visibility: visible;
   }
+  .article-container .body >>> .v-note-wrapper {
+    z-index: auto;
+  }
+  .article-container .body >>> .v-note-wrapper .v-note-op {
+    z-index: auto;
+  }
 </style>
 
 <style>

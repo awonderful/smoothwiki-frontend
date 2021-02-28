@@ -5,6 +5,7 @@ import {state} from './state/index'
 import vuetify from './plugins/vuetify'
 import VueI18n from 'vue-i18n'
 import messages from './langs/messages.js'
+// Vue.config.productionTip = false
 
 Vue.use(VueI18n)
 Vue.use(state)

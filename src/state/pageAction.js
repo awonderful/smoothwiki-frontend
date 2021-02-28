@@ -73,7 +73,8 @@ export const PageAction = new Vue({
           title:         article.editingTitle,
           body:          article.editingBody,
           search:        article.editingSearch,
-          prevArticleId: prevArticleId
+          prevArticleId: prevArticleId,
+          attachmentIds: article.attachmentIds.join(',')
         })
         PageState.setArticleProps(nodeId, uniqId, {
           id:        res.data.data.id,
@@ -167,9 +168,23 @@ export const PageAction = new Vue({
       form.append('file',      file)
 
       const res = await API.uploadAttachment(form)
-      article.attachments.push(res.data.data.id)
+      article.attachmentIds.push(res.data.data.id)
 
       return res
+    },
+    async refreshArticle(spaceId, nodeId, uniqId) {
+      const article = PageState.getArticle(nodeId, uniqId)
+
+      if (article.id > 0 && !article.isEditing) {
+        const res = await API.getArticle({
+          spaceId:   spaceId, 
+          nodeId:    nodeId,
+          articleId: article.id
+        })
+        let refreshedArticle = res.data.data.article
+        refreshedArticle.uniqId = uniqId
+        PageState.putArticle(nodeId, refreshedArticle)
+      }
     }
   }
 })

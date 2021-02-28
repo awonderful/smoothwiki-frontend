@@ -24,8 +24,7 @@
       clipped-right
       clipped-left>
       <v-app-bar-nav-icon @click="left = !left"></v-app-bar-nav-icon>
-
-      <v-toolbar-title>Application</v-toolbar-title>
+      <Tabs/>
       <v-app-bar-nav-icon @click="right = !right"></v-app-bar-nav-icon>
     </v-app-bar>
 
@@ -38,13 +37,14 @@
 
 <script>
 import Left from '@/components/Left/Index'
+import Tabs from '@/components/Top/Tabs'
 import ArticlePage from '@/components/ArticlePage'
 import ArticleList from '@/components/Right/ArticleList'
 import { API_CODE_SUCC, NODE_TYPE } from '@/common/constants.js'
 import * as API from '@/common/API.js'
 
 export default {
-  components: { Left, ArticlePage, ArticleList },
+  components: { Left, ArticlePage, ArticleList, Tabs },
   data: function () {
     return {
       left: null,

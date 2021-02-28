@@ -26,7 +26,7 @@
 import { API_CODE_SUCC, ARTICLE_COMPONENT_MAP, ARTICLE_TYPE, PAGE_STATUS } from '@/common/constants.js'
 import MarkdownArticle from '@/components/Article/MarkdownArticle.vue'
 import RichTextArticle from '@/components/Article/RichTextArticle.vue'
-import AttachmentArticle from '@/components/Article/AttachmentArticle.vue'
+import AttachmentArticle from '@/components/Article/AttachmentArticle/Index.vue'
 import MindArticle from '@/components/Article/MindArticle.vue'
 import PdfArticle from '@/components/Article/PdfArticle.vue'
 import * as API from '@/common/API.js'
@@ -84,6 +84,9 @@ export default {
   methods: {
     handleApiFailure (error) {
       console.log(error)
+    },
+    errorCaptured(err) {
+      console.log(err)
     },
     saveArticle (uniqId) {
       this.$state.pageAction.saveArticle(this.spaceId, this.nodeId, uniqId)

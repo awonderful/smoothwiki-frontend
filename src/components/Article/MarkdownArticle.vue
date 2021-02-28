@@ -51,6 +51,7 @@
 import BaseArticle from './BaseArticle'
 import ArticleWindow from './ArticleWindow'
 import { mavonEditor } from 'mavon-editor'
+import { ATTACHMENT_SHOW_URL } from '@/common/constants.js'
 import 'mavon-editor/dist/css/index.css'
 
 export default {
@@ -87,9 +88,11 @@ export default {
   methods: {
     async addImage(pos, file) {
       const res = await this.$state.pageAction.addAttachmentToArticle(this.article.spaceId, this.article.nodeId, this.article.uniqId, file)
-      const id  = res.data.data.id
-      const url = `http://www.smoothwiki.com/api/attachment/download?attachmentId=${id}`
+      const url = ATTACHMENT_SHOW_URL + res.data.data.id
       this.$refs.editor.$img2Url(pos, url)
+    },
+    getEditingSearch() {
+      return this.getEditingBody()
     }
   }
 }
