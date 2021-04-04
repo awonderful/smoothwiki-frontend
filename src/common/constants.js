@@ -1,4 +1,4 @@
-export const API_BASE_URL = ''
+export const API_BASE_URL = 'http://www.smoothwiki.com'
 export const API_CODE_SUCC = 100
 
 export const ATTACHMENT_DOWNLOAD_URL = 'http://www.smoothwiki.com/api/attachment/download?forceDownload=1&attachmentId='
@@ -10,8 +10,10 @@ export const TREE_ID = {
 }
 
 export const NODE_TYPE = {
-  ARTICLE_PAGE: 0,
-  DISCUSSTION_PAGE: 1
+  ARTICLE_PAGE:     1,
+  DISCUSSTION_PAGE: 2,
+  API_PAGE:         3,
+  MOCK_PAGE:        4
 }
 
 export const PAGE_TYPE = {
@@ -39,4 +41,16 @@ export const PAGE_STATUS = {
   FAILED_PULL: 2,
   SUCC_PULL:   3,
   NOT_EXIST:   4
+}
+
+export const SPACE_TYPE = {
+  PERSON:  1,
+  GROUP:   2,
+  PROJECT: 3
+}
+
+export const SPACE_MEMBER_ROLE = {
+  CREATOR:  1,
+  ADMIN:    2,
+  ORDINARY: 3
 }

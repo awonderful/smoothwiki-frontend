@@ -17,12 +17,12 @@ export const PageState = new Vue({
       const page = this.getPage(nodeId)
 
       for (const key in props) {
-        Vue.set(page, key, Vue.observable(props[key]))
+        this.$set(page, key, Vue.observable(props[key]))
       }
     },
     ensurePage(nodeId) {
       if (this.pageMap[nodeId] === undefined) {
-        Vue.set(this.pageMap, nodeId, {})
+        this.$set(this.pageMap, nodeId, {})
         this.setPageProps(nodeId, {
           status: PAGE_STATUS.INITED,
           scrollTo: 0
@@ -90,7 +90,7 @@ export const PageState = new Vue({
         article.order = Object.keys(articleMap).length
       }
 
-      Vue.set(articleMap, article.uniqId, article)
+      this.$set(articleMap, article.uniqId, article)
     },
     insertArticle(nodeId, order, article) {
       const articleMap = this.getArticleMap(nodeId)

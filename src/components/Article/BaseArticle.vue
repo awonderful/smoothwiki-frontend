@@ -32,13 +32,13 @@ export default {
           editingBody:   this.getEditingBody(),
           editingSearch: this.getEditingSearch()
         })
-        this.$emit('save', this.article.uniqId)
+        this.$state.pageAction.saveArticle(this.article.spaceId, this.article.nodeId, this.article.uniqId)
       } else {
         this.exitEditing()
       }
     },
     remove() {
-      this.$emit('remove', this.article.uniqId)
+      this.$state.pageAction.removeArticle(this.article.spaceId, this.article.nodeId, this.article.uniqId)
     },
     exitEditing () {
       this.setArticleProps({isEditing: false})

@@ -2,6 +2,8 @@ import axios from 'axios'
 import { API_BASE_URL, API_CODE_SUCC } from '@/common/constants.js'
 
 axios.defaults.baseURL = API_BASE_URL
+axios.defaults.withCredentials = true
+
 axios.interceptors.response.use(function (response) {
   if (response.data.code === API_CODE_SUCC) {
     return response
@@ -157,8 +159,78 @@ export const downloadAttachment = function (params) {
 }
 
 export const getAttachments = function (params) {
-   const config = {
+  const config = {
     url:    '/api/attachment/list',
+    method: 'GET',
+    params: params
+  }
+
+  return axios.request(config)
+}
+
+export const getSpaces = function (params) {
+  const config = {
+    url:    '/api/space/list',
+    method: 'GET',
+    params: params
+  }
+
+  return axios.request(config)
+}
+
+export const createSpace = function (data) {
+  const config = {
+    url:    '/api/space/create',
+    method: 'POST',
+    data:   data
+  }
+
+  return axios.request(config)
+}
+
+export const updateSpace = function (data) {
+  const config = {
+    url:    '/api/space/update',
+    method: 'POST',
+    data:   data
+  }
+
+  return axios.request(config)
+}
+
+export const removeSpace = function (params) {
+  const config = {
+    url:    '/api/space/remove',
+    method: 'GET',
+    params: params
+  }
+
+  return axios.request(config)
+}
+
+export const getSpaceMembers = function (params) {
+  const config = {
+    url:    '/api/space/member/list',
+    method: 'GET',
+    params: params
+  }
+
+  return axios.request(config)
+}
+
+export const addSpaceMember = function (params) {
+  const config = {
+    url:    '/api/space/member/add',
+    method: 'GET',
+    params: params
+  }
+
+  return axios.request(config)
+}
+
+export const removeSpaceMember = function (params) {
+  const config = {
+    url:    '/api/space/member/remove',
     method: 'GET',
     params: params
   }
