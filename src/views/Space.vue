@@ -3,28 +3,27 @@
     <v-navigation-drawer
       v-model="left"
       app
-      clipped
       left
-      class="drawer">
-      <Left/>
+      class="drawer"
+    >
+      <left></left>
     </v-navigation-drawer>
 
     <v-navigation-drawer
       v-model="right"
       app
-      clipped
       right
       class="drawer">
       <ArticleList></ArticleList>
     </v-navigation-drawer>
 
     <v-app-bar 
-      dense 
       app
-      clipped-right
-      clipped-left>
+      dense
+    >
       <v-app-bar-nav-icon @click="left = !left"></v-app-bar-nav-icon>
-      <Tabs/>
+      <v-spacer></v-spacer>
+      <viewer></viewer>
       <v-app-bar-nav-icon @click="right = !right"></v-app-bar-nav-icon>
     </v-app-bar>
 
@@ -32,23 +31,34 @@
       <ArticlePage/>
     </v-main>
 
+    <global-dialogs></global-dialogs>
+
   </v-app>
 </template>
 
 <script>
-import Left from '@/components/Left/Index'
-import Tabs from '@/components/Top/Tabs'
-import ArticlePage from '@/components/ArticlePage'
-import ArticleList from '@/components/Right/ArticleList'
-import { API_CODE_SUCC, NODE_TYPE } from '@/common/constants.js'
-import * as API from '@/common/API.js'
+import Left from '@/components/Left/Index.vue'
+import ArticlePage from '@/components/Page/ArticlePage.vue'
+import ArticleList from '@/components/Right/ArticleList.vue'
+import Viewer from '@/components/Top/Viewer.vue'
+import GlobalDialogs from '@/components/GlobalDialogs/Index.vue'
+import GeneralErrorHandling from '@/common/generalErrorHandling.js'
 
 export default {
-  components: { Left, ArticlePage, ArticleList, Tabs },
+  components: {
+    Left, 
+    ArticlePage, 
+    ArticleList, 
+    Viewer, 
+    GlobalDialogs 
+  },
+  mixins: [
+    GeneralErrorHandling
+  ],
   data: function () {
     return {
       left: null,
-      right: null
+      right: null,
     }
   }
 }

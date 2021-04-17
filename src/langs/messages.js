@@ -1,7 +1,7 @@
 import en from './en.js'
-import zh from './zh.js'
+import zh_CN from './zh_CN.js'
 
 export default {
   en: en,
-  zh: zh
+  'zh-CN': zh_CN
 }

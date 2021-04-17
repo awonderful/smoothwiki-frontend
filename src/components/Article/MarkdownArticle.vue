@@ -7,6 +7,7 @@
       :isFullScreen = "article.isFullScreen"
       :title.sync   = "article.editingTitle"
       @clickButton  = "clickButton"
+      @clickMenu    = "clickMenu"
       ref           = "window">
       <template v-slot:editor>
         <mavon-editor 
@@ -26,6 +27,7 @@
           :subfield     = "false" 
           :toolbarsFlag = "false"
           :ishljs       = "true"
+          :language     = "language"
           :externalLink = "{
             hljs_js: function() {
               return '/highlightjs/highlight.min.js';
@@ -35,6 +37,12 @@
             },
             hljs_lang: function(lang) {
               return '/highlightjs/languages/' + lang + '.min.js';
+            },
+            katex_js: function() {
+              return '/katex/katex.min.js'
+            },
+            katex_css: function() {
+              return '/katex/katex.min.css'
             }
           }"
           codeStyle     = "github"
@@ -59,6 +67,11 @@ export default {
   components: {
     ArticleWindow,
     mavonEditor
+  },
+  computed: {
+    language () {
+      return this.$i18n.locale
+    }
   },
   data: function () {
     return {
@@ -99,6 +112,12 @@ export default {
 </script>
 
 <style scoped>
+.markdown-editor >>> img, .markdown-viewer >>> img {
+  max-width: min(100%, 800px);
+}
+.markdown-editor >>> .v-note-img-wrapper img, .markdown-viewer >>> .v-note-img-wrapper img {
+  max-width: 100% !important;
+}
 .markdown-editor, .markdown-viewer {
   border: 0;
   z-index: 0;

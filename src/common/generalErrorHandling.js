@@ -1,5 +1,4 @@
 export default {
-  name: 'general-error-handling',
   data: function () {
     return {
       alert: {

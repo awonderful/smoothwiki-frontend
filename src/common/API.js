@@ -136,7 +136,15 @@ export const getArticle = function (params) {
   return axios.request(config)
 }
 
+export const setArticleLevel = function (params) {
+  const config = {
+    url:    '/api/article-page/article/level',
+    method: 'GET',
+    params: params
+  }
 
+  return axios.request(config)
+}
 
 export const uploadAttachment = function (data) {
   const config = {
@@ -197,6 +205,7 @@ export const updateSpace = function (data) {
 
   return axios.request(config)
 }
+
 
 export const removeSpace = function (params) {
   const config = {

@@ -54,3 +54,10 @@ export const SPACE_MEMBER_ROLE = {
   ADMIN:    2,
   ORDINARY: 3
 }
+
+export const CLIPBOARD_STATUS = {
+  NONE:                1,
+  COPY_ARTICLE:        2,
+  CUT_ARTICLE:         3,
+  COPY_ARTICLE_MIRROR: 4
+}

@@ -37,7 +37,7 @@
           <li class="item" :key="attachment.id" v-for="attachment of editingBody.items">
             <span class="thumb"><img v-if="attachment.icon !== null" :src="attachment.icon" ></span>
             <span class="filename"><input type="text" v-model="attachment.filename"/></span>
-            <span class="time">2020-12-08 01:01:01</span>
+            <span class="time">{{ new Date(attachment.ctime).toLocaleDateString($i18n.locale) }}</span>
             <span class="size">{{ uploadedAttachmentMap.hasOwnProperty(attachment.id) ? humanFileSize(uploadedAttachmentMap[attachment.id].size) : ''}}</span>
             <span class="operate">
               <v-btn icon dense small @click="removeAttachment(attachment.id)"><v-icon small>mdi-delete-outline</v-icon></v-btn>
@@ -50,10 +50,9 @@
           <li class="item" :key="attachment.id" v-for="attachment of items">
             <span class="thumb">
               <img v-if="attachment.icon !== null" :src="attachment.icon" >
-              <v-icon v-else>mdi-file-document-outline</v-icon>
             </span>
             <span class="filename">{{attachment.filename}}</span>
-            <span class="time">2020-12-08 01:01:01</span>
+            <span class="time">{{ new Date(attachment.ctime).toLocaleDateString($i18n.locale) }}</span>
             <span class="size">{{ humanFileSize(attachment.size) }}</span>
             <span class="operate">
               <a :href="ATTACHMENT_DOWNLOAD_URL + attachment.id">
@@ -71,15 +70,6 @@
             <span class="operate"><v-btn icon dense small><v-icon small>mdi-pause</v-icon></v-btn></span>
           </li>
         </ul>
-        <div class="upload-area-outer" v-if="editingBody.items.length === 0">
-          <label :for="inputId">
-            <div class="upload-area-inner">
-              <v-icon x-large>mdi-upload</v-icon>
-              <br>
-              点击上传或者将文件拖放到这儿
-            </div>
-          </label>
-        </div>
       </template>
     </article-window>
   </div>
@@ -128,6 +118,7 @@ export default {
         if (this.uploadedAttachmentMap[item.id] !== undefined) {
           item.extension = this.uploadedAttachmentMap[item.id].extension
           item.size = this.uploadedAttachmentMap[item.id].size
+          item.ctime = this.uploadedAttachmentMap[item.id].ctime
         }
 
         item.icon = this.getAttachmentIcon(item)
@@ -209,6 +200,10 @@ export default {
       input.click()
     },
     inputFilter(newFile, oldFile, prevent) {
+      if (newFile && newFile.xhr && !newFile.xhr.withCredentials) {
+          newFile.xhr.withCredentials = true
+      }
+
       if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
         // Create a blob field
         // 创建 blob 字段

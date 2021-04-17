@@ -1,5 +1,19 @@
 <template>
   <div>
+    <v-toolbar dense>
+      <template v-if="isReadOnly === false">
+        <v-btn 
+          :key="button.name" 
+          v-for="button of buttons"
+          small
+          icon
+          @click="clickButton(button)"
+        >
+          <v-icon small>{{button.icon}}</v-icon>
+        </v-btn>
+        <v-spacer></v-spacer>
+      </template>
+    </v-toolbar>
     <v-list class="articles" dense>
       <v-list-item-group
         :ripple = "false"
@@ -15,7 +29,7 @@
             'drag-over-next': dragAndDrop.status === DND_STATUS.INTERNAL && dragAndDrop.overArticle === article && dragAndDrop.overArea === 'next'
           }"
           :style     = "{order: article.order}"
-          :draggable = "true"
+          :draggable = "!isReadOnly"
           :ripple    = "false"
           :ref       = "'article_' + article.uniqId" 
           :key       = "article.uniqId"
@@ -27,10 +41,13 @@
           @click     = "selectArticle(article)"
           v-for      = "article of articleMap">
           <v-list-item-content>
-            <v-list-item-title>
-              {{article.editingTitle}}
+            <v-list-item-title :style="{'text-indent': (article.level * 2) + 'em'}">
+              <v-icon>mdi-circle-medium</v-icon> &nbsp;&nbsp; {{article.editingTitle}}
             </v-list-item-title>
           </v-list-item-content>
+            <v-list-item-action v-if="article.isEditing === true">
+              <v-icon small color="grey lighten-1">mdi-pencil</v-icon>
+            </v-list-item-action>
         </v-list-item>
       </v-list-item-group>
     </v-list>
@@ -38,15 +55,17 @@
 </template>
 
 <script>
+import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
+
 export default {
+  mixins: [ SpaceRouteParamsHandling ],
   computed: {
-    spaceId () {
-      return parseInt(this.$route.params.spaceId)
-    },
-    nodeId () {
-      return this.$route.params.nodeId !== undefined
-        ? parseInt(this.$route.params.nodeId)
-        : 0
+    isReadOnly () {
+      const page = this.$state.page.getPage(this.nodeId)
+      
+      return page !== undefined
+             ? page.isReadOnly
+             : true
     },
     articleMap () {
       const page = this.$state.page.getPage(this.nodeId)
@@ -77,7 +96,21 @@ export default {
         INTERNAL: 2,   // an article is being dragged over the list
         INTO:     3    // an external element is being dragged over the list
       },
-      selectedItem: null
+      selectedItem: null,
+      selectedArticle: null,
+
+      buttons: [
+        {
+          name: 'decIndent',
+          tip: this.$t('articleList.buttons.decIndent'),
+          icon: 'mdi-arrow-left'
+        },
+         {
+          name: 'incIndent',
+          tip: this.$t('articleList.buttons.incIndent'),
+          icon: 'mdi-arrow-right'
+        },
+      ]
     }
   },
   methods: {
@@ -159,23 +192,31 @@ export default {
     },
     getOffset(article) {
       let element = this.getElement(article)
-      let offsetLeft  = element.offsetLeft
-      let offsetTop   = element.offsetTop
-
-      let reference = element.offsetParent
-      while(reference){
-        offsetLeft += reference.offsetLeft
-        offsetTop  += reference.offsetTop
-        reference   = reference.offsetParent
-      }
+      let clientPos  = element.getBoundingClientRect();
 
       return {
-        left: offsetLeft,
-        top: offsetTop
+        left: clientPos.left + window.scrollX,
+        top: clientPos.top + window.scrollY
       }
     },
     selectArticle(article) {
+      this.selectedArticle = article
       this.$state.page.setPageProps(this.nodeId, {scrollTo: article.uniqId})
+    },
+    clickButton(button) {
+      if (typeof this[button.name] === 'function') {
+        this[button.name]()
+      }
+    },
+    decIndent() {
+      if (this.selectedArticle !== null && this.selectedArticle.level > 0) {
+        this.$state.pageAction.setArticleLevel(this.selectedArticle.spaceId, this.selectedArticle.nodeId, this.selectedArticle.uniqId, this.selectedArticle.level - 1)
+      }
+    },
+    incIndent() {
+      if (this.selectedArticle !== null && this.selectedArticle.level < 10) {
+        this.$state.pageAction.setArticleLevel(this.selectedArticle.spaceId, this.selectedArticle.nodeId, this.selectedArticle.uniqId, this.selectedArticle.level + 1)
+      }
     }
   }
 }

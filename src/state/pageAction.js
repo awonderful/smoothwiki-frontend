@@ -12,13 +12,17 @@ export const PageAction = new Vue({
       })
     
       let articles = res.data.data.articles
+      let isReadOnly = res.data.data.isReadOnly
       for (let article of articles) {
+        article.isReadOnly = isReadOnly
         PageState.putArticle(nodeId, article)
       }
       PageState.setPageProps(nodeId, {
         spaceId: spaceId,
-        status: PAGE_STATUS.SUCC_PULL
+        status: PAGE_STATUS.SUCC_PULL,
+        isReadOnly: isReadOnly
       })
+      PageState.refreshNumbers(nodeId)
     },
     async removeArticle(spaceId, nodeId, uniqId) {
       const article = PageState.getArticle(nodeId, uniqId)
@@ -42,6 +46,7 @@ export const PageAction = new Vue({
           articleVersion: article.version
         })
         PageState.removeArticle(nodeId, uniqId)
+        PageState.refreshNumbers(nodeId)
       } finally {
         if (PageState.getArticle(nodeId, uniqId) !== undefined) {
           PageState.setArticleProps(nodeId, uniqId, {isRequesting: false})
@@ -183,7 +188,25 @@ export const PageAction = new Vue({
         })
         let refreshedArticle = res.data.data.article
         refreshedArticle.uniqId = uniqId
+        refreshedArticle.order = article.order
+        refreshedArticle.number = article.number
         PageState.putArticle(nodeId, refreshedArticle)
+      }
+    },
+    async setArticleLevel(spaceId, nodeId, uniqId, level) {
+      const article = PageState.getArticle(nodeId, uniqId)
+      const oldLevel = article.level
+
+      PageState.setArticleProps(nodeId, uniqId, {level: level})
+      try {
+        await API.setArticleLevel({
+          spaceId: spaceId, 
+          nodeId: nodeId, 
+          articleId: article.id, 
+          level: level})
+      } catch (err) {
+        PageState.setArticleProps(nodeId, uniqId, {level: oldLevel})
+        throw err
       }
     }
   }

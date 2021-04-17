@@ -12,18 +12,8 @@ const routes = [
     component: Home
   },
   {
-    path: '/space/view/:spaceId',
-    name: 'space',
-    component: Space
-  },
-  {
-    path: '/space/view/:spaceId/:nodeId',
+    path: '/space/:spaceId/:category/:nodeId',
     name: 'space-node',
-    component: Space,
-  },
-  {
-    path: '/space/view/:spaceId/:nodeId/:articleId',
-    name: 'space-node-article',
     component: Space
   },
   {

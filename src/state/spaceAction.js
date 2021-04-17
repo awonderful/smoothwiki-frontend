@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import { SpaceState } from './space.js'
 import * as API from '@/common/API.js'
-import { addSpaceMember, getSpaceMembers } from '../common/API.js'
 
 export const SpaceAction = new Vue({
   data: {
@@ -36,7 +35,6 @@ export const SpaceAction = new Vue({
     },
 
     async updateSpace(spaceId, props) {
-      console.log('----action:updateSpace----')
       const space = SpaceState.getSpaceById(spaceId)
       if (space.isRequesting === true) {
         return

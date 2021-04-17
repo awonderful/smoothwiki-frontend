@@ -5,27 +5,27 @@ export const TreeState = new Vue({
     treeMap: {}
   },
   methods: {
-    getTree(spaceId, treeId) {
-      if (this.treeMap[spaceId] === undefined || this.treeMap[spaceId][treeId] === undefined) {
+    getTree(spaceId, category) {
+      if (this.treeMap[spaceId] === undefined || this.treeMap[spaceId][category] === undefined) {
         return undefined
       }
 
-      return this.treeMap[spaceId][treeId]
+      return this.treeMap[spaceId][category]
     },
-    ensureTree(spaceId, treeId) {
+    initTree(spaceId, category) {
       if (this.treeMap[spaceId] === undefined) {
-        Vue.set(this.treeMap, spaceId, {})
+        this.$set(this.treeMap, spaceId, {})
       }
 
-      if (this.treeMap[spaceId][treeId] === undefined) {
-        Vue.set(this.treeMap[spaceId], treeId, {
+      if (this.treeMap[spaceId][category] === undefined) {
+        this.$set(this.treeMap[spaceId], category, {
           data: [],
           version: ''
         })
       }
     },
-    setTreeProps(spaceId, treeId, props) {
-      Object.assign(this.treeMap[spaceId][treeId], props)
+    setTreeProps(spaceId, category, props) {
+      Object.assign(this.treeMap[spaceId][category], props)
     }
   }
 })

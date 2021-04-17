@@ -2,6 +2,7 @@
   <v-app id="inspire">
 
     <v-app-bar app>
+      <viewer></viewer>
     </v-app-bar>
 
     <v-main>
@@ -51,10 +52,11 @@
 </template>
 
 <script>
-import SpaceCard from '@/components/SpaceCard.vue'
+import SpaceCard from '@/components/Space/SpaceCard.vue'
 import CreateSpaceDialog from '@/components/Space/CreateSpaceDialog.vue'
 import RemoveSpaceDialog from '@/components/Space/RemoveSpaceDialog.vue'
 import SettingSpaceDialog from '@/components/Space/SettingSpaceDialog.vue'
+import Viewer from '@/components/Top/Viewer.vue'
 import { SPACE_TYPE } from '@/common/constants.js'
 import GeneralErrorHandling from '@/common/generalErrorHandling.js'
 
@@ -63,7 +65,8 @@ export default {
     SpaceCard,
     CreateSpaceDialog,
     RemoveSpaceDialog,
-    SettingSpaceDialog
+    SettingSpaceDialog,
+    Viewer
   },
   mixins: [
     GeneralErrorHandling

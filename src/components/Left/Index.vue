@@ -1,12 +1,26 @@
 <template>
   <div>
-    <DocTree 
+    <v-toolbar dense>
+      <v-text-field
+        dense
+        flat
+        hide-details
+        append-icon="mdi-magnify"
+        v-model="keyword"
+        @input="search()"
+      ></v-text-field>
+    </v-toolbar>
+
+    <doc-tree
       @node-removed = "refreshTrashTree()"
+      :keyword="keyword"
       ref="docTree"
-    />
-    <TrashTree
+    ></doc-tree>
+    
+    <trash-tree
       ref="trashTree"
-    />
+      :keyword="keyword"
+    ></trash-tree>
   </div>
 </template>
 
@@ -17,6 +31,11 @@ import TrashTree from './TrashTree'
 export default {
   name: 'left',
   components: { DocTree, TrashTree },
+  data: function () {
+    return {
+      keyword: ''
+    }
+  },
   methods: {
     refreshTrashTree() {
       this.$refs.trashTree.refresh()
@@ -24,7 +43,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

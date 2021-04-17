@@ -25,7 +25,8 @@ export const PageState = new Vue({
         this.$set(this.pageMap, nodeId, {})
         this.setPageProps(nodeId, {
           status: PAGE_STATUS.INITED,
-          scrollTo: 0
+          scrollTo: 0,
+          isReadOnly: true
         })
       }
     },
@@ -48,6 +49,16 @@ export const PageState = new Vue({
 
       return page.articleMap
     },
+    getArticleList(nodeId) {
+      const articleMap = this.getArticleMap(nodeId)
+      let articleList = Object.values(articleMap)
+
+      articleList.sort(function (a, b) {
+        return a.order - b.order
+      })
+
+      return articleList
+    },
     getArticle(nodeId, uniqId) {
       const articleMap = this.getArticleMap(nodeId)
 
@@ -67,6 +78,8 @@ export const PageState = new Vue({
       const articleMap = this.getArticleMap(nodeId)
 
       const defaultArticleProp = {
+        number:        '',
+        level:         0,
         editingTitle:  article.title,
         editingBody:   article.body,
         editingSearch: article.search,
@@ -74,6 +87,7 @@ export const PageState = new Vue({
         isRequesting:  false,
         isFullScreen:  false,
         isReadOnly:    false,
+        isUploading:   false,
         attachmentIds: []
       }
       for (let key in defaultArticleProp) {
@@ -95,9 +109,10 @@ export const PageState = new Vue({
     insertArticle(nodeId, order, article) {
       const articleMap = this.getArticleMap(nodeId)
 
-      for (const tmpArticle of articleMap) {
+      for (const tmpUniqId in articleMap) {
+        let tmpArticle = articleMap[tmpUniqId]
         if (tmpArticle.order >= order) {
-          this.setArticleProps(nodeId, uniqId, {
+          this.setArticleProps(nodeId, tmpUniqId, {
             order: tmpArticle.order + 1
           })
         }
@@ -105,17 +120,20 @@ export const PageState = new Vue({
 
       article.order = order
       this.putArticle(nodeId, article)
+      this.refreshNumbers(nodeId)
     },
     appendArticle(nodeId, article) {
       const articleMap = this.getArticleMap(nodeId)
       article.order = Object.keys(articleMap).length
 
       this.putArticle(nodeId, article)
+      this.refreshNumbers(nodeId)
     },
     removeArticle(nodeId, uniqId) {
       const articleMap = this.getArticleMap(nodeId)
 
       Vue.delete(articleMap, uniqId)
+      this.refreshNumbers(nodeId)
     },
     moveArticle(nodeId, uniqId, newOrder) {
       const articleMap = this.getArticleMap(nodeId)
@@ -142,11 +160,47 @@ export const PageState = new Vue({
         }
       }
       this.setArticleProps(nodeId, uniqId, {order: newOrder})
+      this.refreshNumbers(nodeId)
+    },
+    refreshNumbers(nodeId) {
+      const articleMap = this.getArticleMap(nodeId)
+
+      let articleList = []
+      for (const uniqId in articleMap) {
+        articleList.push(articleMap[uniqId])
+      }
+      
+      const sortedArticleList = articleList.sort(function (article1, article2) {
+        return article1.order - article2.order
+      })
+
+      for (let i=0; i<sortedArticleList.length; i++) {
+        const article = sortedArticleList[i]
+        this.setArticleProps(nodeId, article.uniqId, {
+          number: i + 1
+        })
+      }
     },
     scrollToArticle(nodeId, uniqId) {
       this.setPageProps(nodeId, {
         scrollTo: uniqId
       })
+    },
+    hasUnsavedArticles(nodeId) {
+      const page = this.getPage(nodeId)
+      if (page.isReadOnly === true) {
+        return false
+      }
+
+      const articleMap = this.getArticleMap(nodeId)
+      for (let uniqId in articleMap) {
+        const article = articleMap[uniqId]
+        if (article.isEditing === true || article.isUploading === true) {
+          return true
+        }
+      }
+
+      return false
     }
   }
 })

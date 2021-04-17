@@ -1,6 +1,6 @@
 <template>
-  <div class="page" ref="page">
-    <v-container fluid v-if="nodeId > 0">
+  <div class="page" ref="page" @contextmenu="handleContextmenuEvent($event)">
+    <v-container fluid v-if="page !== undefined">
       <v-row class="mx-2 flex-column flex-nowrap">
         <v-col class="pa-0 mt-5" cols="12" :style="{order: article.order}" :key="article.uniqId" v-for="article of articleMap">
           <component
@@ -11,19 +11,43 @@
             @remove="removeArticle"/>
         </v-col>
       </v-row>
-      <v-row>
-        <v-col cols="12">
-          <v-btn @click="addFreshArticle(articleType.MARKDOWN)">+ Markdown</v-btn>
-          <v-btn @click="addFreshArticle(articleType.RICHTEXT)">+ 富文本</v-btn>
-          <v-btn @click="addFreshAttachment()">+ 附件</v-btn>
+      <v-row v-if="page.isReadOnly === false" justify="center" class="mt-5 mb-3" @contextmenu.stop="doNothing()">
+        <v-col cols="2">
+          <v-btn color="primary" @click="addFreshArticle(articleType.MARKDOWN)">{{ $t('page.articlePage.buttons.markdown') }}</v-btn>
+        </v-col>
+        <v-col cols="2">
+          <v-btn color="primary" @click="addFreshArticle(articleType.RICHTEXT)">{{ $t('page.articlePage.buttons.richText') }}</v-btn>
+        </v-col>
+        <v-col cols="2">
+          <v-btn color="primary" @click="addFreshAttachment()">{{ $t('page.articlePage.buttons.attachment') }}</v-btn>
         </v-col>
       </v-row>
     </v-container>
+
+    <v-menu
+      v-model="contextmenu.show"
+      v-if="!page.isReadOnly"
+      fixed
+      :position-x="contextmenu.x"
+      :position-y="contextmenu.y"
+    >
+      <v-list dense>
+        <v-list-item-group>
+          <v-list-item :disabled="!isPastable" @click="paste()">
+            <v-list-item-icon>
+              <v-icon>mdi-content-paste</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>粘贴</v-list-item-title>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
+    </v-menu>
   </div>
 </template>
 
 <script>
 import { API_CODE_SUCC, ARTICLE_COMPONENT_MAP, ARTICLE_TYPE, PAGE_STATUS } from '@/common/constants.js'
+import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
 import MarkdownArticle from '@/components/Article/MarkdownArticle.vue'
 import RichTextArticle from '@/components/Article/RichTextArticle.vue'
 import AttachmentArticle from '@/components/Article/AttachmentArticle/Index.vue'
@@ -39,28 +63,38 @@ export default {
     MindArticle,
     PdfArticle
   },
+  mixins: [
+    SpaceRouteParamsHandling
+  ],
   data: function () {
     return {
       articleComponentMap: ARTICLE_COMPONENT_MAP,
       articleType: ARTICLE_TYPE,
+
+      contextmenu: {
+        show: false,
+        order: -1,
+        x: 0,
+        y: 0
+      }
     }
   },
   computed: {
-    spaceId () {
-      return parseInt(this.$route.params.spaceId)
-    },
-    nodeId () {
-      return this.$route.params.nodeId !== undefined
-        ? parseInt(this.$route.params.nodeId)
-        : 0
-    },
     articleMap () {
       return this.$state.page.getArticleMap(this.nodeId)
+    },
+    page () {
+      return this.nodeId > 0
+             ? this.$state.page.getPage(this.nodeId)
+             : undefined
     },
     scrollTo () {
       const page = this.$state.page.getPage(this.nodeId)
 
       return page.scrollTo
+    },
+    isPastable () {
+      return this.$state.clipboard.hasAnArticle
     }
   },
   watch: {
@@ -127,6 +161,52 @@ export default {
     scrollToArticle(uniqId) {
       const el = this.getArticleElement(uniqId)
       window.scrollTo({top: el.offsetTop - 40})
+    },
+    handleContextmenuEvent (event) {
+      if (this.page.isReadOnly === true) {
+        return
+      }
+
+      const articleList = this.$state.page.getArticleList(this.nodeId)
+      let articleRectList = []
+      let order = -1
+
+      for (let i=0; i<articleList.length; i++) {
+        const uniqId = articleList[i].uniqId
+        const element = this.getArticleElement(uniqId)
+        const rect = element.getBoundingClientRect()
+        articleRectList.push(rect)
+
+        if (event.clientY < rect.top) {
+          if (i === 0) {
+            order = 0
+            break
+          } else if (event.clientY > articleRectList[i-1].bottom) {
+            order = i
+            break
+          }
+        }
+      }
+
+      if (order === -1 && event.clientY > articleRectList[articleList.length - 1].bottom) {
+        order = articleList.length
+      }
+
+      this.contextmenu.order = order
+      if (this.contextmenu.order !== -1) {
+        this.contextmenu.x = event.clientX
+        this.contextmenu.y = event.clientY
+        this.contextmenu.show = true
+        event.preventDefault()
+      } else {
+        this.contextmenu.show = false
+      }
+    },
+    doNothing () {
+      return true
+    },
+    paste () {
+      this.$state.clipboardAction.pasteArticleTo(this.nodeId, this.contextmenu.order)
     }
   }
 }

@@ -7,6 +7,7 @@
       :isFullScreen = "article.isFullScreen"
       :title.sync   = "article.editingTitle"
       @clickButton  = "clickButton"
+      @clickMenu    = "clickMenu"
       ref="window">
       <template v-slot:editor>
         <!-- 链接窗口 -->
@@ -16,7 +17,7 @@
           max-width="600px">
           <v-card>
             <v-card-title>
-              <span class="headline">链接</span>
+              <span class="headline">{{ $t('article.richText.insertLinkDialog.title') }}</span>
               <v-spacer></v-spacer>
               <v-btn icon dense elevation="0" @click="hideLinkDialog()">
                 <v-icon>mdi-close</v-icon>
@@ -26,7 +27,7 @@
               <v-container>
                 <v-row>
                   <v-col cols="12">
-                    <v-text-field v-model="linkDialog.title" placeholder="title" required></v-text-field>
+                    <v-text-field v-model="linkDialog.title" :placeholder="$t('article.richText.insertLinkDialog.titlePlaceHolder')" required></v-text-field>
                   </v-col>
                   <v-col cols="12">
                     <v-text-field v-model="linkDialog.url" placeholder="https://" required></v-text-field>
@@ -36,8 +37,8 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="hideLinkDialog">取消</v-btn>
-              <v-btn color="blue darken-1" text @click="applyLink()">确定</v-btn>
+              <v-btn color="blue darken-1" text @click="hideLinkDialog">{{ $t('article.richText.insertLinkDialog.cancel') }}</v-btn>
+              <v-btn color="blue darken-1" text @click="applyLink()">{{ $t('article.richText.insertLinkDialog.ok') }}</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -49,7 +50,7 @@
           max-width="600px">
           <v-card>
             <v-card-title>
-              <span class="headline">图片</span>
+              <span class="headline"> {{ $t('article.richText.insertNetworkImageDialog.title') }} </span>
               <v-spacer></v-spacer>
               <v-btn icon dense elevation="0" @click="hideNetworkImageDialog()">
                 <v-icon>mdi-close</v-icon>
@@ -66,8 +67,8 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="hideNetworkImageDialog">取消</v-btn>
-              <v-btn color="blue darken-1" text @click="insertNetworkImage()">确定</v-btn>
+              <v-btn color="blue darken-1" text @click="hideNetworkImageDialog()"> {{ $t('article.richText.insertNetworkImageDialog.cancel') }} </v-btn>
+              <v-btn color="blue darken-1" text @click="insertNetworkImage()"> {{ $t('article.richText.insertNetworkImageDialog.ok') }} </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -111,12 +112,12 @@
                   <v-list-item-group>
                     <v-list-item @click="showNetworkImageDialog()">
                       <v-list-item-content>
-                        <v-list-item-title>插入网络图片</v-list-item-title>
+                        <v-list-item-title>{{ $t('article.richText.toolbar.insertNetworkImage') }}</v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
                     <v-list-item @click="showUploadDialog()">
                       <v-list-item-content>
-                        <v-list-item-title>上传本地图片</v-list-item-title>
+                        <v-list-item-title>{{ $t('article.richText.toolbar.uploadLocalImage') }}</v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
                   </v-list-item-group>
@@ -629,6 +630,9 @@ export default {
   .content {
     text-align: left;
     padding: 8px 25px;
+  }
+  .content >>> img {
+    max-width: min(100%, 800px);
   }
   .content.editing >>> .ProseMirror {
     min-height: 10em;

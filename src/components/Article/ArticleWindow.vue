@@ -26,7 +26,7 @@
           </v-btn>
         </template>
         <v-list>
-          <v-list-item :key="item.name" v-for="item in menuItems" @click="clickMenuItem(item)">
+          <v-list-item :key="item.name" v-for="item in menuItems" @click="clickMenu(item)">
             <v-list-item-icon><v-icon small>{{item.icon}}</v-icon></v-list-item-icon>
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item>
@@ -219,8 +219,8 @@ export default {
     clickButton (button) {
       this.$emit('clickButton', button.name)
     },
-    clickMenuItem (item) {
-      this.$emit('clickMenuItem', item.name)
+    clickMenu (item) {
+      this.$emit('clickMenu', item.name)
     }
   }
 }
@@ -267,9 +267,11 @@ export default {
     left: 0;
     top: 0;
     z-index: 999;
+    padding: 0 !important;
   }
   .article-container.full-screen .body {
     flex-grow: 1;
+    overflow: auto;
   }
   .article-container.editing .button {
     visibility: visible;
@@ -287,6 +289,6 @@ export default {
 
 <style>
   .article-container.full-screen .body > div {
-    height: 100%;
+    height: auto;
   }
 </style>

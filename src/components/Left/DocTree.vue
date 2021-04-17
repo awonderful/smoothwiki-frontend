@@ -2,7 +2,7 @@
   <TWTree
     ref="tree"
     class="tree"
-    :tree="tree"
+    :tree="treeData"
     :fnBeforeDrop="beforeDrop"
     :fnBeforeContextMenu="beforeContextMenu"
     :autoHideContextMenu="false"
@@ -14,7 +14,8 @@
         titleMaxWidth: '-5%', 
         titleOverflow: 'ellipsis'
     }}"
-    @click="viewPage"
+    :fnBeforeSelect="beforeSelect"
+    @select="viewPage"
     @blur="inputBlur"
   >
     <template v-slot:icon="{node}">
@@ -27,9 +28,10 @@
       <v-menu
         v-model="contextMenu.show" 
         elevation="2" 
-        class="contextmenu" 
-        :position-x="contextMenu.pageX" 
-        :position-y="contextMenu.pageY">
+        class="contextmenu"
+        fixed
+        :position-x="contextMenu.clientX" 
+        :position-y="contextMenu.clientY">
         <v-list dense>
           <v-list-item-group v-model="selectedItem">
             <v-list-item class="menu-item" @click.prevent="clickContextMenu('create', node)">
@@ -37,7 +39,7 @@
                 <v-icon small>mdi-plus</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title class="text-left font-weight-regular pr-2">create</v-list-item-title>
+                <v-list-item-title class="text-left font-weight-regular pr-2">{{ $t('space.docTree.contextMenu.create') }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="menu-item" @click="clickContextMenu('rename', node)">
@@ -45,7 +47,7 @@
                 <v-icon small>mdi-pencil</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title class="text-left font-weight-regular pr-2">rename</v-list-item-title>
+                <v-list-item-title class="text-left font-weight-regular pr-2">{{ $t('space.docTree.contextMenu.rename') }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="menu-item" @click="clickContextMenu('remove', node)" v-if="node.__.depth > 1">
@@ -53,15 +55,7 @@
                 <v-icon small>mdi-trash-can-outline</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title class="text-left font-weight-regular pr-2">remove</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item class="menu-item" @click="clickContextMenu('settings', node)">
-              <v-list-item-icon class="mr-2">
-                <v-icon small>mdi-cog-outline</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title class="text-left font-weight-regular pr-2">settings</v-list-item-title>
+                <v-list-item-title class="text-left font-weight-regular pr-2">{{ $t('space.docTree.contextMenu.remove') }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list-item-group>
@@ -75,30 +69,100 @@
 import TWTree from 'twtree'
 import { API_CODE_SUCC, NODE_TYPE } from '@/common/constants.js'
 import * as API from '@/common/API.js'
+import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
 
 export default {
   components: { TWTree },
+  mixins: [
+    SpaceRouteParamsHandling
+  ],
+  props: {
+    keyword: {
+      type: String,
+      required: false,
+      default: ''
+    }
+  },
   computed: {
-    spaceId () {
-      return parseInt(this.$route.params.spaceId)
+    tree () {
+      let tree = this.$state.tree.getTree(this.spaceId, 'doc')
+
+      if (tree === undefined) {
+        this.$state.tree.initTree(this.spaceId, 'doc')
+        tree = this.$state.tree.getTree(this.spaceId, 'doc')
+        this.$state.treeAction.pullTree(this.spaceId, 'doc')
+      }
+
+      return tree
     },
-    nodeId () {
-      return this.$route.params.nodeId !== undefined
-        ? parseInt(this.$route.params.nodeId)
-        : 0
+    treeData () {
+      return this.tree.data
+    },
+    treeVersion: {
+      get () {
+        return this.tree.version
+      },
+      set (val) {
+        this.$state.tree.setTreeProps(this.spaceId, this.category, {
+          version: val
+        })
+      }
+    }
+  },
+  watch: {
+    treeData: {
+      immediate: true,
+      handler () {
+        this.$nextTick(function () {
+          if (this.$refs.tree === undefined) {
+            return
+          }
+
+          const tree = this.$refs.tree.getNestedTree()
+          if (Array.isArray(tree) && tree.length > 0) {
+            const rootNode = tree[0]
+            this.$refs.tree.expand(rootNode)
+          }
+
+          if (this.category === 'trash') {
+            const selectedOne = this.$refs.tree.getSelectedOne()
+            if (selectedOne !== null) {
+              this.$refs.tree.deselect(selectedOne)
+            }
+
+          } else if (this.category === 'doc' && this.nodeId > 0) {
+            const selectedOne = this.$refs.tree.getSelectedOne()
+            const node = this.$refs.tree.getById(this.nodeId)
+            if (node !== null && selectedOne !== node) {
+              this.$refs.tree.expandAncestors(node)
+              this.$refs.tree.select(node)
+            }
+          }
+        }.bind(this))
+      }
+    },
+    category () {
+      if (this.$refs.tree !== undefined && this.category === 'trash') {
+        const selectedOne = this.$refs.tree.getSelectedOne()
+        if (selectedOne !== null) {
+          this.$refs.tree.deselect(selectedOne)
+        }
+      }
+    },
+    keyword (val) {
+      if (val === '') {
+        this.$refs.tree.clearSearchResult()
+      } else {
+        this.$refs.tree.search(this.keyword)
+      }
     }
   },
   data: function () {
     return {
       treeId: 1,
-      tree: [],
-      treeVersion: null,
       selectedItem: null,
 
       freshIdCounter: 0,
-
-      message: '',
-      showMessage: false,
 
       contextMenu: {
         pageX: 0,
@@ -108,35 +172,8 @@ export default {
     }
   },
   methods: {
-    handleApiFailure (error) {
-      if (error.wrongCode) {
-        this.message = error.wrongCode.response.data.message
-      } else {
-        this.message = 'network error!'
-      }
-      this.showMessage = true
-    },
-    getTree () {
-      API.getTree({
-        spaceId: this.spaceId,
-        treeId: this.treeId
-      }).then((res) => {
-        res.data.data.tree.directoryState = "expanded"
-        res.data.data.tree.style = { showSwitcher: false, showIcon: true}
-        this.tree = [res.data.data.tree]
-        this.treeVersion = res.data.data.treeVersion
-        this.$nextTick(() => {
-          if (this.$route.params.nodeId !== undefined) {
-            const routerNodeId = parseInt(this.$route.params.nodeId)
-            let selectedNode = this.$refs.tree.getSelectedOne()
-            let routerNode   = this.$refs.tree.getById(routerNodeId)
-            if (selectedNode === null && routerNode !== null) {
-              this.$refs.tree.expandAncestors(routerNode)
-              this.$refs.tree.select(routerNode)
-            }
-          }
-        })
-      })
+    handleApiFailure () {
+
     },
     generateFreshId () {
       this.freshIdCounter += 1
@@ -145,6 +182,8 @@ export default {
     beforeContextMenu(node, event) {
       this.contextMenu.pageX = event.pageX
       this.contextMenu.pageY = event.pageY
+      this.contextMenu.clientX = event.clientX
+      this.contextMenu.clientY = event.clientY
       if (!this.contextMenu.show) {
         this.contextMenu.show = true
       }
@@ -155,7 +194,7 @@ export default {
           const freshId = this.generateFreshId()
           this.$refs.tree.createAndEdit({
             id: freshId,
-            title: 'UNTITLED',
+            title: this.$t('space.docTree.defaultTitle'),
             type: NODE_TYPE.ARTICLE_PAGE,
             hasChild: false,
             fresh: true
@@ -206,7 +245,7 @@ export default {
           this.$refs.tree.setAttr(node, 'id', res.data.data.nodeId)
         }).catch((error) => {
           this.$refs.tree.remove(node)
-          this.handleApiFailure(error)
+          throw error
         })
 
       // rename a node
@@ -221,7 +260,7 @@ export default {
           this.treeVersion = res.data.data.treeVersion
         }).catch((error) => {
           this.$refs.tree.setAttr(node, 'title', node.__.oldTitle)
-          this.handleApiFailure(error)
+          throw error
         })
       }
     },
@@ -267,15 +306,20 @@ export default {
         return false
       }
     },
+    beforeSelect (node) {
+      if (this.nodeId !== node.id && this.$state.page.hasUnsavedArticles(this.nodeId)) {
+        this.$state.globalDialogs.showErrorDialog({message: this.$t('errors.unsavedArticles')})
+        return false
+      }
+
+      return true
+    },
     viewPage (node) {
       if (this.nodeId !== node.id) {
-        this.$router.push({name: 'space-node', params: {spaceId: this.spaceId, nodeId: node.id}})
+        this.$router.push({name: 'space-node', params: {spaceId: this.spaceId, category: 'doc', nodeId: node.id}})
       }
     }
   },
-  mounted () {
-    this.getTree()
-  }
 }
 </script>
 

@@ -1,10 +1,8 @@
 import Vue from 'vue'
 
 export const SpaceState = new Vue({
-  data: function() {
-    return {
-      spaceMap: {}
-    }
+  data: {
+    spaceMap: {}
   },
   methods: {
     getSpaceMap () {
