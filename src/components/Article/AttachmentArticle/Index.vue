@@ -52,7 +52,7 @@
               <img v-if="attachment.icon !== null" :src="attachment.icon" >
             </span>
             <span class="filename">{{attachment.filename}}</span>
-            <span class="time">{{ new Date(attachment.ctime).toLocaleDateString($i18n.locale) }}</span>
+            <span class="time">{{ new Date(attachment.ctime).toLocaleDateString(locale) }}</span>
             <span class="size">{{ humanFileSize(attachment.size) }}</span>
             <span class="operate">
               <a :href="ATTACHMENT_DOWNLOAD_URL + attachment.id">
@@ -100,7 +100,8 @@ export default {
         {
           name:  'upload',
           title: 'upload',
-          icon:  'mdi-upload'
+          icon:  'mdi-upload',
+          tip:   this.$t('article.attachment.uploadButtonTip')
         }
       ]
     },
@@ -125,6 +126,9 @@ export default {
       }
 
       return items
+    },
+    locale () {
+      return this.$i18n.locale.replace('_', '-')
     }
   },
   watch: {

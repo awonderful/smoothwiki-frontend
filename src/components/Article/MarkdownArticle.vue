@@ -13,9 +13,32 @@
         <mavon-editor 
           :boxShadow        = "false"
           :toolbars         = "toolbars"
+          :ishljs           = "true"
+          :language         = "language"
+          :externalLink     = "{
+            markdown_css: function() {
+                return '/markdown/github-markdown.min.css'
+            },
+            hljs_js: function() {
+              return '/highlightjs/highlight.min.js'
+            },
+            hljs_css: function(css) {
+              return '/highlightjs/styles/' + css + '.min.css'
+            },
+            hljs_lang: function(lang) {
+              return '/highlightjs/languages/' + lang + '.min.js'
+            },
+            katex_js: function() {
+              return '/katex/katex.min.js'
+            },
+            katex_css: function() {
+              return '/katex/katex.min.css'
+            }
+          }"
+          codeStyle         = "github"
           @imgAdd           = "addImage"
           v-model           = "article.editingBody"
-          class             = "markdown-editor" 
+          class             = "markdown-editor"
           previewBackground = "#ffffff"
           ref               = "editor"/>
       </template>
@@ -29,14 +52,17 @@
           :ishljs       = "true"
           :language     = "language"
           :externalLink = "{
+            markdown_css: function() {
+              return '/markdown/github-markdown.min.css'
+            },
             hljs_js: function() {
-              return '/highlightjs/highlight.min.js';
+              return '/highlightjs/highlight.min.js'
             },
             hljs_css: function(css) {
-              return '/highlightjs/styles/' + css + '.min.css';
+              return '/highlightjs/styles/' + css + '.min.css'
             },
             hljs_lang: function(lang) {
-              return '/highlightjs/languages/' + lang + '.min.js';
+              return '/highlightjs/languages/' + lang + '.min.js'
             },
             katex_js: function() {
               return '/katex/katex.min.js'
@@ -70,7 +96,7 @@ export default {
   },
   computed: {
     language () {
-      return this.$i18n.locale
+      return this.$i18n.locale.replace('_', '-')
     }
   },
   data: function () {

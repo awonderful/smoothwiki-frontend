@@ -5,23 +5,47 @@
     <v-toolbar dense flat class="header">
 
       <!--title-->
-      <input type="text" class="title-input text-h5 flex-grow-1 font-weight-medium" v-model="colonedTitle" @input="updateTitle" :readonly="!isEditing"/>
+      <input 
+        type="text" 
+        class="title-input text-h5 flex-grow-1 font-weight-medium" 
+        v-model="colonedTitle" 
+        @input="updateTitle" 
+        :readonly="!isEditing"
+      />
 
       <!--buttons-->
-      <v-btn
-        small
-        icon
-        class="mr-2 button"
-        :key="button.name"
-        v-for="button of buttons"
-        @click="clickButton(button)">
-        <v-icon small>{{button.icon}}</v-icon>
-      </v-btn>
+      <div>
+        <v-tooltip
+          :key="button.name"
+          v-for="button of buttons"
+          bottom
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              small
+              icon
+              class="mr-2 button"
+              v-bind="attrs"
+              v-on="on"
+              @click="clickButton(button)"
+            >
+              <v-icon small>{{button.icon}}</v-icon>
+            </v-btn>
+          </template>
+          <span>{{button.tip}}</span>
+        </v-tooltip>
+      </div>
 
       <!--menu-->
       <v-menu open-on-hover bottom offset-y v-if="!this.isFreshNew">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn small icon v-bind="attrs" v-on="on" class="button">
+          <v-btn 
+            small 
+            icon 
+            v-bind="attrs" 
+            v-on="on" 
+            class="button"
+          >
             <v-icon small>mdi-dots-vertical</v-icon>
           </v-btn>
         </template>
@@ -163,51 +187,51 @@ export default {
       menuItemMap: {
         history: {
           name:  'history',
-          title: 'history',
-          icon:  'mdi-history'
+          title: this.$t('article.menus.history'),
+          icon:  'mdi-history',
         },
         copy: {
           name:  'copy',
-          title: 'copy',
-          icon:  'mdi-content-copy'
+          title: this.$t('article.menus.copy'),
+          icon:  'mdi-content-copy',
         },
         cut: {
           name:  'cut',
-          title: 'cut',
-          icon:  'mdi-content-cut'
+          title: this.$t('article.menus.cut'),
+          icon:  'mdi-content-cut',
         }
       },
 
       buttonMap: {
         edit: {
           name: 'edit',
-          tip:  'edit',
-          icon: 'mdi-pencil'
+          icon: 'mdi-pencil',
+          tip:  this.$t('article.buttonTips.edit')
         },
         save: {
           name: 'save',
-          tip:  'save',
-          icon: 'mdi-content-save-outline'
+          icon: 'mdi-content-save-outline',
+          tip:  this.$t('article.buttonTips.save')
         },
         fullscreen: {
           name: 'fullscreen',
-          tip:  'fullscreen',
-          icon: 'mdi-fullscreen'
+          icon: 'mdi-fullscreen',
+          tip:  this.$t('article.buttonTips.fullscreen')
         },
         exitFullscreen: {
           name: 'exitFullscreen',
-          tip:  'exit fullscreen',
-          icon: 'mdi-fullscreen-exit'
+          icon: 'mdi-fullscreen-exit',
+          tip:  this.$t('article.buttonTips.exitFullscreen')
         },
         exit: {
           name: 'exit',
-          tip:  'exit',
-          icon: 'mdi-location-exit'
+          icon: 'mdi-location-exit',
+          tip:  this.$t('article.buttonTips.exit')
         },
         remove: {
           name: 'remove',
-          tip:  'remove',
-          icon: 'mdi-trash-can-outline'
+          icon: 'mdi-trash-can-outline',
+          tip:  this.$t('article.buttonTips.remove')
         }
       }
     }

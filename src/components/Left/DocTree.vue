@@ -17,6 +17,8 @@
     :fnBeforeSelect="beforeSelect"
     @select="viewPage"
     @blur="inputBlur"
+    :autoReload="false"
+    v-if="treeData.length > 0"
   >
     <template v-slot:icon="{node}">
       <v-icon small color="green" v-if="node.__.parent === null">mdi-pine-tree</v-icon>
@@ -39,7 +41,7 @@
                 <v-icon small>mdi-plus</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title class="text-left font-weight-regular pr-2">{{ $t('space.docTree.contextMenu.create') }}</v-list-item-title>
+                <v-list-item-title class="text-left font-weight-regular pr-2">{{ $t('docTree.contextMenu.create') }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="menu-item" @click="clickContextMenu('rename', node)">
@@ -47,7 +49,7 @@
                 <v-icon small>mdi-pencil</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title class="text-left font-weight-regular pr-2">{{ $t('space.docTree.contextMenu.rename') }}</v-list-item-title>
+                <v-list-item-title class="text-left font-weight-regular pr-2">{{ $t('docTree.contextMenu.rename') }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="menu-item" @click="clickContextMenu('remove', node)" v-if="node.__.depth > 1">
@@ -55,7 +57,7 @@
                 <v-icon small>mdi-trash-can-outline</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title class="text-left font-weight-regular pr-2">{{ $t('space.docTree.contextMenu.remove') }}</v-list-item-title>
+                <v-list-item-title class="text-left font-weight-regular pr-2">{{ $t('docTree.contextMenu.remove') }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list-item-group>
@@ -66,8 +68,8 @@
 </template>
 
 <script>
-import TWTree from 'twtree'
-import { API_CODE_SUCC, NODE_TYPE } from '@/common/constants.js'
+import TWTree from '@/components/TWTree.vue'
+import { API_CODE, NODE_TYPE } from '@/common/constants.js'
 import * as API from '@/common/API.js'
 import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
 
@@ -173,7 +175,6 @@ export default {
   },
   methods: {
     handleApiFailure () {
-
     },
     generateFreshId () {
       this.freshIdCounter += 1
@@ -188,13 +189,13 @@ export default {
         this.contextMenu.show = true
       }
     },
-    clickContextMenu (action, node) {
+    async clickContextMenu (action, node) {
       switch (action) {
         case 'create': {
           const freshId = this.generateFreshId()
           this.$refs.tree.createAndEdit({
             id: freshId,
-            title: this.$t('space.docTree.defaultTitle'),
+            title: this.$t('docTree.defaultTitle'),
             type: NODE_TYPE.ARTICLE_PAGE,
             hasChild: false,
             fresh: true
@@ -210,58 +211,59 @@ export default {
 
         case 'remove': {
           if (node.__.depth > 1) {
-            API.removeTreeNode({
+            const res = await API.removeTreeNode({
               spaceId:     this.spaceId,
               treeId:      this.treeId,
               nodeId:      node.id,
               treeVersion: this.treeVersion
-            }).then((res) => {
-              this.treeVersion = res.data.data.treeVersion
-              this.$refs.tree.remove(node)
-              this.$emit('node-removed', node.id)
             })
+            this.treeVersion = res.data.data.treeVersion
+            this.$refs.tree.remove(node)
+            this.$emit('node-removed', node.id)
           }
           break
         }
       }
     },
-    inputBlur (node) {
+    async inputBlur (node) {
       this.$refs.tree.quitEdit(node)
 
       // create a node
-      if (node.fresh) {
-        const title = this.$refs.tree.getNewTitle(node)
-        API.appendTreeNode({
-          spaceId:     this.spaceId,
-          treeId:      this.treeId,
-          title:       title,
-          type:        node.type,
-          pid:         node.__.parent.id,
-          treeVersion: this.treeVersion
-        }).then((res) => {
+      if (node.fresh === true) {
+        try {
+          const title = this.$refs.tree.getNewTitle(node)
+          const res = await API.appendTreeNode({
+            spaceId:     this.spaceId,
+            treeId:      this.treeId,
+            title:       title,
+            type:        node.type,
+            pid:         node.__.parent.id,
+            treeVersion: this.treeVersion
+          })
           this.treeVersion = res.data.data.treeVersion
           this.$refs.tree.setAttr(node, 'fresh', false)
           this.$refs.tree.setAttr(node, 'title', title)
           this.$refs.tree.setAttr(node, 'id', res.data.data.nodeId)
-        }).catch((error) => {
+        } catch (err) {
           this.$refs.tree.remove(node)
-          throw error
-        })
+          throw err
+        }
 
       // rename a node
       } else {
-        API.renameTreeNode({
-          spaceId:     this.spaceId,
-          treeId:      this.treeId,
-          nodeId:      node.id,
-          newTitle:    node.title,
-          treeVersion: this.treeVersion
-        }).then((res) => {
+        try {
+          const res = await API.renameTreeNode({
+            spaceId:     this.spaceId,
+            treeId:      this.treeId,
+            nodeId:      node.id,
+            newTitle:    node.title,
+            treeVersion: this.treeVersion
+          })
           this.treeVersion = res.data.data.treeVersion
-        }).catch((error) => {
+        } catch (err) {
           this.$refs.tree.setAttr(node, 'title', node.__.oldTitle)
-          throw error
-        })
+          throw err
+        }
       }
     },
     async beforeDrop(dragAndDrop) {
@@ -307,7 +309,7 @@ export default {
       }
     },
     beforeSelect (node) {
-      if (this.nodeId !== node.id && this.$state.page.hasUnsavedArticles(this.nodeId)) {
+      if (this.nodeId > 0 && this.nodeId !== node.id && this.$state.page.hasUnsavedArticles(this.nodeId)) {
         this.$state.globalDialogs.showErrorDialog({message: this.$t('errors.unsavedArticles')})
         return false
       }

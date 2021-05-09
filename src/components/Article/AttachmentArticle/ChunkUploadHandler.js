@@ -210,7 +210,7 @@ import {
   createRequest,
   sendFormRequest
 } from 'vue-upload-component/src/utils/request.js'
-import { API_CODE_SUCC } from '@/common/constants.js'
+import { API_CODE } from '@/common/constants.js'
 
 export default class ChunkUploadHandler {
   /**
@@ -445,7 +445,7 @@ export default class ChunkUploadHandler {
         name: this.fileName
       })
     }).then(res => {
-      if (res.code !== API_CODE_SUCC) {
+      if (res.code !== API_CODE.SUCC) {
         this.file.response = res
         return this.reject('server')
       }
@@ -521,7 +521,7 @@ export default class ChunkUploadHandler {
       chunk: chunk.blob
     })).then(res => {
       chunk.active = false
-      if (res.code === API_CODE_SUCC) {
+      if (res.code === API_CODE.SUCC) {
         chunk.uploaded = true
       } else {
         if (chunk.retries-- <= 0) {
@@ -560,7 +560,7 @@ export default class ChunkUploadHandler {
       })
     }).then(res => {
       this.file.response = res
-      if (res.code !== API_CODE_SUCC) {
+      if (res.code !== API_CODE.SUCC) {
         return this.reject('server')
       }
 

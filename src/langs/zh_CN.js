@@ -22,6 +22,19 @@ export default {
     languages: '语言'
   },
   article: {
+    buttonTips: {
+      edit: '编辑',
+      save: '保存',
+      remove: '删除',
+      exit: '退出编辑',
+      fullscreen: '全屏',
+      exitFullscreen: '退出全屏'
+    },
+    menus: {
+      history: '历史版本',
+      copy: '复制',
+      cut: '剪切'
+    },
     removeDialog: {
       title: '删除',
       desc: '确定要删除吗?',
@@ -45,8 +58,12 @@ export default {
         titlePlaceHolder: '标题'
       }
     },
+    mind: {
+      defaultRootNodeText: '新建脑图'
+    },
     attachment: {
-      defaultTitle: '附件'
+      defaultTitle: '附件',
+      uploadButtonTip: '上传'
     }
   },
   page: {
@@ -54,6 +71,7 @@ export default {
       buttons: {
         richText: '+ 富文本',
         markdown: '+ MARKDOWN',
+        mind: '+ 脑图',
         attachment: '+ 附件'
       }
     }
@@ -116,28 +134,75 @@ export default {
       }
     }
   },
-  space: {
-    docTree: {
-      contextMenu: {
-        create: '添加',
-        rename: '重命名',
-        remove: '删除'
-      },
-      defaultTitle: '未命名'
+
+  trashTree: {
+    root: '回收站'
+  },
+
+  docTree: {
+    contextMenu: {
+      create: '添加',
+      rename: '重命名',
+      remove: '删除'
     },
-    trashTree: {
-      root: '回收站'
+    defaultTitle: '未命名',
+    error: {
+      treeChanged: '目录树已经变更，请刷新后重试！'
     }
   },
+
 
   articleList: {
     buttons: {
       incIndent: '增加缩进',
-      decIndent: '减少缩进'
+      decIndent: '减少缩进',
+      copy: '复制',
+      cut: '剪切',
+      paste: '粘贴'
     }
   },
 
   errors: {
-    unsavedArticles: '有文档尚未保存！'
+    unsavedArticles: '有文档尚未保存！',
+    systemError: '系统异常，请稍候再试！',
+    notLoggedIn: '请您先登录！',
+    treeUpdated: '文档树已经更新，请刷新后重试！',
+    permissionDenied: '您没有权限进行此操作！',
+  },
+
+  login: {
+    logo: '/img/logo-zh.png',
+    login: '登录',
+    email: '邮箱',
+    password: '密码',
+    submit: '登录',
+    remember: '记录登录状态',
+    forgotPassword: '忘记密码?',
+    register: '注册',
+    required: '必填',
+    invalidEmail: '邮箱地址格式有误',
+    invalidEmailOrPassword: '错误的邮箱地址或密码!',
+    systemError: '系统异常'
+  },
+
+  register: {
+    register: '注册',
+
+    name: '名称',
+    email: '邮箱',
+    password: '密码',
+    confirmPassword: '确认密码',
+
+    submit: '注册',
+
+    fieldErrors: {
+      required: '必填',
+      invalidEmail: '邮箱地址格式有误',
+      invalidPassword: '密码至少8个字符',
+      invalidConfirmPassword: '密码和确认密码不一致'
+    },
+
+    systemError: '系统异常',
+    duplicateEmail: '邮箱地址已被占用'
   }
 }

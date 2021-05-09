@@ -8,54 +8,87 @@ import { PageAction } from './pageAction.js'
 
 export const ClipboardAction = new Vue({
   methods: {
-    async pasteArticleTo (nodeId, order) {
+    async pasteArticlesTo (nodeId, order) {
 
-      if (ClipboardState.status === CLIPBOARD_STATUS.COPY_ARTICLE) {
+      if (ClipboardState.status === CLIPBOARD_STATUS.COPY_ARTICLES) {
           const page = PageState.getPage(nodeId)
           if (page.isReadOnly === true) {
             return
           }
 
-          const oldArticle = PageState.getArticle(ClipboardState.src.nodeId, ClipboardState.src.uniqId)
+          for (let i=0; i<ClipboardState.src.uniqIds.length; i++) {
+            const uniqId = ClipboardState.src.uniqIds[i]
+            const oldArticle = PageState.getArticle(ClipboardState.src.nodeId, uniqId)
 
-          let newArticle = {
-            spaceId:       oldArticle.spaceId,
-            nodeId:        nodeId,
-            uniqId:        generateUniqId(),
-            id:            0,
-            type:          oldArticle.type,
-            title:         oldArticle.title,
-            body:          oldArticle.body,
-            search:        oldArticle.search,
-            editingTitle:  oldArticle.editingTitle,
-            editingBody:   oldArticle.editingBody,
-            editingSearch: oldArticle.editingSearch,
-            order:         order,
-            isReadOnly:    false,
-            isEditing:     true
+            let newArticle = {
+              spaceId:       oldArticle.spaceId,
+              nodeId:        nodeId,
+              uniqId:        generateUniqId(),
+              id:            0,
+              type:          oldArticle.type,
+              title:         oldArticle.title,
+              body:          oldArticle.body,
+              search:        oldArticle.search,
+              editingTitle:  oldArticle.editingTitle,
+              editingBody:   oldArticle.editingBody,
+              editingSearch: oldArticle.editingSearch,
+              order:         order,
+              isReadOnly:    false,
+              isEditing:     true
+            }
+
+            PageState.insertArticle(nodeId, order + i, newArticle)
+            if (oldArticle.id !== 0) {
+              await PageAction.saveArticle(oldArticle.spaceId, nodeId, newArticle.uniqId)
+            }
           }
-
-          PageState.insertArticle(nodeId, order, newArticle)
-          await PageAction.saveArticle(newArticle.spaceId, nodeId, newArticle.uniqId)
           ClipboardState.clear()
 
-      } else if (ClipboardState.status === CLIPBOARD_STATUS.CUT_ARTICLE) {
+      } else if (ClipboardState.status === CLIPBOARD_STATUS.CUT_ARTICLES) {
           const page = PageState.getPage(nodeId)
           if (page.isReadOnly === true) {
             return
           }
 
-          const oldArticle = PageState.getArticle(ClipboardState.src.nodeId, ClipboardState.src.uniqId)
+          let prevArticleId = 0
+          const articleList = PageState.getArticleList(nodeId)
+          for (let i=articleList.length-1; i>=0; i--) {
+            const article = articleList[i]
+            if (article.order < order && article.id > 0) {
+              prevArticleId = article.id
+            }
+          }
 
-          let newArticle = Object.assign({}, oldArticle)
-          newArticle.articleId = 0
-          newArticle.uniqId = generateUniqId()
-          newArticle.order = order
-          newArticle.isReadOnly = false
-          newArticle.isEditing = true
-          PageState.insertArticle(nodeId, order, article)
-          await PageAction.saveArticle(newArticle.spaceId, nodeId, newArticle.uniqId)
+          for (let i=0; i<ClipboardState.src.uniqIds.length; i++) {
+            const uniqId = ClipboardState.src.uniqIds[i]
+            await API.moveArticle()
 
+            const oldArticle = PageState.getArticle(ClipboardState.src.nodeId, uniqId)
+
+            let newArticle = {
+              spaceId:       oldArticle.spaceId,
+              nodeId:        nodeId,
+              uniqId:        generateUniqId(),
+              id:            0,
+              type:          oldArticle.type,
+              title:         oldArticle.title,
+              body:          oldArticle.body,
+              search:        oldArticle.search,
+              editingTitle:  oldArticle.editingTitle,
+              editingBody:   oldArticle.editingBody,
+              editingSearch: oldArticle.editingSearch,
+              order:         order,
+              isReadOnly:    false,
+              isEditing:     true
+            }
+
+            PageState.insertArticle(nodeId, order + i, newArticle)
+            if (oldArticle.id !== 0) {
+              await PageAction.saveArticle(oldArticle.spaceId, nodeId, newArticle.uniqId)
+            }
+
+          }
+          ClipboardState.clear()
       }
 
     }

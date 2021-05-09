@@ -1,14 +1,25 @@
+import { API_CODE } from '@/common/constants.js'
+
 export default {
-  data: function () {
-    return {
-      alert: {
-        show: false,
-        message: ''
+  errorCaptured (err) {
+    let msg = this.$t('errors.systemError')
+
+    if (typeof err.wrongCode === 'number') {
+      const errorMap = {
+        [API_CODE.NOT_LOGGED_IN]: this.$t('errors.notLoggedIn'),
+        [API_CODE.PERMISSION_DENIED]: this.$t('errors.permissionDenied'),
+        [API_CODE.TREE_UPDATED]: this.$t('errors.treeUpdated')
+      }
+      const code = err.wrongCode
+      if (errorMap[code] !== undefined) {
+        msg = errorMap[code]
       }
     }
-  },
-  errorCaptured () {
-    this.alert.message = '网络错误，请稍候再试！'
-    this.alert.show = true
+
+    this.$state.globalDialogs.showErrorDialog({
+      message: msg
+    })
+
+    //return false
   }
 }

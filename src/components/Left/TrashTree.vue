@@ -66,7 +66,7 @@ export default {
           const tree = this.$refs.tree.getNestedTree()
           if (Array.isArray(tree) && tree.length > 0) {
             const rootNode = tree[0]
-            this.$refs.tree.setTitle(rootNode, this.$t('space.trashTree.root'))
+            this.$refs.tree.setTitle(rootNode, this.$t('trashTree.root'))
           }
 
           if (this.category === 'doc') {

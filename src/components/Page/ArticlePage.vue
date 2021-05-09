@@ -19,7 +19,10 @@
           <v-btn color="primary" @click="addFreshArticle(articleType.RICHTEXT)">{{ $t('page.articlePage.buttons.richText') }}</v-btn>
         </v-col>
         <v-col cols="2">
-          <v-btn color="primary" @click="addFreshAttachment()">{{ $t('page.articlePage.buttons.attachment') }}</v-btn>
+          <v-btn color="primary" @click="addFreshArticle(articleType.MIND)">{{ $t('page.articlePage.buttons.mind') }}</v-btn>
+        </v-col>
+        <v-col cols="2">
+          <v-btn color="primary" @click="addFreshArticle(articleType.ATTACHMENT)">{{ $t('page.articlePage.buttons.attachment') }}</v-btn>
         </v-col>
       </v-row>
     </v-container>
@@ -46,7 +49,7 @@
 </template>
 
 <script>
-import { API_CODE_SUCC, ARTICLE_COMPONENT_MAP, ARTICLE_TYPE, PAGE_STATUS } from '@/common/constants.js'
+import { API_CODE, ARTICLE_COMPONENT_MAP, ARTICLE_TYPE, PAGE_STATUS } from '@/common/constants.js'
 import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
 import MarkdownArticle from '@/components/Article/MarkdownArticle.vue'
 import RichTextArticle from '@/components/Article/RichTextArticle.vue'
@@ -104,7 +107,7 @@ export default {
         let nodeId = newVal
         const page = this.$state.page.getPage(nodeId)
 
-        if (page === undefined) {
+        if (page === undefined && nodeId > 0) {
           this.$state.page.ensureArticlePage(nodeId)
           this.$state.pageAction.pullArticlePage(this.spaceId, nodeId)
         }
@@ -119,9 +122,6 @@ export default {
     handleApiFailure (error) {
       console.log(error)
     },
-    errorCaptured(err) {
-      console.log(err)
-    },
     saveArticle (uniqId) {
       this.$state.pageAction.saveArticle(this.spaceId, this.nodeId, uniqId)
     },
@@ -129,30 +129,37 @@ export default {
       this.$state.pageAction.removeArticle(this.spaceId, this.nodeId, uniqId)
     },
     addFreshArticle(type) {
-      this.$state.page.appendArticle(this.nodeId, {
-        spaceId:  this.spaceId,
-        nodeId:   this.nodeId,
-        id:       0,
-        type:     type,
-        title:    '',
-        body:     '',
-        search:   '',
-        isEditing: true
-      })
-    },
-    addFreshAttachment() {
-      this.$state.page.appendArticle(this.nodeId, {
-          spaceId:  this.spaceId,
-          nodeId:   this.nodeId,
-          id:       0,
-          type:     this.articleType.ATTACHMENT,
-          title:    '附件',
-          body:     JSON.stringify({
-            items: []
-          }),
-          search:   '',
-          isEditing: false
-      })
+      switch (type) {
+        case ARTICLE_TYPE.MARKDOWN:
+        case ARTICLE_TYPE.RICHTEXT:
+        case ARTICLE_TYPE.MIND:
+          this.$state.page.appendArticle(this.nodeId, {
+            spaceId:  this.spaceId,
+            nodeId:   this.nodeId,
+            id:       0,
+            type:     type,
+            title:    '',
+            body:     '',
+            search:   '',
+            isEditing: true
+          })
+          break
+
+        case ARTICLE_TYPE.ATTACHMENT:
+          this.$state.page.appendArticle(this.nodeId, {
+              spaceId:  this.spaceId,
+              nodeId:   this.nodeId,
+              id:       0,
+              type:     this.articleType.ATTACHMENT,
+              title:    this.$t('article.attachment.defaultTitle'),
+              body:     JSON.stringify({
+                items: []
+              }),
+              search:   '',
+              isEditing: false
+          })
+          break
+      }
     },
     getArticleElement(uniqId) {
       const ref = 'article-' + uniqId

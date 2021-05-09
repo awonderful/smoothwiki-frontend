@@ -1,7 +1,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import Space from '../views/Space.vue'
+import Home from '@/views/Home.vue'
+import Space from '@/views/Space.vue'
+import Login from '@/views/Login.vue'
+import Register from '@/views/Register.vue'
+import { UserState } from '@/state/user.js'
+import { UserAction } from '@/state/userAction.js'
+import { USER_STATUS } from '@/common/constants.js'
 
 Vue.use(VueRouter)
 
@@ -9,25 +14,54 @@ const routes = [
   {
     path: '/home',
     name: 'home',
-    component: Home
+    component: Home,
+    meta: {
+      mustBeLoggedIn: true
+    }
   },
   {
     path: '/space/:spaceId/:category/:nodeId',
     name: 'space-node',
-    component: Space
+    component: Space,
+    meta: {
+      mustBeLoggedIn: true
+    }
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path: '/login',
+    name: 'login',
+    component: Login,
+    meta: {
+      mustBeLoggedIn: false
+    }
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: Register,
+    meta: {
+      mustBeLoggedIn: false
+    }
   }
 ]
 
 const router = new VueRouter({
   routes
+})
+
+router.beforeEach(async (to, from, next) => {
+  if (to.meta.mustBeLoggedIn === true) {
+    if (UserState.getUserStatus() === USER_STATUS.NONE) {
+      await UserAction.pullUserInfo()
+    }
+    if (UserState.getUserStatus() === USER_STATUS.NOT_LOGGED_IN) {
+      next({name: 'login'})
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
 })
 
 export default router

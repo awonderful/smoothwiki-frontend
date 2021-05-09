@@ -7,10 +7,14 @@ import { ClipboardAction } from './clipboardAction.js'
 import { GlobalDialogState } from './globalDialogs.js'
 import { TreeState } from './tree.js'
 import { TreeAction } from './treeAction.js'
+import { UserState } from './user.js'
+import { UserAction } from './userAction.js'
 
 export const state = {
   install: function (vue) {
     vue.prototype.$state = {
+      user:            UserState,
+      userAction:      UserAction,
       tree:            TreeState,
       treeAction:      TreeAction,
       page:            PageState,

@@ -11,7 +11,7 @@ Vue.use(VueI18n)
 Vue.use(state)
 
 const i18n = new VueI18n({
-  locale: 'zh-CN',
+  locale: 'zh_CN',
   messages
 })
 

@@ -1,22 +1,60 @@
 import axios from 'axios'
-import { API_BASE_URL, API_CODE_SUCC } from '@/common/constants.js'
+import { API_BASE_URL, API_CODE } from '@/common/constants.js'
 
 axios.defaults.baseURL = API_BASE_URL
 axios.defaults.withCredentials = true
 
 axios.interceptors.response.use(function (response) {
-  if (response.data.code === API_CODE_SUCC) {
+  if (response.data.code === API_CODE.SUCC) {
     return response
   }
   throw {
-    wrongCode: {
-      response: response
-    } 
+    wrongCode: response.data.code,
+    response: response
   }
 }, function (error) {
   return Promise.reject(error);
 })
 
+
+export const login = function (data) {
+  const config = {
+    url:    '/login',
+    method: 'POST',
+    data:   data
+  }
+
+  return axios.request(config)
+}
+
+export const logout = function (data) {
+  const config = {
+    url:    '/logout',
+    method: 'POST',
+    data: data
+  }
+
+  return axios.request(config)
+}
+
+export const register = function (data) {
+  const config = {
+    url:    '/register',
+    method: 'POST',
+    data:   data
+  }
+
+  return axios.request(config)
+}
+
+export const getUserInfo = function (params) {
+   const config = {
+    url:    '/api/user/info',
+    method: 'GET',
+    params: params
+  }
+  return axios.request(config)
+}
 
 export const getTree = function (params) {
   const config = {

@@ -1,5 +1,4 @@
 export const API_BASE_URL = 'http://www.smoothwiki.com'
-export const API_CODE_SUCC = 100
 
 export const ATTACHMENT_DOWNLOAD_URL = 'http://www.smoothwiki.com/api/attachment/download?forceDownload=1&attachmentId='
 export const ATTACHMENT_SHOW_URL = 'http://www.smoothwiki.com/api/attachment/download?attachmentId='
@@ -56,8 +55,37 @@ export const SPACE_MEMBER_ROLE = {
 }
 
 export const CLIPBOARD_STATUS = {
-  NONE:                1,
-  COPY_ARTICLE:        2,
-  CUT_ARTICLE:         3,
-  COPY_ARTICLE_MIRROR: 4
+  NONE:                 1,
+  COPY_ARTICLES:        2,
+  CUT_ARTICLES:         3,
+  MIRROR_ARTICLES: 4
+}
+
+export const USER_STATUS = {
+  NONE:          1,
+  LOGGED_IN:     2,
+  NOT_LOGGED_IN: 3
+}
+
+export const API_CODE = {
+	SUCC              : 100,
+  SYSTEM_ERROR      : 101,
+  NOT_LOGGED_IN     : 102,
+	PERMISSION_DENIED : 103,
+	API_NOT_EXIST     : 104,
+	INVALID_PARAM     : 105,
+	ILLEGAL_OPERATION : 106,
+
+  SPACE_NOT_EXIST : 1001,
+
+	TREE_UPDATED    : 2001,
+	TREE_NOT_EXIST  : 2002,
+
+	ARTICLE_UPDATED : 3001,
+	PAGE_UPDATED    : 3002,
+	PAGE_NOT_EXIST  : 3003,
+
+	SPACE_MENU_NOT_EXIST : 4001,
+
+  DUPLICATE_EMAIL: 9001
 }

@@ -7,16 +7,16 @@ export const ClipboardState = new Vue({
       status: CLIPBOARD_STATUS.NONE,
       src: {
         nodeId: 0,
-        uniqId: 0
+        uniqIds: []
       }
     }
   },
   computed: {
     hasAnArticle() {
       const statuses = [
-        CLIPBOARD_STATUS.COPY_ARTICLE,
-        CLIPBOARD_STATUS.CUT_ARTICLE,
-        CLIPBOARD_STATUS.COPY_ARTICLE_MIRROR,
+        CLIPBOARD_STATUS.COPY_ARTICLES,
+        CLIPBOARD_STATUS.CUT_ARTICLES,
+        CLIPBOARD_STATUS.MIRROR_ARTICLES,
       ]
 
       return statuses.includes(this.status)
@@ -25,16 +25,18 @@ export const ClipboardState = new Vue({
   methods: {
     clear () {
       this.status = CLIPBOARD_STATUS.NONE
+      this.src.nodeId = 0
+      this.src.uniqIds.splice(0, this.src.uniqIds.length)
     },
-    copyArticle (nodeId, uniqId) {
-      this.status = CLIPBOARD_STATUS.COPY_ARTICLE,
+    copyArticles (nodeId, uniqIds) {
+      this.status = CLIPBOARD_STATUS.COPY_ARTICLES,
       this.src.nodeId = nodeId
-      this.src.uniqId = uniqId
+      this.src.uniqIds.splice(0, this.src.uniqIds.length, ...uniqIds)
     },
-    cutArticle (nodeId, uniqId) {
-      this.status = CLIPBOARD_STATUS.CUT_ARTICLE,
+    cutArticles (nodeId, uniqIds) {
+      this.status = CLIPBOARD_STATUS.CUT_ARTICLES,
       this.src.nodeId = nodeId
-      this.src.uniqId = uniqId
+      this.src.uniqIds.splice(0, this.src.uniqIds.length, ...uniqIds)
     }
   }
 })

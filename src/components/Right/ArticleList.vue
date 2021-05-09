@@ -1,26 +1,35 @@
 <template>
   <div>
     <v-toolbar dense>
-      <template v-if="isReadOnly === false">
-        <v-btn 
-          :key="button.name" 
-          v-for="button of buttons"
-          small
-          icon
-          @click="clickButton(button)"
-        >
-          <v-icon small>{{button.icon}}</v-icon>
-        </v-btn>
-        <v-spacer></v-spacer>
-      </template>
+      <v-tooltip
+        bottom
+        v-for = "button of buttons"
+        :key  = "button.name" 
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn 
+            @click = "clickButton(button)"
+            v-bind = "attrs"
+            v-on   = "on"
+            small
+            icon
+          >
+            <v-icon small>{{button.icon}}</v-icon>
+          </v-btn>
+        </template>
+        <span>{{button.tip}}</span>
+      </v-tooltip>
+      <v-spacer></v-spacer>
     </v-toolbar>
     <v-list class="articles" dense>
       <v-list-item-group
-        :ripple = "false"
-        ref     = "articleList"
-        class   = "article-list-wrapper"
-        v-model = "selectedItem"
-        color   = "primary">
+        :ripple   = "false"
+        ref       = "articleList"
+        class     = "article-list-wrapper"
+        v-model   = "selectedUniqIds"
+        color     = "primary"
+        multiple
+      >
         <v-list-item
           :class     = "{
             'article':        true,
@@ -28,26 +37,25 @@
             'drag-over-prev': dragAndDrop.status === DND_STATUS.INTERNAL && dragAndDrop.overArticle === article && dragAndDrop.overArea === 'prev',
             'drag-over-next': dragAndDrop.status === DND_STATUS.INTERNAL && dragAndDrop.overArticle === article && dragAndDrop.overArea === 'next'
           }"
-          :style     = "{order: article.order}"
-          :draggable = "!isReadOnly"
-          :ripple    = "false"
-          :ref       = "'article_' + article.uniqId" 
-          :key       = "article.uniqId"
-          @dragstart = "handleDragStart(article, $event)"
-          @dragover  = "handleDragOver(article, $event)"
-          @dragenter = "handleDragEnter"
-          @drop      = "handleDrop"
-          @dragend   = "handleDragEnd"
-          @click     = "selectArticle(article)"
-          v-for      = "article of articleMap">
+          :style      = "{order: article.order}"
+          :draggable  = "!isReadOnly"
+          :ripple     = "false"
+          :ref        = "'article_' + article.uniqId" 
+          :key        = "article.uniqId"
+          :value      = "article.uniqId"
+          @dragstart  = "handleDragStart(article, $event)"
+          @dragover   = "handleDragOver(article, $event)"
+          @dragenter  = "handleDragEnter"
+          @drop       = "handleDrop"
+          @dragend    = "handleDragEnd"
+          @click      = "clickItem(article, $event)"
+          v-for       = "article of articleMap"
+        >
           <v-list-item-content>
             <v-list-item-title :style="{'text-indent': (article.level * 2) + 'em'}">
-              <v-icon>mdi-circle-medium</v-icon> &nbsp;&nbsp; {{article.editingTitle}}
+              <v-icon>mdi-circle-small</v-icon> &nbsp;&nbsp; {{article.editingTitle}}
             </v-list-item-title>
           </v-list-item-content>
-            <v-list-item-action v-if="article.isEditing === true">
-              <v-icon small color="grey lighten-1">mdi-pencil</v-icon>
-            </v-list-item-action>
         </v-list-item>
       </v-list-item-group>
     </v-list>
@@ -79,6 +87,27 @@ export default {
       }
 
       return articleMap
+    },
+    buttons () {
+      if (this.selectedUniqIds.length === 0) {
+        return []
+      }
+
+      if (this.isReadOnly === true) {
+        return [this.buttonMap.copy]
+      }
+
+      const buttons = [
+        this.buttonMap.decIndent,
+        this.buttonMap.incIndent,
+        this.buttonMap.copy,
+        this.buttonMap.cut
+      ]
+      if (this.$state.clipboard.hasAnArticle === true) {
+        buttons.push(this.buttonMap.paste)
+      }
+
+      return buttons
     }
   },
   data: function() {
@@ -96,21 +125,36 @@ export default {
         INTERNAL: 2,   // an article is being dragged over the list
         INTO:     3    // an external element is being dragged over the list
       },
-      selectedItem: null,
-      selectedArticle: null,
+      selectedUniqIds: [],
+      lastSelectedArticle: null,
 
-      buttons: [
-        {
+      buttonMap: {
+        copy: {
+          name: 'copy',
+          tip: this.$t('articleList.buttons.copy'),
+          icon: 'mdi-content-copy'
+        },
+        cut: {
+          name: 'cut',
+          tip: this.$t('articleList.buttons.cut'),
+          icon: 'mdi-content-cut'
+        },
+        paste: {
+          name: 'paste',
+          tip: this.$t('articleList.buttons.paste'),
+          icon: 'mdi-content-paste'
+        },
+        decIndent: {
           name: 'decIndent',
           tip: this.$t('articleList.buttons.decIndent'),
           icon: 'mdi-arrow-left'
         },
-         {
+        incIndent: {
           name: 'incIndent',
           tip: this.$t('articleList.buttons.incIndent'),
           icon: 'mdi-arrow-right'
-        },
-      ]
+        }
+      }
     }
   },
   methods: {
@@ -199,24 +243,85 @@ export default {
         top: clientPos.top + window.scrollY
       }
     },
-    selectArticle(article) {
-      this.selectedArticle = article
-      this.$state.page.setPageProps(this.nodeId, {scrollTo: article.uniqId})
-    },
     clickButton(button) {
       if (typeof this[button.name] === 'function') {
         this[button.name]()
       }
     },
-    decIndent() {
-      if (this.selectedArticle !== null && this.selectedArticle.level > 0) {
-        this.$state.pageAction.setArticleLevel(this.selectedArticle.spaceId, this.selectedArticle.nodeId, this.selectedArticle.uniqId, this.selectedArticle.level - 1)
+    clickCheckbox(article) {
+      if (this.checkedUniqIds.includes(article.uniqId)) {
+        this.selectedUniqIds.splice(0, this.selectedUniqIds.length, ...this.checkedUniqIds)
+
+      } else {
+        for (let i=this.selectedUniqIds.length-1; i>=0; i--) {
+          if (this.selectedUniqIds[i] === article.uniqId) {
+            this.selectedUniqIds.splice(i, 1)
+          }
+        }
+      } 
+    },
+    clickItem(article, event) {
+      // the user isn't pressing the ctrl key or the shift key
+      if (event.ctrlKey === false && event.shiftKey === false) {
+        for (let i=this.selectedUniqIds.length-1; i>=0; i--) {
+          if (this.selectedUniqIds[i] !== article.uniqId) {
+            this.selectedUniqIds.splice(i, 1)
+          }
+        }
+      }
+
+      // the user is pressing the ctrl key
+      if (event.ctrlKey === true && event.shiftKey === false) {
+      }
+
+      // the user is pressing the shift key
+      if (event.shiftKey === true && event.ctrlKey === false) {
+        if (this.lastSelectedArticle === null) {
+          for (const uniqId in this.articleMap) {
+            if (articleMap[uniqId].order < article.order) {
+              this.selectedUniqIds.push(uniqId)
+            }
+          }
+
+        } else {
+          const min = Math.min(article.order, this.lastSelectedArticle.order)
+          const max = Math.max(article.order, this.lastSelectedArticle.order)
+          for (const uniqId in this.articleMap) {
+            if (this.articleMap[uniqId].order > min && this.articleMap[uniqId].order < max && !this.selectedUniqIds.includes(article.uniqId)) {
+              this.selectedUniqIds.push(uniqId)
+            }
+          }
+        }
+
+      }
+
+      this.lastSelectedArticle = article
+      this.$state.page.setPageProps(this.nodeId, {scrollTo: article.uniqId})
+    },
+    async decIndent() {
+      for (const uniqId of this.selectedUniqIds) {
+        const article = this.articleMap[uniqId]
+        if (article.level > 0) {
+          await this.$state.pageAction.setArticleLevel(article.spaceId, article.nodeId, article.uniqId, article.level - 1)
+        }
       }
     },
-    incIndent() {
-      if (this.selectedArticle !== null && this.selectedArticle.level < 10) {
-        this.$state.pageAction.setArticleLevel(this.selectedArticle.spaceId, this.selectedArticle.nodeId, this.selectedArticle.uniqId, this.selectedArticle.level + 1)
+    async incIndent() {
+      for (const uniqId of this.selectedUniqIds) {
+        const article = this.articleMap[uniqId]
+        if (article.level < 10) {
+          await this.$state.pageAction.setArticleLevel(article.spaceId, article.nodeId, article.uniqId, article.level + 1)
+        }
       }
+    },
+    copy() {
+      this.$state.clipboard.copyArticles(this.nodeId, this.selectedUniqIds)
+    },
+    cut() {
+      this.$state.clipboard.cutArticles(this.nodeId, this.selectedUniqIds)
+    },
+    async paste() {
+      this.$state.clipboardAction.paste
     }
   }
 }

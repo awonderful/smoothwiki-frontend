@@ -14,7 +14,7 @@
       app
       right
       class="drawer">
-      <ArticleList></ArticleList>
+      <article-list></article-list>
     </v-navigation-drawer>
 
     <v-app-bar 
@@ -28,7 +28,7 @@
     </v-app-bar>
 
     <v-main>
-      <ArticlePage/>
+      <article-page v-if="nodeId > 0"></article-page>
     </v-main>
 
     <global-dialogs></global-dialogs>
@@ -43,6 +43,7 @@ import ArticleList from '@/components/Right/ArticleList.vue'
 import Viewer from '@/components/Top/Viewer.vue'
 import GlobalDialogs from '@/components/GlobalDialogs/Index.vue'
 import GeneralErrorHandling from '@/common/generalErrorHandling.js'
+import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
 
 export default {
   components: {
@@ -50,10 +51,11 @@ export default {
     ArticlePage, 
     ArticleList, 
     Viewer, 
-    GlobalDialogs 
+    GlobalDialogs
   },
   mixins: [
-    GeneralErrorHandling
+    GeneralErrorHandling,
+    SpaceRouteParamsHandling
   ],
   data: function () {
     return {

@@ -3,19 +3,20 @@
     open-on-hover
     bottom
     :offset-y="true"
+    v-if="userInfo !== null"
   >
     <template v-slot:activator="{ on, attrs }">
-      <v-avatar color="secondary lighten-5" :size="size" v-bind="attrs" v-on="on">
-        <v-icon>mdi-account</v-icon>
-      </v-avatar>
+      <span v-bind="attrs" v-on="on">
+        {{ userInfo.name }} <v-icon>mdi-menu-down</v-icon>
+      </span>
     </template>
 
-    <v-list>
+    <v-list dense>
       <v-list-item-group
         v-model="selectMenu"
         color="primary"
       >
-        <v-list-item>
+        <v-list-item @click="logout()">
           <v-list-item-title>{{ $t('appBar.viewer.menu.logOut') }}</v-list-item-title>
         </v-list-item>
       </v-list-item-group>
@@ -32,9 +33,20 @@ export default {
       default: 40
     }
   },
+  computed: {
+    userInfo () {
+      return this.$state.user.getUserInfo()
+    }
+  },
   data: function () {
     return {
       selectMenu: 0
+    }
+  },
+  methods: {
+    async logout () {
+      await this.$state.userAction.logout()
+      this.$router.push({name: 'login'})
     }
   }
 }
