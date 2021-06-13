@@ -10,7 +10,8 @@ export const PageAction = new Vue({
         spaceId: spaceId,
         nodeId:  nodeId
       })
-    
+
+      PageState.clearAllArticles(nodeId)
       let articles = res.data.data.articles
       let isReadOnly = res.data.data.isReadOnly
       for (let article of articles) {
@@ -18,9 +19,9 @@ export const PageAction = new Vue({
         PageState.putArticle(nodeId, article)
       }
       PageState.setPageProps(nodeId, {
-        spaceId: spaceId,
         status: PAGE_STATUS.SUCC_PULL,
-        isReadOnly: isReadOnly
+        isReadOnly: isReadOnly,
+        isOutdated: false
       })
       PageState.refreshNumbers(nodeId)
     },
@@ -126,9 +127,9 @@ export const PageAction = new Vue({
       }
 
       if (article.id === 0) {
-        this.saveFreshArticle(spaceId, nodeId, uniqId)
+        await this.saveFreshArticle(spaceId, nodeId, uniqId)
       } else {
-        this.saveUpdatedArticle(spaceId, nodeId, uniqId)
+        await this.saveUpdatedArticle(spaceId, nodeId, uniqId)
       }
     },
     async moveArticle(spaceId, nodeId, uniqId, newOrder) {
@@ -208,6 +209,38 @@ export const PageAction = new Vue({
         PageState.setArticleProps(nodeId, uniqId, {level: oldLevel})
         throw err
       }
+    },
+    async checkIfPageIsOutdated(spaceId, nodeId) {
+      let oldVersion = ''
+      const oldArticleList = PageState.getArticleList(nodeId)
+      if (oldArticleList === undefined) {
+        return
+      }
+
+      oldArticleList.forEach(function (article) {
+        if (article.id > 0) {
+          oldVersion = oldVersion + article.version
+        }
+      })
+
+      let newVersion = ''
+      const res = await API.getArticlesVersions({
+        spaceId: spaceId,
+        nodeId: nodeId
+      })
+      res.data.data.versions.forEach(function(item) {
+        newVersion = newVersion + item.version
+      })
+
+      console.log('------------------------')
+      console.log(oldArticleList)
+      console.log(res.data.data.versions)
+      console.log(oldVersion)
+      console.log(newVersion)
+
+      PageState.setPageProps(nodeId, {
+        isOutdated: newVersion !== oldVersion
+      })
     }
   }
 })

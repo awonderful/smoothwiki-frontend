@@ -22,7 +22,7 @@ export const TreeAction = new Vue({
         })
         TreeState.setTreeProps(spaceId, category, {
           data: [res.data.data.tree],
-          version: ''
+          version: res.data.data.treeVersion
         })
       }
     }

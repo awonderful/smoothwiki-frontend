@@ -19,6 +19,9 @@ export default {
         logOut: '退出'
       }
     },
+    leftDrawer: '显示/隐藏左侧边栏',
+    rightDrawer: '显示/隐藏右侧边栏',
+    search: '搜索',
     languages: '语言'
   },
   article: {
@@ -73,12 +76,18 @@ export default {
         markdown: '+ MARKDOWN',
         mind: '+ 脑图',
         attachment: '+ 附件'
-      }
+      },
+      outdatedAlert: '当前页面内容有更新！',
+      refresh: '刷新'
     }
   },
 
 
   home: {
+    spaceMenu: {
+      remove: '删除',
+      settings: '设置'
+    },
     createSpaceDialog: {
       title: '创建{spaceTypeName}',
       fields: {
@@ -135,8 +144,15 @@ export default {
     }
   },
 
+  left: {
+    search: '搜索'
+  },
+
   trashTree: {
-    root: '回收站'
+    root: '回收站',
+    contextMenu: {
+      restore: '恢复'
+    }
   },
 
   docTree: {
@@ -204,5 +220,21 @@ export default {
 
     systemError: '系统异常',
     duplicateEmail: '邮箱地址已被占用'
+  },
+
+  forgotPassword: {
+    resetPassword: '重置密码',
+    email: '邮箱',
+    submit: '发送密码重置链接',
+    succ: '已将密码重置链接发到你的邮箱！',
+    invalidEmail: '无效的邮箱地址!'
+  },
+
+  resetPassword: {
+    resetPassword: '重置密码',
+    email: '邮箱',
+    password: '密码',
+    confirmPassword: '确认密码',
+    submit: '重置密码'
   }
 }

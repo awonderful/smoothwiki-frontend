@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { UserState } from './user.js'
 import * as API from '@/common/API.js'
 import { USER_STATUS, API_CODE } from '@/common/constants.js'
+import { sendPasswordResetEmail } from '../common/API.js'
 
 export const UserAction = new Vue({
   methods: {
@@ -32,6 +33,10 @@ export const UserAction = new Vue({
     async register (data) {
       await API.register(data)
       await this.pullUserInfo()
+    },
+
+    async sendPasswordResetEmail (data) {
+      await API.sendPasswordResetEmail(data)
     }
   }
 })

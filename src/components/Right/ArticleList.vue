@@ -1,6 +1,11 @@
 <template>
-  <div>
-    <v-toolbar dense>
+  <div class="d-flex flex-column wrapper">
+    <v-toolbar 
+      dense 
+      class="flex-grow-0"
+      :dark="$state.theme.top.dark"
+      :color="$state.theme.top.bgColor"
+    >
       <v-tooltip
         bottom
         v-for = "button of buttons"
@@ -21,44 +26,47 @@
       </v-tooltip>
       <v-spacer></v-spacer>
     </v-toolbar>
-    <v-list class="articles" dense>
-      <v-list-item-group
-        :ripple   = "false"
-        ref       = "articleList"
-        class     = "article-list-wrapper"
-        v-model   = "selectedUniqIds"
-        color     = "primary"
-        multiple
-      >
-        <v-list-item
-          :class     = "{
-            'article':        true,
-            'drag-over':      dragAndDrop.status === DND_STATUS.INTERNAL && dragAndDrop.overArticle === article,
-            'drag-over-prev': dragAndDrop.status === DND_STATUS.INTERNAL && dragAndDrop.overArticle === article && dragAndDrop.overArea === 'prev',
-            'drag-over-next': dragAndDrop.status === DND_STATUS.INTERNAL && dragAndDrop.overArticle === article && dragAndDrop.overArea === 'next'
-          }"
-          :style      = "{order: article.order}"
-          :draggable  = "!isReadOnly"
-          :ripple     = "false"
-          :ref        = "'article_' + article.uniqId" 
-          :key        = "article.uniqId"
-          :value      = "article.uniqId"
-          @dragstart  = "handleDragStart(article, $event)"
-          @dragover   = "handleDragOver(article, $event)"
-          @dragenter  = "handleDragEnter"
-          @drop       = "handleDrop"
-          @dragend    = "handleDragEnd"
-          @click      = "clickItem(article, $event)"
-          v-for       = "article of articleMap"
+
+    <div class="flex-grow-1 scroll-area" :style="{'background-color': $state.theme.right.bgColor}">
+      <v-list class="articles" dense>
+        <v-list-item-group
+          :ripple   = "false"
+          ref       = "articleList"
+          class     = "article-list-wrapper"
+          v-model   = "selectedUniqIds"
+          color     = "primary"
+          multiple
         >
-          <v-list-item-content>
-            <v-list-item-title :style="{'text-indent': (article.level * 2) + 'em'}">
-              <v-icon>mdi-circle-small</v-icon> &nbsp;&nbsp; {{article.editingTitle}}
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-item-group>
-    </v-list>
+          <v-list-item
+            :class     = "{
+              'article':        true,
+              'drag-over':      dragAndDrop.status === DND_STATUS.INTERNAL && dragAndDrop.overArticle === article,
+              'drag-over-prev': dragAndDrop.status === DND_STATUS.INTERNAL && dragAndDrop.overArticle === article && dragAndDrop.overArea === 'prev',
+              'drag-over-next': dragAndDrop.status === DND_STATUS.INTERNAL && dragAndDrop.overArticle === article && dragAndDrop.overArea === 'next'
+            }"
+            :style      = "{order: article.order}"
+            :draggable  = "!isReadOnly"
+            :ripple     = "false"
+            :ref        = "'article_' + article.uniqId" 
+            :key        = "article.uniqId"
+            :value      = "article.uniqId"
+            @dragstart  = "handleDragStart(article, $event)"
+            @dragover   = "handleDragOver(article, $event)"
+            @dragenter  = "handleDragEnter"
+            @drop       = "handleDrop"
+            @dragend    = "handleDragEnd"
+            @click      = "clickItem(article, $event)"
+            v-for       = "article of articleMap"
+          >
+            <v-list-item-content>
+              <v-list-item-title :style="{'text-indent': (article.level * 2) + 'em'}">
+                <v-icon>mdi-circle-small</v-icon> &nbsp;&nbsp; {{article.editingTitle}}
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
+    </div>
   </div>
 </template>
 
@@ -89,20 +97,24 @@ export default {
       return articleMap
     },
     buttons () {
-      if (this.selectedUniqIds.length === 0) {
-        return []
-      }
+      const buttons = []
 
+      //a read only page
       if (this.isReadOnly === true) {
-        return [this.buttonMap.copy]
+        if (this.selectedUniqIds.length > 0) {
+          buttons.push(this.buttonMap.copy)
+        }
+        return buttons
       }
 
-      const buttons = [
-        this.buttonMap.decIndent,
-        this.buttonMap.incIndent,
-        this.buttonMap.copy,
-        this.buttonMap.cut
-      ]
+      //a writable page
+      if (this.selectedUniqIds.length > 0) {
+        buttons.push(this.buttonMap.decIndent)
+        buttons.push(this.buttonMap.incIndent)
+        buttons.push(this.buttonMap.copy)
+        buttons.push(this.buttonMap.cut)
+      }
+
       if (this.$state.clipboard.hasAnArticle === true) {
         buttons.push(this.buttonMap.paste)
       }
@@ -321,20 +333,50 @@ export default {
       this.$state.clipboard.cutArticles(this.nodeId, this.selectedUniqIds)
     },
     async paste() {
-      this.$state.clipboardAction.paste
+      let order = 0
+
+      if (this.selectedUniqIds.length > 0) {
+        let maxOrder = 0
+        for (const uniqId of this.selectedUniqIds) {
+          const article = this.articleMap[uniqId]
+          if (article.order > maxOrder) {
+            maxOrder = article.order
+          }
+        }
+        order = maxOrder + 1
+
+      } else {
+        let maxOrder = 0
+        for (const uniqId in this.articleMap) {
+          const article = this.articleMap[uniqId]
+          if (article.order > maxOrder) {
+            maxOrder = article.order
+          }
+        }
+        order = maxOrder + 1
+      }
+
+      await this.$state.clipboardAction.pasteArticlesTo(this.nodeId, order)
     }
   }
 }
 </script>
 
 <style scoped>
+.wrapper {
+  height: 100vh;
+  overflow: hidden;
+}
+.scroll-area {
+  overflow: auto;
+}
 .article-list-wrapper {
   display: flex;
   flex-direction: column;
 }
 .article {
-  border-top: 1px solid white;
-  border-bottom: 1px solid white;
+  border-top: 1px solid rgba(255, 255, 255, 0);
+  border-bottom: 1px solid rgba(255, 255, 255, 0);
 }
 .drag-over-prev {
   border-top: 1px solid green;

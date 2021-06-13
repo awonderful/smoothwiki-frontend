@@ -47,6 +47,16 @@ export const register = function (data) {
   return axios.request(config)
 }
 
+export const sendPasswordResetEmail = function (data) {
+  const config = {
+    url:    '/password/email',
+    method: 'POST',
+    data:   data
+  }
+
+  return axios.request(config)
+}
+
 export const getUserInfo = function (params) {
    const config = {
     url:    '/api/user/info',
@@ -68,6 +78,15 @@ export const getTree = function (params) {
 export const getTrashTree = function (params) {
   const config = {
     url:    '/api/tree/trash/get',
+    method: 'GET',
+    params: params
+  }
+  return axios.request(config)
+}
+
+export const getTreeVersion = function (params) {
+  const config = {
+    url:    '/api/tree/version',
     method: 'GET',
     params: params
   }
@@ -104,9 +123,29 @@ export const removeTreeNode = function (params) {
   return axios.request(config)
 }
 
+export const restoreTreeNode = function (params) {
+  const config = {
+    url:    '/api/tree/node/restore',
+    method: 'GET',
+    params: params
+  }
+
+  return axios.request(config)
+}
+
 export const moveTreeNode = function (params) {
   const config = {
     url:    '/api/tree/node/move',
+    method: 'GET',
+    params: params
+  }
+
+  return axios.request(config)
+}
+
+export const getArticlesVersions = function (params) {
+  const config = {
+    url:    '/api/article-page/version',
     method: 'GET',
     params: params
   }
@@ -157,6 +196,16 @@ export const removeArticle = function (params) {
 export const moveArticle = function (params) {
   const config = {
     url:    '/api/article-page/article/move',
+    method: 'GET',
+    params: params
+  }
+
+  return axios.request(config)
+}
+
+export const transferArticle = function (params) {
+  const config = {
+    url:    '/api/article-page/article/transfer',
     method: 'GET',
     params: params
   }

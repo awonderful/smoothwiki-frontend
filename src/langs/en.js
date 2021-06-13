@@ -19,6 +19,9 @@ export default {
         logOut: 'Log out'
       }
     },
+    leftDrawer: 'show/hide left drawer',
+    rightDrawer: 'show/hide right drawer',
+    search: 'search',
     languages: 'Languages'
   },
   article: {
@@ -73,12 +76,18 @@ export default {
         markdown: '+ MARKDOWN',
         mind: '+ Mind',
         attachment: '+ Attachment'
-      }
+      },
+      outdatedAlert: 'this page is outdated!',
+      refresh: 'refresh'
     }
   },
 
 
   home: {
+    spaceMenu: {
+      remove: 'Remove',
+      settings: 'Settings'
+    },
     createSpaceDialog: {
       title: 'Create a {spaceTypeName}',
       fields: {
@@ -135,8 +144,15 @@ export default {
     }
   },
 
+  left: {
+    search: 'search'
+  },
+
   trashTree: {
-    root: 'Trash'
+    root: 'Trash',
+    contextMenu: {
+      restore: 'restore'
+    }
   },
 
   docTree: {
@@ -173,7 +189,7 @@ export default {
   login: {
     logo: '/img/logo-en.png',
     login: 'Log in',
-    email: 'Email',
+    email: 'E-Mail Address',
     password: 'Password',
     submit: 'Log in',
     remember: 'Remember Me',
@@ -182,6 +198,42 @@ export default {
     required: 'Required',
     invalidEmail: 'The email address is invalid!',
     invalidEmailOrPassword: 'Wrong password. Try again or click "Forgot Your password" to reset it.',
-    systemError: 'System Error!'
+  },
+
+  register: {
+    register: 'Register',
+
+    name: 'Name',
+    email: 'E-Mail address',
+    password: 'Password',
+    confirmPassword: 'Password Confirmation',
+
+    submit: 'Register',
+
+    fieldErrors: {
+      required: 'required',
+      invalidEmail: 'The email address is invalid!',
+      invalidPassword: '密码至少8个字符',
+      invalidConfirmPassword: '密码和确认密码不一致'
+    },
+
+    duplicateEmail: 'This E-Mail address has been taken!'
+  },
+
+  forgotPassword: {
+    resetPassword: 'Reset Password',
+    email: 'E-Mail Address',
+    submit: 'Send Password Reset Link',
+    succ: 'We have emailed your password reset link!',
+    invalidEmail: "We can't find a user with that email address."
+  },
+
+  resetPassword: {
+    resetPassword: 'Reset Password',
+    email: 'E-Mail Address',
+    password: 'Password',
+    confirmPassword: 'Password Confirmation',
+    submit: 'RESET PASSWORD'
   }
+
 }

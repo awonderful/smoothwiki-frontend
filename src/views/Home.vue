@@ -1,7 +1,12 @@
 <template>
   <v-app id="inspire">
 
-    <v-app-bar app>
+    <v-app-bar 
+      app 
+      dense 
+      :dark="$state.theme.top.dark"
+      :color="$state.theme.top.bgColor"
+    >
       <v-container>
         <v-row no-gutters>
           <v-col cols="12" class="text-right">
@@ -26,17 +31,40 @@
               xs="12"
               xl="1"
             >
-              <!--
-              <space-card 
-                :space="space"
-                class="card"
-                @remove = "remove(space)"
-                @setting = "setting(space)"
-              />
-              -->
-
               <v-sheet elevation="0" class="card space-card">
                 <div class="space-img-wrapper pt-3 pb-3" @click="gotoSpace(space.id)">
+                  <v-menu
+                    bottom
+                    offset-y
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        color="primary"
+                        dark
+                        v-bind="attrs"
+                        v-on="on"
+                        icon
+                        small
+                        class="menu-btn"
+                      >
+                        <v-icon small>mdi-dots-horizontal</v-icon>
+                      </v-btn>
+                    </template>
+
+                    <v-list dense>
+                      <v-list-item-group>
+                        <v-list-item @click="remove(space)">
+                          <v-list-item-icon><v-icon small>mdi-trash-can-outline</v-icon></v-list-item-icon>
+                          <v-list-item-title>{{$t('home.spaceMenu.remove')}}</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="setting(space)">
+                          <v-list-item-icon><v-icon small>mdi-cog-outline</v-icon></v-list-item-icon>
+                          <v-list-item-title>{{$t('home.spaceMenu.settings')}}</v-list-item-title>
+                        </v-list-item>
+                      </v-list-item-group>
+                    </v-list>
+                  </v-menu>
+
                   <img src="/img/space-icon.svg"/>
                 </div>
                 <div class="space-title mt-2">
@@ -52,7 +80,9 @@
               xl="1"
             >
               <v-card elevation="0" class="card create-card" @click="create(parseInt(type))">
+                <v-btn icon x-large>
                 <v-icon color="secondary lighten-2" size="3em">mdi-plus</v-icon>
+                </v-btn>
               </v-card>
             </v-col>
           </v-row>
@@ -160,6 +190,7 @@ export default {
   box-sizing: border-box;
 }
 .space-card .space-img-wrapper {
+  position: relative;
   width: 100%;
   cursor: pointer;
   border-radius: 5px;
@@ -179,4 +210,14 @@ export default {
   align-items: center;
   cursor: pointer;
 }
+.space-card .space-img-wrapper .menu-btn {
+  position: absolute;
+  right: 0.3em;
+  top: 0.3em;
+  display: none;
+}
+.space-card .space-img-wrapper:hover .menu-btn {
+  display: block;
+}
+
 </style>

@@ -5,11 +5,14 @@ import { PAGE_STATUS, PAGE_TYPE } from '../common/constants'
 
 export const PageState = new Vue({
   data: {
-    pageMap: {}
+    pageMap: {},
   },
   methods: {
 
     //---page----
+    getPageMap() {
+      return this.pageMap
+    },
     getPage(nodeId) {
       return this.pageMap[nodeId]
     },
@@ -20,21 +23,28 @@ export const PageState = new Vue({
         this.$set(page, key, Vue.observable(props[key]))
       }
     },
-    ensurePage(nodeId) {
+    initPage(spaceId, nodeId) {
       if (this.pageMap[nodeId] === undefined) {
         this.$set(this.pageMap, nodeId, {})
         this.setPageProps(nodeId, {
+          spaceId: spaceId,
           status: PAGE_STATUS.INITED,
           scrollTo: 0,
-          isReadOnly: true
+          isReadOnly: true,
+          isOutdated: false,
+          lastViewTimestamp: 0
         })
       }
     },
-
+    refreshPageLastViewTimestamp(nodeId) {
+      this.setPageProps(nodeId, {
+        lastViewTimestamp: Date.now()
+      })
+    },
 
     //---article-page---------------    
-    ensureArticlePage(nodeId) {
-      this.ensurePage(nodeId)
+    initArticlePage(spaceId, nodeId) {
+      this.initPage(spaceId, nodeId)
       const page = this.getPage(nodeId)
 
       if (page.articleMap === undefined) {
@@ -47,7 +57,9 @@ export const PageState = new Vue({
     getArticleMap(nodeId) {
       const page = this.getPage(nodeId)
 
-      return page.articleMap
+      return page === undefined
+             ? undefined
+             : page.articleMap
     },
     getArticleList(nodeId) {
       const articleMap = this.getArticleMap(nodeId)
@@ -201,6 +213,12 @@ export const PageState = new Vue({
       }
 
       return false
+    },
+    clearAllArticles(nodeId) {
+      const articleMap = this.getArticleMap(nodeId)
+      for(const uniqId in articleMap) {
+        delete articleMap[uniqId]
+      }
     }
   }
 })

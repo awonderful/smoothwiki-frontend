@@ -1,8 +1,20 @@
 <template>
-  <div class="page" ref="page" @contextmenu="handleContextmenuEvent($event)">
+  <div class="page" ref="page" @contextmenu="handleContextmenuEvent($event)" :style="{'background-color': $state.theme.articlePage.bgColor}">
+    <v-alert
+      elevation="2"
+      class="text-center outdated-alert"
+      color="warning"
+      dark
+      v-if="isOutdated"
+    >
+      {{$t('page.articlePage.outdatedAlert')}}
+      <v-btn small light @click="refreshPage()"> 
+        {{$t('page.articlePage.refresh')}} 
+      </v-btn>
+    </v-alert>
     <v-container fluid v-if="page !== undefined">
       <v-row class="mx-2 flex-column flex-nowrap">
-        <v-col class="pa-0 mt-5" cols="12" :style="{order: article.order}" :key="article.uniqId" v-for="article of articleMap">
+        <v-col class="pa-2 mt-5" cols="12" :style="{order: article.order}" :key="article.uniqId" v-for="article of articleMap">
           <component
             :ref="'article-' + article.uniqId"
             :is="articleComponentMap[article.type]"
@@ -49,7 +61,7 @@
 </template>
 
 <script>
-import { API_CODE, ARTICLE_COMPONENT_MAP, ARTICLE_TYPE, PAGE_STATUS } from '@/common/constants.js'
+import { API_CODE, ARTICLE_COMPONENT_MAP, ARTICLE_TYPE, PAGE_VERSION_CHECKING_INTERVAL } from '@/common/constants.js'
 import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
 import MarkdownArticle from '@/components/Article/MarkdownArticle.vue'
 import RichTextArticle from '@/components/Article/RichTextArticle.vue'
@@ -79,7 +91,10 @@ export default {
         order: -1,
         x: 0,
         y: 0
-      }
+      },
+
+      lastViewRefreshingInterval: null,
+      outdateCheckingInterval: null,
     }
   },
   computed: {
@@ -98,6 +113,9 @@ export default {
     },
     isPastable () {
       return this.$state.clipboard.hasAnArticle
+    },
+    isOutdated () {
+      return typeof this.page === 'object' && this.page.isOutdated === true
     }
   },
   watch: {
@@ -108,15 +126,32 @@ export default {
         const page = this.$state.page.getPage(nodeId)
 
         if (page === undefined && nodeId > 0) {
-          this.$state.page.ensureArticlePage(nodeId)
+          this.$state.page.initArticlePage(this.spaceId, nodeId)
           this.$state.pageAction.pullArticlePage(this.spaceId, nodeId)
         }
+        this.$state.page.refreshPageLastViewTimestamp(nodeId)
       }
     },
     scrollTo(newVal) {
-      const uniqId = newVal
-      this.scrollToArticle(uniqId)
+      this.$nextTick(function(){
+        const uniqId = newVal
+        if (this.articleMap[uniqId] !== undefined ) {
+          this.scrollToArticle(uniqId)
+        }
+      }.bind(this))
     }
+  },
+  mounted () {
+    this.lastViewRefreshingInterval = setInterval(function () {
+      this.$state.page.refreshPageLastViewTimestamp(this.nodeId)
+    }.bind(this), 10000)
+    this.outdateCheckingInterval = setInterval(function () {
+      this.$state.pageAction.checkIfPageIsOutdated(this.spaceId, this.nodeId)
+    }.bind(this), PAGE_VERSION_CHECKING_INTERVAL)
+  },
+  beforeDestroy() {
+    clearInterval(this.lastViewRefreshingInterval)
+    clearInterval(this.outdateCheckingInterval)
   },
   methods: {
     handleApiFailure (error) {
@@ -214,6 +249,15 @@ export default {
     },
     paste () {
       this.$state.clipboardAction.pasteArticleTo(this.nodeId, this.contextmenu.order)
+    },
+    refreshPage () {
+      if (this.$state.page.hasUnsavedArticles(this.nodeId) === true) {
+        this.$state.globalDialogs.showErrorDialog({
+          message: this.$t('errors.unsavedArticles')
+        })
+      } else {
+        this.$state.pageAction.pullArticlePage(this.spaceId, this.nodeId)
+      }
     }
   }
 }
@@ -228,5 +272,17 @@ export default {
 
 .article-container {
   background-color: #ffffff;
+}
+
+.refresh-button {
+  animation: glow 800ms ease-out infinite alternate;
+}
+
+.outdated-alert {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: 999;
 }
 </style>

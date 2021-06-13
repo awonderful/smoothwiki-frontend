@@ -3,6 +3,8 @@ export const API_BASE_URL = 'http://www.smoothwiki.com'
 export const ATTACHMENT_DOWNLOAD_URL = 'http://www.smoothwiki.com/api/attachment/download?forceDownload=1&attachmentId='
 export const ATTACHMENT_SHOW_URL = 'http://www.smoothwiki.com/api/attachment/download?attachmentId='
 
+export const DEFAULT_LOCALE = 'zh_CN'
+
 export const TREE_ID = {
   MAIN:  1,
   TRASH: 2
@@ -58,7 +60,7 @@ export const CLIPBOARD_STATUS = {
   NONE:                 1,
   COPY_ARTICLES:        2,
   CUT_ARTICLES:         3,
-  MIRROR_ARTICLES: 4
+  MIRROR_ARTICLES:      4
 }
 
 export const USER_STATUS = {
@@ -89,3 +91,6 @@ export const API_CODE = {
 
   DUPLICATE_EMAIL: 9001
 }
+
+export const PAGE_VERSION_CHECKING_INTERVAL = 6000
+export const TREE_VERSION_CHECKING_INTERVAL = 6000

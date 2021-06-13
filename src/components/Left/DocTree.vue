@@ -3,7 +3,7 @@
     ref="tree"
     class="tree"
     :tree="treeData"
-    :fnBeforeDrop="beforeDrop"
+    :dropToMove="false"
     :fnBeforeContextMenu="beforeContextMenu"
     :autoHideContextMenu="false"
     :default-attrs="{
@@ -17,7 +17,7 @@
     :fnBeforeSelect="beforeSelect"
     @select="viewPage"
     @blur="inputBlur"
-    :autoReload="false"
+    @drop="drop"
     v-if="treeData.length > 0"
   >
     <template v-slot:icon="{node}">
@@ -68,8 +68,8 @@
 </template>
 
 <script>
-import TWTree from '@/components/TWTree.vue'
-import { API_CODE, NODE_TYPE } from '@/common/constants.js'
+import TWTree from 'twtree'
+import { API_CODE, NODE_TYPE, TREE_VERSION_CHECKING_INTERVAL } from '@/common/constants.js'
 import * as API from '@/common/API.js'
 import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
 
@@ -170,7 +170,9 @@ export default {
         pageX: 0,
         pageY: 0,
         show: true
-      }
+      },
+
+      treeVersionCheckingInterval: null
     }
   },
   methods: {
@@ -219,6 +221,7 @@ export default {
             })
             this.treeVersion = res.data.data.treeVersion
             this.$refs.tree.remove(node)
+            this.$state.treeAction.pullTree(this.spaceId, 'trash')
             this.$emit('node-removed', node.id)
           }
           break
@@ -265,6 +268,42 @@ export default {
           throw err
         }
       }
+    },
+    async drop (dragAndDrop) {
+      let node = dragAndDrop.dragNode
+      let overNode = dragAndDrop.overNode
+      let newParent = null
+      let newPos    = 0
+
+      switch (dragAndDrop.overArea) {
+        case 'prev':
+          newParent = overNode.__.parent
+          newPos    = overNode.__.pos
+          break
+
+        case 'next':
+          newParent = overNode.__.parent
+          newPos    = overNode.__.pos + 1
+          break
+
+        case 'self':
+          newParent = overNode
+          newPos    = overNode.hasChild
+                    ? overNode.children.length
+                    : 0
+          break
+      }
+
+      const res = await API.moveTreeNode({
+        spaceId:     this.spaceId,
+        treeId:      this.treeId,
+        nodeId:      node.id,
+        newPid:      newParent.id,
+        newLocation: newPos,
+        treeVersion: this.treeVersion
+      })
+      this.treeVersion = res.data.data.treeVersion
+      this.$refs.tree.move(node, newParent, newPos)
     },
     async beforeDrop(dragAndDrop) {
       let node = dragAndDrop.dragNode
@@ -322,6 +361,21 @@ export default {
       }
     }
   },
+  mounted () {
+    this.treeVersionCheckingInterval = setInterval(async function () {
+      const res = await API.getTreeVersion({
+        spaceId: this.spaceId,
+        treeId: this.treeId
+      })
+      if (res.data.data.treeVersion !== this.treeVersion) {
+        this.$state.treeAction.pullTree(this.spaceId, 'doc')
+        this.$state.treeAction.pullTree(this.spaceId, 'trash')
+      }
+    }.bind(this), TREE_VERSION_CHECKING_INTERVAL)
+  },
+  beforeDestroy () {
+    clearInterval(this.treeVersionCheckingInterval)
+  }
 }
 </script>
 

@@ -45,7 +45,21 @@ export const humanFileSize = function (bytes, si=false, dp=1) {
  * check if a extension is a kind of image
  */
 export const isImageExtension = function (extension) {
-  const imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'tif', 'bmp', 'pcx', 'svg', 'ico', 'icon', 'webp'];
+  const imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'tif', 'bmp', 'pcx', 'svg', 'ico', 'icon', 'webp']
 
   return imageExtensions.includes(extension)
+}
+
+/**
+ * check if a string is a valid json string
+ * @param {*} str 
+ * @returns 
+ */
+export const isJsonString = function (str) {
+    try {
+        JSON.parse(str)
+    } catch (e) {
+        return false
+    }
+    return true
 }

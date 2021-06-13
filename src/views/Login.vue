@@ -171,7 +171,7 @@ export default {
         if (err.wrongCode === API_CODE.INVALID_PARAM) {
           this.errorMessage = this.$t('login.invalidEmailOrPassword')
         } else {
-          this.errorMessage = this.$t('login.systemError')
+          this.errorMessage = this.$t('errors.systemError')
         }
       } finally {
         this.requesting = false

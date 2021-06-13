@@ -128,7 +128,7 @@ export default {
       setTimeout(function () {
         this.editor = new MindElixir({
           el: '#' + this.editorId,
-          direction: this.article.edigintBody === ''
+          direction: this.article.editingBody === ''
                      ? MindElixir.LEFT
                      : JSON.parse(this.article.editingBody).direction,
           data: this.article.editingBody === '' 

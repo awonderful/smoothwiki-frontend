@@ -2,9 +2,11 @@ import { API_CODE } from '@/common/constants.js'
 
 export default {
   errorCaptured (err) {
-    let msg = this.$t('errors.systemError')
+    console.log(err)
 
+    // an api call returned a error code.
     if (typeof err.wrongCode === 'number') {
+      let msg = this.$t('errors.systemError')
       const errorMap = {
         [API_CODE.NOT_LOGGED_IN]: this.$t('errors.notLoggedIn'),
         [API_CODE.PERMISSION_DENIED]: this.$t('errors.permissionDenied'),
@@ -14,11 +16,11 @@ export default {
       if (errorMap[code] !== undefined) {
         msg = errorMap[code]
       }
-    }
 
-    this.$state.globalDialogs.showErrorDialog({
-      message: msg
-    })
+      this.$state.globalDialogs.showErrorDialog({
+        message: msg
+      })
+    }
 
     //return false
   }

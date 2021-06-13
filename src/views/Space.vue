@@ -20,11 +20,23 @@
     <v-app-bar 
       app
       dense
+      :dark="$state.theme.top.dark"
+      :color="$state.theme.top.bgColor"
     >
-      <v-app-bar-nav-icon @click="left = !left"></v-app-bar-nav-icon>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-app-bar-nav-icon  @click="left = !left" v-bind="attrs" v-on="on"></v-app-bar-nav-icon>
+        </template>
+        <span>{{$t('appBar.leftDrawer')}}</span>
+      </v-tooltip>
       <v-spacer></v-spacer>
       <viewer></viewer>
-      <v-app-bar-nav-icon @click="right = !right"></v-app-bar-nav-icon>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-app-bar-nav-icon  @click="right = !right" v-bind="attrs" v-on="on"></v-app-bar-nav-icon>
+        </template>
+        <span>{{$t('appBar.rightDrawer')}}</span>
+      </v-tooltip>
     </v-app-bar>
 
     <v-main>

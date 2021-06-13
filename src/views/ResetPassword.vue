@@ -17,7 +17,7 @@
                 <v-container class="pa-5 pb-10">
                   <v-row class="mb-5" align="center">
                     <v-col cols="12" class="text-left">
-                      {{ $t('register.register') }}
+                      {{ $t('resetPassword.resetPassword') }}
                     </v-col>
                   </v-row>
                   <v-row>
@@ -36,22 +36,9 @@
                     <v-col cols="12">
                       <v-text-field 
                         outlined
-                        dense
-                        validate-on-blur
-                        :label="$t('register.name')"
-                        v-model="name"
-                        :rules="[rules.required]"
-                      >
-                      </v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row no-gutters>
-                    <v-col cols="12">
-                      <v-text-field 
-                        outlined
                         dense 
                         validate-on-blur
-                        :label="$t('register.email')"
+                        :label="$t('resetPassword.email')"
                         v-model="email"
                         :rules="[rules.required, rules.email]"
                         @input="clearErrorMessage()"
@@ -65,7 +52,7 @@
                         outlined 
                         dense 
                         validate-on-blur
-                        :label="$t('register.password')"
+                        :label="$t('resetPassword.password')"
                         type="password" 
                         v-model="password"
                         :rules="[rules.required, rules.password]"
@@ -79,7 +66,7 @@
                         outlined 
                         dense 
                         validate-on-blur
-                        :label="$t('register.confirmPassword')"
+                        :label="$t('resetPassword.confirmPassword')"
                         type="password" 
                         v-model="confirmPassword"
                         :rules="[rules.required, rules.confirmPassword]"
@@ -87,9 +74,9 @@
                       </v-text-field>
                     </v-col>
                   </v-row>
-                  <v-row no-gutters class="mt-8" justify="space-between" align="center">
+                  <v-row no-gutters class="mt-8" align="center">
                     <v-col cols="12" class="text-right">
-                      <v-btn color="primary" @click="register()">{{ $t('register.submit') }}</v-btn>
+                      <v-btn color="primary" @click="register()">{{ $t('resetPassword.submit') }}</v-btn>
                     </v-col>
                   </v-row>
                 </v-container>

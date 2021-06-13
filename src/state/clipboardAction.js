@@ -16,15 +16,15 @@ export const ClipboardAction = new Vue({
             return
           }
 
-          for (let i=0; i<ClipboardState.src.uniqIds.length; i++) {
-            const uniqId = ClipboardState.src.uniqIds[i]
-            const oldArticle = PageState.getArticle(ClipboardState.src.nodeId, uniqId)
+          for (let i=0; i<ClipboardState.src.articles.length; i++) {
+            const oldArticle = ClipboardState.src.articles[i]
 
             let newArticle = {
               spaceId:       oldArticle.spaceId,
               nodeId:        nodeId,
               uniqId:        generateUniqId(),
               id:            0,
+              level:         oldArticle.level,
               type:          oldArticle.type,
               title:         oldArticle.title,
               body:          oldArticle.body,
@@ -34,11 +34,11 @@ export const ClipboardAction = new Vue({
               editingSearch: oldArticle.editingSearch,
               order:         order,
               isReadOnly:    false,
-              isEditing:     true
+              isEditing:     true,
             }
 
             PageState.insertArticle(nodeId, order + i, newArticle)
-            if (oldArticle.id !== 0) {
+            if (oldArticle.id !== 0 && oldArticle.isEditing === false) {
               await PageAction.saveArticle(oldArticle.spaceId, nodeId, newArticle.uniqId)
             }
           }
@@ -56,37 +56,37 @@ export const ClipboardAction = new Vue({
             const article = articleList[i]
             if (article.order < order && article.id > 0) {
               prevArticleId = article.id
+              break
             }
           }
 
-          for (let i=0; i<ClipboardState.src.uniqIds.length; i++) {
-            const uniqId = ClipboardState.src.uniqIds[i]
-            await API.moveArticle()
+          for (let i=0; i<ClipboardState.src.articles.length; i++) {
+            const article = ClipboardState.src.articles[i]
 
-            const oldArticle = PageState.getArticle(ClipboardState.src.nodeId, uniqId)
+            if (article.id > 0) {
+              await API.transferArticle({
+                spaceId: article.spaceId,
+                nodeId: article.nodeId,
+                articleId: article.id,
+                toNodeId: nodeId,
+                toPrevArticleId: prevArticleId
+              })
+              prevArticleId = article.id
 
-            let newArticle = {
-              spaceId:       oldArticle.spaceId,
-              nodeId:        nodeId,
-              uniqId:        generateUniqId(),
-              id:            0,
-              type:          oldArticle.type,
-              title:         oldArticle.title,
-              body:          oldArticle.body,
-              search:        oldArticle.search,
-              editingTitle:  oldArticle.editingTitle,
-              editingBody:   oldArticle.editingBody,
-              editingSearch: oldArticle.editingSearch,
-              order:         order,
-              isReadOnly:    false,
-              isEditing:     true
+              const articleMap = PageState.getArticleMap(article.nodeId)
+              if (articleMap !== undefined && articleMap !== null) {
+                for (const tUniqId in articleMap) {
+                  if (articleMap[tUniqId].id === article.id) {
+                    PageState.removeArticle(article.nodeId, tUniqId)
+                  }
+                }
+              }
             }
 
-            PageState.insertArticle(nodeId, order + i, newArticle)
-            if (oldArticle.id !== 0) {
-              await PageAction.saveArticle(oldArticle.spaceId, nodeId, newArticle.uniqId)
-            }
-
+            article.uniqId = generateUniqId()
+            article.nodeId = nodeId
+            article.order = order + i
+            PageState.insertArticle(nodeId, order + i, article)
           }
           ClipboardState.clear()
       }

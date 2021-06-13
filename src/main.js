@@ -5,6 +5,7 @@ import {state} from './state/index'
 import vuetify from './plugins/vuetify'
 import VueI18n from 'vue-i18n'
 import messages from './langs/messages.js'
+import Locale from './common/locale.js'
 // Vue.config.productionTip = false
 
 Vue.use(VueI18n)
@@ -19,5 +20,6 @@ new Vue({
   router,
   i18n,
   vuetify,
+  mixins: [Locale],
   render: h => h(App)
 }).$mount('#app')

@@ -9,10 +9,14 @@ import { TreeState } from './tree.js'
 import { TreeAction } from './treeAction.js'
 import { UserState } from './user.js'
 import { UserAction } from './userAction.js'
+import { ThemeState } from './theme.js'
+import { Notify } from './notify.js'
+import { LocalStorage } from './localStorage.js'
 
 export const state = {
   install: function (vue) {
     vue.prototype.$state = {
+      theme:           ThemeState,
       user:            UserState,
       userAction:      UserAction,
       tree:            TreeState,
@@ -23,7 +27,9 @@ export const state = {
       spaceAction:     SpaceAction,
       clipboard:       ClipboardState,
       clipboardAction: ClipboardAction,
-      globalDialogs:   GlobalDialogState
+      globalDialogs:   GlobalDialogState,
+      notify:          Notify,
+      LocalStorage:    LocalStorage
     }
   }
 }
