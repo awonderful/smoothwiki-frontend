@@ -44,6 +44,15 @@ export default {
       okText: '确定',
       cancelText: '取消'
     },
+    historyDialog: {
+      title: '历史版本',
+      table: {
+        version: '版本号',
+        stime: '保存时间',
+        author: '作者',
+        view: '查看'
+      }
+    },
     richText: {
       toolbar: {
         uploadLocalImage: '上传本地图片',

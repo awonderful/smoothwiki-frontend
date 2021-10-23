@@ -44,6 +44,15 @@ export default {
       okText: 'remove',
       cancelText: 'cancel'
     },
+    historyDialog: {
+      title: 'history',
+      table: {
+        version: 'Version',
+        stime: 'Creation Time',
+        author: 'Author',
+        view: 'view'
+      }
+    },
     richText: {
       toolbar: {
         uploadLocalImage: 'upload a local image',

@@ -6,6 +6,7 @@ import Login from '@/views/Login.vue'
 import Register from '@/views/Register.vue'
 import ForgotPassword from '@/views/ForgotPassword.vue'
 import ResetPassword from '@/views/ResetPassword.vue'
+import Search from '@/views/Search.vue'
 import { UserState } from '@/state/user.js'
 import { UserAction } from '@/state/userAction.js'
 import { USER_STATUS } from '@/common/constants.js'
@@ -61,6 +62,14 @@ const routes = [
       mustBeLoggedIn: false
     }
   },
+  {
+    path: '/search',
+    name: 'search',
+    component: Search,
+    meta: {
+      mustBeLoggedIn: true
+    }
+  }
 ]
 
 const router = new VueRouter({

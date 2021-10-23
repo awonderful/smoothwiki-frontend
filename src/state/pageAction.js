@@ -2,6 +2,7 @@ import Vue from 'vue'
 import * as API from '@/common/API.js'
 import { PAGE_STATUS } from '@/common/constants'
 import { PageState } from './page.js'
+import { getArticleHistoryVersions } from '../common/API.js'
 
 export const PageAction = new Vue({
   methods: {
@@ -232,15 +233,66 @@ export const PageAction = new Vue({
         newVersion = newVersion + item.version
       })
 
-      console.log('------------------------')
+      /*console.log('------------------------')
       console.log(oldArticleList)
       console.log(res.data.data.versions)
       console.log(oldVersion)
-      console.log(newVersion)
+      console.log(newVersion)*/
 
       PageState.setPageProps(nodeId, {
         isOutdated: newVersion !== oldVersion
       })
+    },
+    async pullArticleHistoryVersions(spaceId, nodeId, uniqId) {
+      const article = PageState.getArticle(nodeId, uniqId)
+      const res = await API.getArticleHistoryVersions({
+        spaceId: spaceId,
+        nodeId: nodeId,
+        articleId: article.id
+      })
+      const versions = res.data.data.versions
+      for (let i=0; i<versions.length; i++) {
+        Object.assign(versions[i], {
+          title: '',
+          body: '',
+          ext: '',
+          search: '',
+          pulled: false
+        })
+      }
+
+      PageState.setArticleProps(nodeId, uniqId, {
+        historyVersions: versions
+      })
+    },
+    async pullHistoryArticle(spaceId, nodeId, uniqId, version) {
+      const article = PageState.getArticle(nodeId, uniqId)
+      const res = await API.getHistoryArticle({
+        spaceId: spaceId,
+        nodeId: nodeId,
+        articleId: article.id,
+        version: version
+      })
+      const historyArticle = res.data.data.article
+
+      const versions = article.historyVersions
+      for (let i=0; i<versions.length; i++) {
+        if (versions[i].version === version) {
+          versions[i].pulled = true
+          Object.assign(versions[i], {
+            version: version,
+            title: historyArticle.title,
+            body: historyArticle.body,
+            ext: historyArticle.ext,
+            search: historyArticle.search,
+            pulled: true
+          })
+        }
+      }
+
+      PageState.setArticleProps(nodeId, uniqId, {
+        historyVersions: versions
+      })
     }
-  }
+  },
 })

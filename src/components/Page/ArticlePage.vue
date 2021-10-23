@@ -20,7 +20,8 @@
             :is="articleComponentMap[article.type]"
             :article="article"
             @save="saveArticle"
-            @remove="removeArticle"/>
+            @remove="removeArticle"
+            @history="showArticleHistoryVersions"/>
         </v-col>
       </v-row>
       <v-row v-if="page.isReadOnly === false" justify="center" class="mt-5 mb-3" @contextmenu.stop="doNothing()">
@@ -38,6 +39,13 @@
         </v-col>
       </v-row>
     </v-container>
+
+    <history-dialog
+      v-model="historyDialog.isVisible"
+      :spaceId="spaceId"
+      :nodeId="nodeId"
+      :uniqId="historyDialog.uniqId"
+    ></history-dialog>
 
     <v-menu
       v-model="contextmenu.show"
@@ -68,6 +76,7 @@ import RichTextArticle from '@/components/Article/RichTextArticle.vue'
 import AttachmentArticle from '@/components/Article/AttachmentArticle/Index.vue'
 import MindArticle from '@/components/Article/MindArticle.vue'
 import PdfArticle from '@/components/Article/PdfArticle.vue'
+import HistoryDialog from '@/components/Dialog/HistoryDialog.vue'
 import * as API from '@/common/API.js'
 
 export default {
@@ -76,7 +85,8 @@ export default {
     RichTextArticle,
     AttachmentArticle,
     MindArticle,
-    PdfArticle
+    PdfArticle,
+    HistoryDialog
   },
   mixins: [
     SpaceRouteParamsHandling
@@ -95,6 +105,12 @@ export default {
 
       lastViewRefreshingInterval: null,
       outdateCheckingInterval: null,
+
+      historyDialog: {
+        isVisible: false,
+        uniqId: '',
+        articleId: 0,
+      }
     }
   },
   computed: {
@@ -162,6 +178,10 @@ export default {
     },
     removeArticle (uniqId) {
       this.$state.pageAction.removeArticle(this.spaceId, this.nodeId, uniqId)
+    },
+    showArticleHistoryVersions (uniqId) {
+      this.historyDialog.uniqId = uniqId
+      this.historyDialog.isVisible = true
     },
     addFreshArticle(type) {
       switch (type) {

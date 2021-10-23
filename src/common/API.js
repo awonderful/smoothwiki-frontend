@@ -163,6 +163,26 @@ export const getArticles = function (params) {
   return axios.request(config)
 }
 
+export const getArticleHistoryVersions = function (params) {
+  const config = {
+    url:    '/api/article-page/article/versions',
+    method: 'GET',
+    params: params
+  }
+
+  return axios.request(config)
+}
+
+export const getHistoryArticle = function (params) {
+  const config = {
+    url:    '/api/article-page/article/history/get',
+    method: 'GET',
+    params: params
+  }
+
+  return axios.request(config)
+}
+
 export const updateArticle = function (data) {
   const config = {
     url:    '/api/article-page/article/update',
@@ -327,6 +347,16 @@ export const addSpaceMember = function (params) {
 export const removeSpaceMember = function (params) {
   const config = {
     url:    '/api/space/member/remove',
+    method: 'GET',
+    params: params
+  }
+
+  return axios.request(config)
+}
+
+export const searchInSpace = function (params) {
+  const config = {
+    url:    '/api/search/space',
     method: 'GET',
     params: params
   }

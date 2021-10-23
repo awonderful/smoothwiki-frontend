@@ -13,7 +13,7 @@ export default {
         htmlScrollTop: null,
         bodyWidth: null,
         bodyHeight: null
-      }
+      },
     }
   },
   methods: {
@@ -104,10 +104,7 @@ export default {
       this.$state.clipboard.cutArticle(this.article.nodeId, this.article.uniqId)
     },
     history () {
-      this.$state.globalDialogs.showConfirmDialog({
-        title: 'history',
-        desc: 'sorry that this feature is not finished yet!'
-      })
+      this.$emit('history', this.article.uniqId)
     },
     clickButton (button) {
       if (typeof this[button] === 'function') {
@@ -115,7 +112,7 @@ export default {
       }
     },
     clickMenu (menu) {
-       if (typeof this[menu] === 'function') {
+      if (typeof this[menu] === 'function') {
         this[menu]()
       }
     }

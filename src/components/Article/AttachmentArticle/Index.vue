@@ -31,6 +31,7 @@
       :title.sync   = "article.editingTitle"
       :extraButtons = "extraButtons"
       @clickButton  = "clickButton"
+      @clickMenu    = "clickMenu"
       ref           = "window">
       <template v-slot:editor>
         <ul class="attachments">

@@ -90,17 +90,18 @@ export const PageState = new Vue({
       const articleMap = this.getArticleMap(nodeId)
 
       const defaultArticleProp = {
-        number:        '',
-        level:         0,
-        editingTitle:  article.title,
-        editingBody:   article.body,
-        editingSearch: article.search,
-        isEditing:     false,
-        isRequesting:  false,
-        isFullScreen:  false,
-        isReadOnly:    false,
-        isUploading:   false,
-        attachmentIds: []
+        number:          '',
+        level:           0,
+        editingTitle:    article.title,
+        editingBody:     article.body,
+        editingSearch:   article.search,
+        isEditing:       false,
+        isRequesting:    false,
+        isFullScreen:    false,
+        isReadOnly:      false,
+        isUploading:     false,
+        attachmentIds:   [],
+        historyVersions: [],
       }
       for (let key in defaultArticleProp) {
         if (article[key] === undefined) {

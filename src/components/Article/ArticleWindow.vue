@@ -8,7 +8,7 @@
       <input 
         type="text" 
         class="title-input text-h5 flex-grow-1 font-weight-medium" 
-        v-model="colonedTitle" 
+        v-model="clonedTitle" 
         @input="updateTitle" 
         :readonly="!isEditing"
       />
@@ -182,7 +182,7 @@ export default {
   },
   data: function () {
     return {
-      colonedTitle: this.title,
+      clonedTitle: this.title,
 
       menuItemMap: {
         history: {
@@ -238,7 +238,7 @@ export default {
   },
   methods: {
     updateTitle () {
-      this.$emit('update:title', this.colonedTitle)
+      this.$emit('update:title', this.clonedTitle)
     },
     clickButton (button) {
       this.$emit('clickButton', button.name)
