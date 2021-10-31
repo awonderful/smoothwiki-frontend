@@ -87,7 +87,10 @@ export default {
         attachment: '+ 附件'
       },
       outdatedAlert: '当前页面内容有更新！',
-      refresh: '刷新'
+      refresh: '刷新',
+      trashDialog: {
+        title: '垃圾箱'
+      }
     }
   },
 
@@ -184,6 +187,10 @@ export default {
       copy: '复制',
       cut: '剪切',
       paste: '粘贴'
+    },
+    menus: {
+      trash: '垃圾箱',
+      exportPdf: '导出PDF'
     }
   },
 

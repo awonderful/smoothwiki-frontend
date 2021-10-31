@@ -4,15 +4,17 @@
       :isReadOnly   = "article.isReadOnly"
       :isEditing    = "article.isEditing"
       :isFreshNew   = "article.id === 0"
-      :isFullScreen = "article.isFullScreen"
+      :isFullScreen = "isFullScreen"
       :title.sync   = "article.editingTitle"
+      :buttons      = "buttons"
+      :menuItems    = "menuItems"
       @clickButton  = "clickButton"
       @clickMenu    = "clickMenu"
       ref           = "window">
       <template v-slot:editor>
         <div 
           :id="editorId" 
-          :class="['mind-editor', {'mind-fullscreen': article.isFullScreen}]"
+          :class="['mind-editor', {'mind-fullscreen': isFullScreen}]"
           :style="{'height': containerHeight + 'px'}"
         >
         </div>
@@ -20,7 +22,7 @@
       <template v-slot:view>
         <div 
           :id="viewId" 
-          :class="['mind-view', {'mind-fullscreen': article.isFullScreen}]"
+          :class="['mind-view', {'mind-fullscreen': isFullScreen}]"
           :style="{'height': containerHeight + 'px'}"
         >
         </div>
@@ -150,7 +152,7 @@ export default {
     },
     fullscreen () {
       this.hidePageScrollbar()
-      this.setArticleProps({isFullScreen: true})
+      this.isFullScreen = true
       setTimeout(function () {
         if (this.article.isEditing === true) {
           this.editor.toCenter()
@@ -160,7 +162,7 @@ export default {
       }.bind(this), 0)
     },
     exitFullscreen() {
-      this.setArticleProps({isFullScreen: false})
+      this.isFullScreen = false
       setTimeout(function () {
         this.showPageScrollbar()
           if (this.article.isEditing === true) {

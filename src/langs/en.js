@@ -87,7 +87,10 @@ export default {
         attachment: '+ Attachment'
       },
       outdatedAlert: 'this page is outdated!',
-      refresh: 'refresh'
+      refresh: 'refresh',
+      trashDialog: {
+        title: 'trash'
+      }
     }
   },
 
@@ -184,6 +187,10 @@ export default {
       copy: 'copy',
       cut: 'cut',
       paste: 'paste'
+    },
+    menus: {
+      trash: 'trash',
+      exportPdf: 'export to pdf'
     }
   },
 

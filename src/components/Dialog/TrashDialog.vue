@@ -7,7 +7,7 @@
         dark
       >
         <v-toolbar-title>
-          {{ $t('article.historyDialog.title') }}
+          {{ $t('page.articlePage.trashDialog.title') }}
         </v-toolbar-title>
         <v-spacer/>
         <v-btn icon @click="close()">
@@ -15,14 +15,18 @@
         </v-btn>
       </v-toolbar>
 
-      <v-card-text>
+      <v-card-text class="page">
        <v-container>
-          <component
-            :is="articleComponentMap[article.type]"
-            :article="article"
-						:useDefaultMenuItems="false"
-						v-if="article !== null && article !== undefined"
-          />
+					<v-row class="mx-2 flex-column flex-nowrap">
+						<v-col class="pa-2 mt-5" cols="12" :key="article.uniqId" v-for="article of articles">
+							<component
+								:ref="'article-' + article.uniqId"
+								:is="articleComponentMap[article.type]"
+								:article="article"
+								:useDefaultMenuItems="false"
+							/>
+						</v-col>
+					</v-row>
        </v-container>
       </v-card-text>
     </v-card>
@@ -37,6 +41,7 @@ import RichTextArticle from '@/components/Article/RichTextArticle.vue'
 import AttachmentArticle from '@/components/Article/AttachmentArticle/Index.vue'
 import MindArticle from '@/components/Article/MindArticle.vue'
 import PdfArticle from '@/components/Article/PdfArticle.vue'
+import { generateUniqId } from '@/common/util'
 
 export default {
 	name: 'article-dialog',
@@ -59,15 +64,7 @@ export default {
     nodeId: {
       type: Number,
       required: true
-    },
-    uniqId: {
-      type: String,
-      required: true
-    },
-		version: {
-			type: String,
-			required: false
-		}
+    }
 	},
 	computed: {
 		show: {
@@ -78,42 +75,39 @@ export default {
 				this.$emit('input', val)
 			}
 		},
-		article() {
-			const article = this.$state.page.getArticle(this.nodeId, this.uniqId)
-			if (!article) {
-				return null
+		articles() {
+			const page = this.$state.page.getPage(this.nodeId)
+
+			if (!page || !page.trash || page.trash.pulled === false) {
+				return []
 			}
 
+			const articles = []
+			for (const article of page.trash.articles) {
+				articles.push(Object.assign({}, article, {
+					uniqId: generateUniqId(),
+					editingTitle:    article.title,
+					editingBody:     article.body,
+					editingSearch:   article.search,
+					isEditing:       false,
+					isRequesting:    false,
+					isReadOnly:      true,
+					isUploading:     false,
+				}))
+			}
 
-			if (this.version) {
-				const historyVersions = article.historyVersions
-				for (const historyArticle of historyVersions) {
-					if (historyArticle.version === this.version) {
-						if (historyArticle.pulled === false) {
-							this.$state.pageAction.pullHistoryArticle(this.spaceId, this.nodeId, this.uniqId, this.version)
-							return null
-						} else {
-							const t = Object.assign({}, article, historyArticle, {
-								editingTitle:    historyArticle.title,
-								editingBody:     historyArticle.body,
-								editingSearch:   historyArticle.search,
-								isEditing:       false,
-								isRequesting:    false,
-								isReadOnly:      true,
-								isUploading:     false,
-							})
-							return t
-						}
-					}
+			return articles
+		}
+	},
+	watch: {
+		show (val) {
+			if (val === true) {
+				const page = this.$state.page.getPage(this.nodeId)
+
+				if (!page.trash || page.trash.pulled === false) {
+					this.$state.pageAction.pullPageTrashArticles(this.spaceId, this.nodeId)
 				}
 			}
-
-			return Object.assign({}, article, {
-				isEditing:       false,
-				isRequesting:    false,
-				isReadOnly:      true,
-				isUploading:     false,
-			})
 		}
 	},
 	data: function () {
@@ -131,4 +125,7 @@ export default {
 </script>
 
 <style scoped>
+.page {
+  background-color: #eff3f8;
+}
 </style>

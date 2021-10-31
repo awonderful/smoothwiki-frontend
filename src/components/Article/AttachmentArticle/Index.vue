@@ -27,9 +27,10 @@
       :isReadOnly   = "article.isReadOnly"
       :isEditing    = "article.isEditing"
       :isFreshNew   = "article.id === 0"
-      :isFullScreen = "article.isFullScreen"
+      :isFullScreen = "isFullScreen"
       :title.sync   = "article.editingTitle"
-      :extraButtons = "extraButtons"
+      :buttons      = "buttons"
+      :menuItems    = "menuItems"
       @clickButton  = "clickButton"
       @clickMenu    = "clickMenu"
       ref           = "window">
@@ -38,7 +39,7 @@
           <li class="item" :key="attachment.id" v-for="attachment of editingBody.items">
             <span class="thumb"><img v-if="attachment.icon !== null" :src="attachment.icon" ></span>
             <span class="filename"><input type="text" v-model="attachment.filename"/></span>
-            <span class="time">{{ new Date(attachment.ctime).toLocaleDateString($i18n.locale) }}</span>
+            <span class="time">{{ new Date(attachment.ctime).toLocaleDateString(locale) }}</span>
             <span class="size">{{ uploadedAttachmentMap.hasOwnProperty(attachment.id) ? humanFileSize(uploadedAttachmentMap[attachment.id].size) : ''}}</span>
             <span class="operate">
               <v-btn icon dense small @click="removeAttachment(attachment.id)"><v-icon small>mdi-delete-outline</v-icon></v-btn>
@@ -92,19 +93,35 @@ export default {
     FileUpload
   },
   computed: {
-    extraButtons () {
-      if (this.article.isReadOnly || this.article.isEditing) {
-        return []
-      }
+    defaultButtons () {
+      const fullscreenSwitcher = this.isFullScreen
+        ? 'exitFullscreen'
+        : 'fullscreen'
 
-      return [
-        {
+      const upload = {
           name:  'upload',
           title: 'upload',
           icon:  'mdi-upload',
           tip:   this.$t('article.attachment.uploadButtonTip')
-        }
-      ]
+      }
+
+      if (this.article.isEditing && this.article.isFreshNew) {
+        return [fullscreenSwitcher, 'save', 'remove']
+      }
+
+      if (this.article.isEditing && !this.article.isFreshNew) {
+        return [fullscreenSwitcher, 'save', 'exit']
+      }
+
+      if (!this.article.isEditing && !this.article.isReadOnly) {
+        return [upload, fullscreenSwitcher, 'edit', 'remove']
+      }
+
+      if (!this.article.isEditing && this.article.isReadOnly) {
+        return [fullscreenSwitcher]
+      }
+
+      return []
     },
     postData() {
       return {

@@ -97,11 +97,15 @@ export const PageState = new Vue({
         editingSearch:   article.search,
         isEditing:       false,
         isRequesting:    false,
-        isFullScreen:    false,
         isReadOnly:      false,
         isUploading:     false,
         attachmentIds:   [],
         historyVersions: [],
+        trash:           {
+          pulled: false,
+          timestamp: 0,
+          articles: [],
+        },
       }
       for (let key in defaultArticleProp) {
         if (article[key] === undefined) {

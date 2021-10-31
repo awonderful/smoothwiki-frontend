@@ -16,7 +16,7 @@
       <!--buttons-->
       <div>
         <v-tooltip
-          :key="button.name"
+          :key="button.name + (isEditing? '-editing': '')"
           v-for="button of buttons"
           bottom
         >
@@ -37,7 +37,7 @@
       </div>
 
       <!--menu-->
-      <v-menu open-on-hover bottom offset-y v-if="!this.isFreshNew">
+      <v-menu open-on-hover bottom offset-y close-delay="300" v-if="!this.isFreshNew && this.menuItems.length > 0">
         <template v-slot:activator="{ on, attrs }">
           <v-btn 
             small 
@@ -73,26 +73,6 @@
 <script>
 export default {
   props: {
-    useDefaultButtons: {
-      type: Boolean,
-      default: true
-    },
-    useDefaultMenuItems: {
-      type: Boolean,
-      default: true
-    },
-    extraButtons: {
-      type: Array,
-      default: function () {
-        return []
-      }
-    },
-    extraMenuItems: {
-      type: Array,
-      default: function () {
-        return []
-      }
-    },
     title: {
       type: String,
       default: ''
@@ -112,128 +92,23 @@ export default {
     isFullScreen: {
       type: Boolean,
       default: false
-    }
-  },
-  computed: {
-    defaultButtons () {
-      const fullscreenSwitcher = this.isFullScreen
-        ? 'exitFullscreen'
-        : 'fullscreen'
-
-      if (this.isEditing && this.isFreshNew) {
-        return [fullscreenSwitcher, 'save', 'remove']
-      }
-
-      if (this.isEditing && !this.isFreshNew) {
-        return [fullscreenSwitcher, 'save', 'exit']
-      }
-
-      if (!this.isEditing && !this.isReadOnly) {
-        return [fullscreenSwitcher, 'edit', 'remove']
-      }
-
-      if (!this.isEditing && this.isReadOnly) {
-        return [fullscreenSwitcher]
-      }
-
-      return []
     },
-    defaultMenuItems () {
-      return ['history', 'copy', 'cut']
+    buttons: {
+      type: Array,
+      default: function () {
+        return []
+      }
     },
-    buttons () {
-      const buttons = []
-
-      for (const button of this.extraButtons) {
-        if (typeof button === 'string') {
-          if (this.buttonMap[button]) {
-            buttons.push(this.buttonMap[button])
-          }
-        } else {
-          buttons.push(button)
-        }
+    menuItems: {
+      type: Array,
+      default: function () {
+        return []
       }
-
-      for (const button of this.defaultButtons) {
-        buttons.push(this.buttonMap[button])
-      }
-
-      return buttons
     },
-    menuItems () {
-      const items = []
-
-      for (const item of this.defaultMenuItems) {
-        items.push(this.menuItemMap[item])
-      }
-
-      for (const item of this.extraMenuItems) {
-        if (typeof item === 'string') {
-          if (this.menuItemMap[item]) {
-            items.push(this.menuItemMap[item])
-          }
-        } else {
-          items.push(item)
-        }
-      }
-
-      return items
-    }
   },
   data: function () {
     return {
       clonedTitle: this.title,
-
-      menuItemMap: {
-        history: {
-          name:  'history',
-          title: this.$t('article.menus.history'),
-          icon:  'mdi-history',
-        },
-        copy: {
-          name:  'copy',
-          title: this.$t('article.menus.copy'),
-          icon:  'mdi-content-copy',
-        },
-        cut: {
-          name:  'cut',
-          title: this.$t('article.menus.cut'),
-          icon:  'mdi-content-cut',
-        }
-      },
-
-      buttonMap: {
-        edit: {
-          name: 'edit',
-          icon: 'mdi-pencil',
-          tip:  this.$t('article.buttonTips.edit')
-        },
-        save: {
-          name: 'save',
-          icon: 'mdi-content-save-outline',
-          tip:  this.$t('article.buttonTips.save')
-        },
-        fullscreen: {
-          name: 'fullscreen',
-          icon: 'mdi-fullscreen',
-          tip:  this.$t('article.buttonTips.fullscreen')
-        },
-        exitFullscreen: {
-          name: 'exitFullscreen',
-          icon: 'mdi-fullscreen-exit',
-          tip:  this.$t('article.buttonTips.exitFullscreen')
-        },
-        exit: {
-          name: 'exit',
-          icon: 'mdi-location-exit',
-          tip:  this.$t('article.buttonTips.exit')
-        },
-        remove: {
-          name: 'remove',
-          icon: 'mdi-trash-can-outline',
-          tip:  this.$t('article.buttonTips.remove')
-        }
-      }
     }
   },
   methods: {

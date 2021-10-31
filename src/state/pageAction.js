@@ -293,6 +293,21 @@ export const PageAction = new Vue({
       PageState.setArticleProps(nodeId, uniqId, {
         historyVersions: versions
       })
+    },
+    async pullPageTrashArticles(spaceId, nodeId) {
+      const res = await API.getTrashArticles({
+        spaceId: spaceId,
+        nodeId: nodeId
+      })
+      const articles = res.data.data.articles
+
+      PageState.setPageProps(nodeId, {
+        trash: {
+          pulled: true,
+          timestamp: Date.now(),
+          articles: articles
+        }
+      })
     }
   },
 })

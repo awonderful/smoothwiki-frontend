@@ -163,6 +163,16 @@ export const getArticles = function (params) {
   return axios.request(config)
 }
 
+export const getTrashArticles = function (params) {
+  const config = {
+    url:    '/api/article-page/trash/get',
+    method: 'GET',
+    params: params
+  }
+
+  return axios.request(config)
+}
+
 export const getArticleHistoryVersions = function (params) {
   const config = {
     url:    '/api/article-page/article/versions',

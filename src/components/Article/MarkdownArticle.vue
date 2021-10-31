@@ -4,8 +4,10 @@
       :isReadOnly   = "article.isReadOnly"
       :isEditing    = "article.isEditing"
       :isFreshNew   = "article.id === 0"
-      :isFullScreen = "article.isFullScreen"
+      :isFullScreen = "isFullScreen"
       :title.sync   = "article.editingTitle"
+      :buttons      = "buttons"
+      :menuItems    = "menuItems"
       @clickButton  = "clickButton"
       @clickMenu    = "clickMenu"
       ref           = "window">

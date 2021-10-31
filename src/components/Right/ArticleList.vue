@@ -24,7 +24,30 @@
         </template>
         <span>{{button.tip}}</span>
       </v-tooltip>
+
       <v-spacer></v-spacer>
+
+      <!--menu-->
+      <v-menu open-on-hover bottom offset-y close-delay="300">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn 
+            small 
+            icon 
+            v-bind="attrs" 
+            v-on="on" 
+            class="button"
+          >
+            <v-icon small>mdi-dots-vertical</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item :key="item.name" v-for="item in menuItems" @click="clickMenu(item)">
+            <v-list-item-icon><v-icon small>{{item.icon}}</v-icon></v-list-item-icon>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
     </v-toolbar>
 
     <div class="flex-grow-1 scroll-area" :style="{'background-color': $state.theme.right.bgColor}">
@@ -67,13 +90,21 @@
         </v-list-item-group>
       </v-list>
     </div>
+
+    <trash-dialog
+      v-model="showTrashDialog"
+      :spaceId="this.spaceId"
+      :nodeId="this.nodeId"
+    />
   </div>
 </template>
 
 <script>
 import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
+import TrashDialog from '../Dialog/TrashDialog.vue'
 
 export default {
+  components: { TrashDialog },
   mixins: [ SpaceRouteParamsHandling ],
   computed: {
     isReadOnly () {
@@ -120,6 +151,13 @@ export default {
       }
 
       return buttons
+    },
+    menuItems () {
+      if (this.category !== 'trash') {
+        return [this.menuItemMap.trash]
+      }
+
+      return []
     }
   },
   data: function() {
@@ -139,6 +177,7 @@ export default {
       },
       selectedUniqIds: [],
       lastSelectedArticle: null,
+      showTrashDialog: false,
 
       buttonMap: {
         copy: {
@@ -165,6 +204,19 @@ export default {
           name: 'incIndent',
           tip: this.$t('articleList.buttons.incIndent'),
           icon: 'mdi-arrow-right'
+        }
+      },
+
+      menuItemMap: {
+        trash: {
+          name:  'trash',
+          title: this.$t('articleList.menus.trash'),
+          icon:  'mdi-trash-can-outline',
+        },
+        exportPdf: {
+          name:  'exportPdf',
+          title: this.$t('articleList.menus.exportPdf'),
+          icon:  'mdi-file-pdf-box',
         }
       }
     }
@@ -357,6 +409,14 @@ export default {
       }
 
       await this.$state.clipboardAction.pasteArticlesTo(this.nodeId, order)
+    },
+    trash() {
+      this.showTrashDialog = true
+    },
+    clickMenu (menu) {
+      if (typeof this[menu.name] === 'function') {
+        this[menu.name]()
+      }
     }
   }
 }

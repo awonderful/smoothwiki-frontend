@@ -158,6 +158,10 @@ export default {
         return false
       }
 
+      if (node.id === 0) {
+        return false
+      }
+
       return true
     },
     viewPage (node) {
