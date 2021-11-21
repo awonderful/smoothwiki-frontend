@@ -1,4 +1,4 @@
-import { SPACE_TYPE, SPACE_MEMBER_ROLE } from '@/common/constants.js'
+import { SPACE_TYPE, SPACE_MEMBER_ROLE, SEARCH_TYPE } from '@/common/constants.js'
 
 export default {
   dict: {
@@ -94,6 +94,25 @@ export default {
     }
   },
 
+  search: {
+    page: {
+      chip: {
+        [SEARCH_TYPE.SPACE_TITLE]: '空间',
+        [SEARCH_TYPE.SPACE_DESC]: '空间',
+        [SEARCH_TYPE.NODE_TITLE]: '结点',
+        [SEARCH_TYPE.ARTICLE_TITLE]: '文章',
+        [SEARCH_TYPE.ARTICLE_BODY]: '文章'
+      }
+    },
+    component: {
+      placeholder: '搜索',
+      dropdown: {
+        thisSpace: '此空间',
+        thisUser: '此用户',
+        wholeSite: '全站'
+      }
+    }
+  },
 
   home: {
     spaceMenu: {
@@ -157,7 +176,7 @@ export default {
   },
 
   left: {
-    search: '搜索'
+    search: '查找树结点'
   },
 
   trashTree: {

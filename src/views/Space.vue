@@ -30,6 +30,7 @@
         <span>{{$t('appBar.leftDrawer')}}</span>
       </v-tooltip>
       <v-spacer></v-spacer>
+      <search></search>
       <viewer></viewer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
@@ -53,6 +54,7 @@ import Left from '@/components/Left/Index.vue'
 import ArticlePage from '@/components/Page/ArticlePage.vue'
 import ArticleList from '@/components/Right/ArticleList.vue'
 import Viewer from '@/components/Top/Viewer.vue'
+import Search from '@/components/Top/Search.vue'
 import GlobalDialogs from '@/components/GlobalDialogs/Index.vue'
 import GeneralErrorHandling from '@/common/generalErrorHandling.js'
 import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
@@ -63,7 +65,8 @@ export default {
     ArticlePage, 
     ArticleList, 
     Viewer, 
-    GlobalDialogs
+    GlobalDialogs,
+    Search
   },
   mixins: [
     GeneralErrorHandling,

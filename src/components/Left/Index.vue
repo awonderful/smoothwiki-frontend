@@ -47,6 +47,13 @@ export default {
     }
   },
   methods: {
+    search() {
+      const keyword = this.keyword.trim()
+      if (keyword.length > 0) {
+        this.$refs.docTree.search(keyword)
+        this.$refs.trashTree.search(keyword)
+      }
+    }
   }
 }
 </script>

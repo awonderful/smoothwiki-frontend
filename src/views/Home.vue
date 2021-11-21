@@ -9,7 +9,8 @@
     >
       <v-container>
         <v-row no-gutters>
-          <v-col cols="12" class="text-right">
+          <v-col cols="12" class="d-flex flex-row justify-end">
+          <search></search>
           <viewer></viewer>
           </v-col>
         </v-row>
@@ -105,12 +106,12 @@
 </template>
 
 <script>
-import SpaceCard from '@/components/Space/SpaceCard.vue'
 import CreateSpaceDialog from '@/components/Space/CreateSpaceDialog.vue'
 import RemoveSpaceDialog from '@/components/Space/RemoveSpaceDialog.vue'
 import SettingSpaceDialog from '@/components/Space/SettingSpaceDialog.vue'
 import GlobalDialogs from '@/components/GlobalDialogs/Index.vue'
 import Viewer from '@/components/Top/Viewer.vue'
+import Search from '@/components/Top/Search.vue'
 import { SPACE_TYPE } from '@/common/constants.js'
 import GeneralErrorHandling from '@/common/generalErrorHandling.js'
 
@@ -120,7 +121,8 @@ export default {
     RemoveSpaceDialog,
     SettingSpaceDialog,
     GlobalDialogs,
-    Viewer
+    Viewer,
+    Search
   },
   mixins: [
     GeneralErrorHandling

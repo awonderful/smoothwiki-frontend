@@ -1,4 +1,4 @@
-import { SPACE_TYPE, SPACE_MEMBER_ROLE } from '@/common/constants.js'
+import { SPACE_TYPE, SPACE_MEMBER_ROLE, SEARCH_TYPE } from '@/common/constants.js'
 
 export default {
   dict: {
@@ -94,6 +94,25 @@ export default {
     }
   },
 
+  search: {
+    page: {
+      chip: {
+        [SEARCH_TYPE.SPACE_TITLE]: 'SPACE',
+        [SEARCH_TYPE.SPACE_DESC]: 'SPACE',
+        [SEARCH_TYPE.NODE_TITLE]: 'NODE',
+        [SEARCH_TYPE.ARTICLE_TITLE]: 'ARTICLE',
+        [SEARCH_TYPE.ARTICLE_BODY]: 'ARTICLE'
+      }
+    },
+    component: {
+      placeholder: 'search',
+      dropdown: {
+        thisSpace: 'in this space',
+        thisUser: 'in this user',
+        wholeSite: 'all site'
+      }
+    }
+  },
 
   home: {
     spaceMenu: {
@@ -157,7 +176,7 @@ export default {
   },
 
   left: {
-    search: 'search'
+    search: 'search in tree'
   },
 
   trashTree: {

@@ -63,7 +63,7 @@ const routes = [
     }
   },
   {
-    path: '/search',
+    path: '/search/:type',
     name: 'search',
     component: Search,
     meta: {
