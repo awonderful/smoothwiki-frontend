@@ -22,7 +22,7 @@ export const SpaceAction = new Vue({
           othersWrite: space.othersWrite
         })
         SpaceState.addSpace({
-          id:          res.data.id,
+          id:          res.data.data.id,
           title:       space.title,
           desc:        space.desc,
           type:        space.type,

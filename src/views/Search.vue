@@ -19,56 +19,58 @@
 
     <v-main>
       <v-container>
-        <v-row v-for="item of items" :key="item.id + '_' + item.searchType">
+        <v-row v-for="item of items" :key="item.objectType + '_' + item.objectId" class="mb-10" justify="center">
+          <v-col cols="12" xl="6">
+            <v-sheet elevation="0" class="d-flex flex-column mb-2">
+                <v-breadcrumbs :items="item.path" class="search-breadcrumbs pa-0">
+                  <template v-slot:divider>
+                    <v-icon>mdi-chevron-right</v-icon>
+                  </template>
+                  <template v-slot:item="{ item }">
+                    <v-breadcrumbs-item
+                      :href="item.href"
+                      target="_blank"
+                      class="search-breadcrumbs-item"
+                    >
+                      {{ item.text }}
+                    </v-breadcrumbs-item>
+                  </template>
+                </v-breadcrumbs>
+
+
+                <a :href="item.url" target="_blank" class="search-title text-h6">
+                  {{ item.objectTitle }}
+                </a>
+
+                <div class="search-conent grey--text">
+                  <template v-if="item.objectType === SEARCH_OBJECT_TYPE.ARTICLE">
+                    {{ item.objectContent }}
+                  </template>
+                  <template v-if="item.objectType === SEARCH_OBJECT_TYPE.SPACE">
+                    {{ item.objectContent }}
+                  </template>
+                  <template v-if="item.objectType === SEARCH_OBJECT_TYPE.TREE_NODE">
+                    <ul>
+                      <li v-for="article of item.articles" :key="'article_' + article.id">
+                        {{ article.title }}
+                      </li>
+                      <li v-for="child of item.children" :key="'node_' + child.id">
+                        {{ child.title}}
+                      </li>
+                    </ul>
+                  </template>
+                </div>
+            </v-sheet>
+            <v-divider></v-divider>
+          </v-col>
+        </v-row>
+        <v-row>
           <v-col cols="12">
-            <v-card elevation="0" outlined>
-              <v-card-title>
-                <v-btn 
-                  class="ma-2"
-                  color="primary"
-                  small
-                  rounded
-                  depressed
-                  target="_blank"
-                  :href="item.spaceUrl"
-                >
-                  {{ item.spaceTitle }}
-                </v-btn>
-                <v-btn 
-                  plain
-                  color="primary"
-                >
-                  {{ item.title }}
-                </v-btn>
-              </v-card-title>
-              <v-divider></v-divider>
-              <v-card-text class="pa-0">
-                <v-row>
-                  <v-col cols="3">
-                    <div class="pa-2">
-                      <TWTree :tree="item.tree">
-                      </TWTree>
-                    </div>
-                  </v-col>
-                  <v-col cols="9">
-                    <div class="content-wrapper pa-2">
-                      <template v-if="Array.isArray(item.articles) && item.articles.length > 0">
-                        <v-list>
-                          <v-list-item :key="article.id" v-for="article of item.articles">
-                            <v-list-item-title>
-                              {{article.title}}
-                            </v-list-item-title>
-                          </v-list-item>
-                        </v-list>
-                      </template>
-                      <template v-else>
-                        {{item.content}}
-                      </template>
-                    </div>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
+            <v-pagination
+              v-model="whichPage"
+              :length="pageCount"
+              :total-visible="10"
+            ></v-pagination> 
           </v-col>
         </v-row>
       </v-container>
@@ -84,49 +86,69 @@ import GlobalDialogs from '@/components/GlobalDialogs/Index.vue'
 import Viewer from '@/components/Top/Viewer.vue'
 import Search from '@/components/Top/Search.vue'
 import GeneralErrorHandling from '@/common/generalErrorHandling.js'
-import { SEARCH_TYPE } from '@/common/constants.js'
+import { SEARCH_OBJECT_TYPE } from '@/common/constants.js'
 import * as API from '@/common/API.js'
-import TWTree from 'twtree'
 
 export default {
   components: {
     GlobalDialogs,
     Viewer,
-    TWTree,
     Search
   },
   mixins: [
     GeneralErrorHandling
   ],
   computed: {
-    type () {
-      return this.$route.params.type
+    range () {
+      return this.$route.params.range
     },
+    whichPage: {
+      get () {
+        return this.$route.query.whichPage
+              ? parseInt(this.$route.query.whichPage)
+              : 1
+      },
+      set (val) {
+        this.$router.push({
+          name: 'search',
+          params: {
+            range: this.range
+          },
+          query: {
+            spaceId: this.$route.query.spaceId,
+            whichPage: val,
+            pageSize: this.pageSize,
+            keyword: this.$route.query.keyword
+          }
+        })
+      }
+    },
+    pageSize () {
+      return this.$route.query.pageSize
+             ? parseInt(this.$route.query.pageSize)
+             : 20
+    }
   },
   data: function() {
     return {
-      items: []
+      pageCount: 0,
+      items: [],
+      SEARCH_OBJECT_TYPE: SEARCH_OBJECT_TYPE
     }
   },
   methods: {
-    search() {
-      switch (this.type) {
-        case 'space':
-          let keyword = this.$route.query.keyword
-          let spaceId = this.$route.query.spaceId
-          this.searchInSpace(spaceId, keyword)
-          break
-      }
-    },
-    async searchInSpace(spaceId, keyword) {
-      const rs = await API.searchInSpace({
-        spaceId: spaceId,
-        keyword: keyword
+    async search() {
+      const rs = await API.search({
+        spaceId: this.$route.query.spaceId,
+        keyword: this.$route.query.keyword,
+        whichPage: this.whichPage,
+        pageSize: 20,
+        range: this.range
       })
+      this.pageCount = rs.data.data.pageCount
       for (const item of rs.data.data.items) {
-        switch (item.searchType) {
-          case SEARCH_TYPE.SPACE_TITLE:
-          case SEARCH_TYPE.SPACE_DESC:
+        switch (item.objectType) {
+          case SEARCH_OBJECT_TYPE.SPACE:
             item.url = this.$router.resolve({
               name: 'space-node',
               params: {
@@ -137,25 +159,24 @@ export default {
             }).href
             break
 
-          case SEARCH_TYPE.NODE_TITLE:
+          case SEARCH_OBJECT_TYPE.TREE_NODE:
             item.url = this.$router.resolve({
               name: 'space-node',
               params: {
                 spaceId: item.spaceId,
                 category: 'doc',
-                nodeId: item.id
+                nodeId: item.objectId
               }
             }).href
             break
 
-          case SEARCH_TYPE.ARTICLE_TITLE:
-          case SEARCH_TYPE.ARTICLE_BODY:
+          case SEARCH_OBJECT_TYPE.ARTICLE:
              item.url = this.$router.resolve({
               name: 'space-node',
               params: {
                 spaceId: item.spaceId,
                 category: 'doc',
-                nodeId: item.belongId
+                nodeId: item.nodeId
               }
             }).href
             break
@@ -174,7 +195,7 @@ export default {
           continue
         }
 
-        /*for (const pathItem of item.path) {
+        for (const pathItem of item.path) {
           const router = this.$router.resolve({
             name: 'space-node',
             params: {
@@ -187,48 +208,17 @@ export default {
           pathItem.href = router.href
           pathItem.target = '_blank'
         }
-
-        item.path[0].text = item.spaceTitle*/
-
-        const root = {};
-        let node = root;
-        for (let i=0; i<item.path.length; i++) {
-          if (i === 0) {
-            Object.assign(node, {
-              id: item.path[i].id,
-              title: item.path[i].title,
-              hasChild: false
-            })
-          } else {
-            node.hasChild = true
-            node.children = [{
-              id: item.path[i].id,
-              title: item.path[i].title,
-              hasChild: false
-            }]
-            node = node.children[0]
-            if (i === item.path.length - 1) {
-              node.__ = {isSearchResult: true}
-            }
-            if (i === item.path.length - 1 && Array.isArray(item.children) && item.children.length > 0) {
-              node.hasChild = true
-              node.children = []
-              for (let j=0; j<item.children.length && j<5; j++) {
-                const child = item.children[j]
-                node.children.push({
-                  id: child.id,
-                  title: child.title,
-                  hasChild: false
-                })
-              }
-            }
-          }
-        }
-
-        item.tree = [root]
+        item.path[0].text = item.spaceTitle
       }
       this.items = rs.data.data.items
-      console.log(this.items)
+    }
+  },
+  watch: {
+    '$route.query': function () {
+      this.search()
+    },
+    '$route.params': function () {
+      this.search()
     }
   },
   mounted () {
@@ -239,21 +229,15 @@ export default {
 
 <style scoped>
 
-.content-wrapper {
-  border-left: 1px solid rgba(0, 0, 0, 0.12);
-  border-right: 0;
-  border-top: 0;
-  border-bottom: 0;
-  height: 100%;
+.search-title {
+  text-decoration: none;
 }
 
-.vertical-divider {
-  border: 0;
-  width: 0;
-  height: calc(100% + 32px);
-  border-left: 1px solid lightgrey;
-  position: relative;
-  top: -16px;
+.search-title:hover {
+  text-decoration: underline;
 }
 
+.search-breadcrumbs >>> .search-breadcrumbs-item:not(:hover) a {
+  color: grey;
+}
 </style>

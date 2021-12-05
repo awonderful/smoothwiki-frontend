@@ -1,4 +1,4 @@
-import { SPACE_TYPE, SPACE_MEMBER_ROLE, SEARCH_TYPE } from '@/common/constants.js'
+import { SPACE_TYPE, SPACE_MEMBER_ROLE, SEARCH_OBJECT_TYPE } from '@/common/constants.js'
 
 export default {
   dict: {
@@ -97,11 +97,9 @@ export default {
   search: {
     page: {
       chip: {
-        [SEARCH_TYPE.SPACE_TITLE]: 'SPACE',
-        [SEARCH_TYPE.SPACE_DESC]: 'SPACE',
-        [SEARCH_TYPE.NODE_TITLE]: 'NODE',
-        [SEARCH_TYPE.ARTICLE_TITLE]: 'ARTICLE',
-        [SEARCH_TYPE.ARTICLE_BODY]: 'ARTICLE'
+        [SEARCH_OBJECT_TYPE.SPACE]: 'SPACE',
+        [SEARCH_OBJECT_TYPE.TREE_NODE]: 'NODE',
+        [SEARCH_OBJECT_TYPE.ARTICLE]: 'ARTICLE'
       }
     },
     component: {

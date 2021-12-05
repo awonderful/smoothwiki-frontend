@@ -37,7 +37,7 @@
       <v-list-item-group
         color="primary"
       >
-        <v-list-item @click="searchInThisSpace()" v-if="this.spaceId > 0">
+        <v-list-item @click="search('space')" v-if="this.spaceId > 0">
 					<v-icon small color="grey" class="mr-2">mdi-magnify</v-icon>
           <v-list-item-title>
 						{{ keyword }}
@@ -56,7 +56,7 @@
 
 				<v-divider></v-divider>
 
-        <v-list-item @click="searchInThisUser()">
+        <v-list-item @click="search('user')">
 					<v-icon small color="grey" class="mr-2">mdi-magnify</v-icon>
           <v-list-item-title>
 						{{ keyword }}
@@ -75,7 +75,7 @@
 
 				<v-divider></v-divider>
 
-        <v-list-item @click="searchInWholeSite()">
+        <v-list-item @click="search('site')">
 					<v-icon small color="grey" class="mr-2">mdi-magnify</v-icon>
           <v-list-item-title>
 						{{ keyword }}
@@ -98,8 +98,6 @@
 </template>
 
 <script>
-import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
-
 export default {
   props: {
 		value: {
@@ -111,9 +109,15 @@ export default {
 			default: '_blank'
 		}
   },
-  mixins: [
-    SpaceRouteParamsHandling
-  ],
+	computed: {
+		spaceId () {
+			if (this.$route.name === 'space-node') {
+				const spaceId = this.$route.params.spaceId
+				return parseInt(spaceId)
+			}
+			return 0
+		}
+	},
   data: function () {
     return {
       keyword: '',
@@ -137,45 +141,26 @@ export default {
 		jumpTo(url) {
 			window.open(url, this.target).focus()
 		},
-		searchInThisSpace() {
-			const url = this.$router.resolve({
+		search(range) {
+			const route = {
 				name: 'search',
 				params: {
-					type: 'space'
+					range: range
 				},
 				query: {
-					spaceId: this.spaceId,
-					keyword: this.keyword
+					keyword:   this.keyword,
+					spaceId:   this.spaceId,
+					whichPage: 1,
+					pageSize:  20,
 				}
-			}).href
-			this.jumpTo(url)
+			}
+			if (this.target === '_blank') {
+				const url = this.$router.resolve(route).href
+				this.jumpTo(url)
+			} else {
+				this.$router.push(route)
+			}
 		},
-		searchInThisUser() {
-			const viewr = this.$state.user.getUserInfo()
-			const url = this.$router.resolve({
-				name: 'search',
-				params: {
-					type: 'user'
-				},
-				query: {
-					uid: viewer.uid,
-					keyword: this.keyword
-				}
-			}).href
-			this.jumpTo(url)
-		},
-		searchWholeSite() {
-			const url = this.$router.resolve({
-				name: 'search',
-				params: {
-					type: 'site'
-				},
-				query: {
-					keyword: this.keyword
-				}
-			}).href
-			this.jumpTo(url)
-		}
   }
 }
 </script>

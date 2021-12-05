@@ -364,9 +364,9 @@ export const removeSpaceMember = function (params) {
   return axios.request(config)
 }
 
-export const searchInSpace = function (params) {
+export const search = function (params) {
   const config = {
-    url:    '/api/search/space',
+    url:    '/api/search',
     method: 'GET',
     params: params
   }
