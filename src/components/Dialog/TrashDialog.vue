@@ -24,7 +24,11 @@
 								:is="articleComponentMap[article.type]"
 								:article="article"
 								:useDefaultMenuItems="false"
+								:extraMenuItems="menuItems"
 							/>
+						</v-col>
+						<v-col v-if="articles.length === 0" class="text-center ma-6">
+							<h1>{{ $t('page.articlePage.trashDialog.empty') }}</h1>
 						</v-col>
 					</v-row>
        </v-container>
@@ -97,10 +101,23 @@ export default {
 			}
 
 			return articles
+		},
+		menuItems() {
+			return [
+				{
+          name:  'copy',
+          title: this.$t('article.menus.copy'),
+          icon:  'mdi-content-copy',
+					action: function (article) {
+						this.$state.clipboard.copyTrashArticle(this.nodeId, article.id)
+					}.bind(this)
+				}
+			]
 		}
 	},
 	watch: {
 		show (val) {
+			console.log(`----show-----${val}------`)
 			if (val === true) {
 				const page = this.$state.page.getPage(this.nodeId)
 

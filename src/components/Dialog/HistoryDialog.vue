@@ -114,7 +114,7 @@ export default {
 
       const article = this.$state.page.getArticle(this.nodeId, this.uniqId)
 
-      if (article !== null && Array.isArray(article.historyVersions)) {
+      if (article && Array.isArray(article.historyVersions)) {
         return article.historyVersions
       }
 

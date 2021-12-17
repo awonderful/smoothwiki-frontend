@@ -116,10 +116,10 @@ export default {
       this.$emit('update:title', this.clonedTitle)
     },
     clickButton (button) {
-      this.$emit('clickButton', button.name)
+      this.$emit('clickButton', button)
     },
     clickMenu (item) {
-      this.$emit('clickMenu', item.name)
+      this.$emit('clickMenu', item)
     }
   }
 }

@@ -257,13 +257,17 @@ export default {
       this.$emit('history', this.article.uniqId)
     },
     clickButton (button) {
-      if (typeof this[button] === 'function') {
-        this[button]()
+      if (typeof button.action === 'function') {
+        button.action(this.article)
+      } else if (typeof this[button.name] === 'function') {
+        this[button.name](this.article)
       }
     },
     clickMenu (menu) {
-      if (typeof this[menu] === 'function') {
-        this[menu]()
+      if (typeof menu.action === 'function') {
+        menu.action(this.article)
+      } else if (typeof this[menu.name] === 'function') {
+        this[menu.name](this.article)
       }
     }
   }

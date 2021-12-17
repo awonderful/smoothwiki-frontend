@@ -21,6 +21,7 @@
             :is="articleComponentMap[article.type]"
             :article="article"
 						:useDefaultMenuItems="false"
+						:extraMenuItems="menuItems"
 						v-if="article !== null && article !== undefined"
           />
        </v-container>
@@ -114,6 +115,18 @@ export default {
 				isReadOnly:      true,
 				isUploading:     false,
 			})
+		},
+		menuItems() {
+			return [
+				{
+          name:  'copy',
+          title: this.$t('article.menus.copy'),
+          icon:  'mdi-content-copy',
+					action: function () {
+						this.$state.clipboard.copyHistoryArticle(this.nodeId, this.uniqId, this.version)
+					}.bind(this)
+				}
+			]
 		}
 	},
 	data: function () {

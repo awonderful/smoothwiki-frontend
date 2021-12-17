@@ -89,7 +89,8 @@ export default {
       outdatedAlert: '当前页面内容有更新！',
       refresh: '刷新',
       trashDialog: {
-        title: '垃圾箱'
+        title: '垃圾箱',
+        empty: '空'
       }
     }
   },

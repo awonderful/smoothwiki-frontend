@@ -89,7 +89,8 @@ export default {
       outdatedAlert: 'this page is outdated!',
       refresh: 'refresh',
       trashDialog: {
-        title: 'trash'
+        title: 'TRASH',
+        empty: 'EMPTY'
       }
     }
   },

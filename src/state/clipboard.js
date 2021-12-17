@@ -60,6 +60,70 @@ export const ClipboardState = new Vue({
 
       this.sendExternalNotification()
     },
+    copyArticle (nodeId, uniqId) {
+      this.copyArticles(nodeId, [uniqId])
+    },
+    copyHistoryArticle (nodeId, uniqId, version) {
+      const article = PageState.getArticle(nodeId, uniqId)
+      const versions = article.historyVersions || []
+      let historyArticle = null
+
+      for (const temp of versions) {
+        if (temp.version === version) {
+          historyArticle = Object.assign({}, temp, {
+            spaceId:        article.spaceId,
+            nodeId:         article.nodeId,
+            uniqId:         article.uniqId,
+            id:             article.id,
+            level:          article.level,
+            type:           article.type,
+            editingTitle:   temp.title,
+            editingBody:    temp.body,
+            editingSearch:  temp.search,
+            isEditing:      false,
+            isUploading:    false,
+            isRequesting:   false
+          })
+        }
+      }
+
+      if (historyArticle !== null) {
+        this.status = CLIPBOARD_STATUS.COPY_ARTICLES,
+        this.src.nodeId = nodeId
+        this.src.uniqIds.splice(0, this.src.uniqIds.length, uniqId)
+        this.src.articles.splice(0, this.src.articles.length, historyArticle)
+
+        this.sendExternalNotification()
+      }
+    },
+    copyTrashArticle (nodeId, articleId) {
+      const page = PageState.getPage(nodeId)
+      const trashArticles = page.trash && page.trash.articles
+                            ? page.trash.articles
+                            : []
+      let article = null
+
+      for (const temp of trashArticles) {
+        if (temp.id === articleId) {
+          article = Object.assign({}, temp, {
+            editingTitle:   temp.title,
+            editingBody:    temp.body,
+            editingSearch:  temp.search,
+            isEditing:      false,
+            isUploading:    false,
+            isRequesting:   false
+          })
+        }
+      }
+
+      if (article !== null) {
+        this.status = CLIPBOARD_STATUS.COPY_ARTICLES,
+        this.src.nodeId = nodeId
+        this.src.uniqIds.splice(0, this.src.uniqIds.length)
+        this.src.articles.splice(0, this.src.articles.length, article)
+        this.sendExternalNotification()
+      }
+    },
     cutArticles (nodeId, uniqIds) {
       const clonedUniqIds = [...uniqIds]
       const articleMap = PageState.getArticleMap(nodeId)

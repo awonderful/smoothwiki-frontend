@@ -42,8 +42,8 @@
 
     <history-dialog
       v-model="historyDialog.isVisible"
-      :spaceId="spaceId"
-      :nodeId="nodeId"
+      :spaceId="historyDialog.spaceId"
+      :nodeId="historyDialog.nodeId"
       :uniqId="historyDialog.uniqId"
     ></history-dialog>
 
@@ -108,6 +108,8 @@ export default {
 
       historyDialog: {
         isVisible: false,
+        spaceId: 0,
+        nodeId: 0,
         uniqId: '',
         articleId: 0,
       }
@@ -181,6 +183,8 @@ export default {
     },
     showArticleHistoryVersions (uniqId) {
       this.historyDialog.uniqId = uniqId
+      this.historyDialog.spaceId = this.spaceId
+      this.historyDialog.nodeId = this.nodeId
       this.historyDialog.isVisible = true
     },
     addFreshArticle(type) {
