@@ -48,6 +48,11 @@ export const PageAction = new Vue({
           articleVersion: article.version
         })
         PageState.removeArticle(nodeId, uniqId)
+        PageState.setPageProps(nodeId, {
+          trash: {
+            pulled: false
+          }
+        })
         PageState.refreshNumbers(nodeId)
       } finally {
         if (PageState.getArticle(nodeId, uniqId) !== undefined) {

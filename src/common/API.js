@@ -283,9 +283,19 @@ export const downloadAttachment = function (params) {
   return axios.request(config)
 }
 
-export const getAttachments = function (params) {
+export const getArticleAttachments = function (params) {
   const config = {
-    url:    '/api/attachment/list',
+    url:    '/api/attachment/list/article',
+    method: 'GET',
+    params: params
+  }
+
+  return axios.request(config)
+}
+
+export const getAttachmentsByIds = function (params) {
+  const config = {
+    url:    '/api/attachment/list/ids',
     method: 'GET',
     params: params
   }

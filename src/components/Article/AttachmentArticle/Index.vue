@@ -40,7 +40,7 @@
             <span class="thumb"><img v-if="attachment.icon !== null" :src="attachment.icon" ></span>
             <span class="filename"><input type="text" v-model="attachment.filename"/></span>
             <span class="time">{{ new Date(attachment.ctime).toLocaleDateString(locale) }}</span>
-            <span class="size">{{ uploadedAttachmentMap.hasOwnProperty(attachment.id) ? humanFileSize(uploadedAttachmentMap[attachment.id].size) : ''}}</span>
+            <span class="size">{{ attachmentMap.hasOwnProperty(attachment.id) ? humanFileSize(attachmentMap[attachment.id].size) : ''}}</span>
             <span class="operate">
               <v-btn icon dense small @click="removeAttachment(attachment.id)"><v-icon small>mdi-delete-outline</v-icon></v-btn>
             </span>
@@ -134,10 +134,10 @@ export default {
       const items = this.editingBody.items
 
       for (const item of items) {
-        if (this.uploadedAttachmentMap[item.id] !== undefined) {
-          item.extension = this.uploadedAttachmentMap[item.id].extension
-          item.size = this.uploadedAttachmentMap[item.id].size
-          item.ctime = this.uploadedAttachmentMap[item.id].ctime
+        if (this.attachmentMap[item.id] !== undefined) {
+          item.extension = this.attachmentMap[item.id].extension
+          item.size = this.attachmentMap[item.id].size
+          item.ctime = this.attachmentMap[item.id].ctime
         }
 
         item.icon = this.getAttachmentIcon(item)
@@ -163,6 +163,8 @@ export default {
       uploadChunkUrl: `${API_BASE_URL}/api/attachment/upload/chunk`,
       editingBody: {items:[]},
       uploadedAttachmentMap: {},
+      otherAttachmentMap: {},
+      attachmentMap: {},
       inputId: 'input_' + this.article.uniqId,
       uploadingFiles: [],
 
@@ -255,14 +257,14 @@ export default {
             await this.refresh()
             await this.save()
             this.$refs.uploader.clear()
-            await this.getUploadedAttachmentMap()
+            await this.getAttachmentMap()
             await this.refresh()
           }.bind(this))()
         }
       }
     },
     async getUploadedAttachmentMap() {
-      const res = await API.getAttachments({
+      const res = await API.getArticleAttachments({
         spaceId:   this.article.spaceId,
         nodeId:    this.article.nodeId,
         articleId: this.article.id
@@ -274,6 +276,40 @@ export default {
         map[attachment.id] = attachment
       }
       this.uploadedAttachmentMap = map
+    },
+    async getOtherAttachmentMap() {
+      const attachmentIds = []
+      for (const item of this.items) {
+        if (!this.uploadedAttachmentMap.hasOwnProperty(item.id)) {
+          attachmentIds.push(item.id);
+        }
+      }
+
+      if (attachmentIds.length > 0) {
+        const res = await API.getAttachmentsByIds({
+          spaceId:   this.article.spaceId,
+          attachmentIds: attachmentIds.join(',')
+        })
+        const attachments = res.data.data.attachments
+        const map = {}
+        for (const attachment of attachments) {
+          map[attachment.id] = attachment
+        }
+        this.otherAttachmentMap = map
+      }
+    },
+    async getAttachmentMap() {
+      await this.getUploadedAttachmentMap()
+      await this.getOtherAttachmentMap()
+
+      const map = {}
+      for (const id in this.uploadedAttachmentMap) {
+        map[id] = this.uploadedAttachmentMap[id]
+      }
+      for (const id in this.otherAttachmentMap) {
+        map[id] = this.otherAttachmentMap[id]
+      }
+      this.attachmentMap = map
     },
     removeAttachment(attachmentId) {
       for (let i=0; i<this.editingBody.items.length; i++) {
@@ -293,10 +329,10 @@ export default {
     }
   },
   mounted() {
-    if (this.article.id === 0) {
+    if (this.article.id === 0 && this.items.length === 0) {
       this.save()
     } else {
-      this.getUploadedAttachmentMap()
+      this.getAttachmentMap()
     }
   }
 }

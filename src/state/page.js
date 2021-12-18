@@ -75,7 +75,7 @@ export const PageState = new Vue({
       const articleMap = this.getArticleMap(nodeId)
 
       if (!articleMap.hasOwnProperty(uniqId)) {
-        console.log(`article doesn't exist! (nodeId=${nodeId}, uniqId={$uniqId})`)
+        console.log(`article doesn't exist! (nodeId=${nodeId}, uniqId=${uniqId})`)
       }
 
       return articleMap[uniqId]
