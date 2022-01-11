@@ -1,7 +1,7 @@
-export const API_BASE_URL = 'http://www.smoothwiki.com'
+export const API_BASE_URL = ''
 
-export const ATTACHMENT_DOWNLOAD_URL = 'http://www.smoothwiki.com/api/attachment/download?forceDownload=1&attachmentId='
-export const ATTACHMENT_SHOW_URL = 'http://www.smoothwiki.com/api/attachment/download?attachmentId='
+export const ATTACHMENT_DOWNLOAD_URL = '/api/attachment/download?forceDownload=1&attachmentId='
+export const ATTACHMENT_SHOW_URL = '/api/attachment/download?attachmentId='
 
 export const DEFAULT_LOCALE = 'zh_CN'
 
