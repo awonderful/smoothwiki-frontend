@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" width="auto" max-width="40em">
+  <v-dialog v-model="show" max-width="40em">
     <v-card>
 
       <v-toolbar

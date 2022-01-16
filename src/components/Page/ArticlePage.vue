@@ -15,9 +15,8 @@
     <v-container fluid v-if="page !== undefined">
       <v-row class="mx-2 flex-column flex-nowrap">
         <v-col class="pa-2 mt-5" cols="12" :style="{order: article.order}" :key="article.uniqId" v-for="article of articleMap">
-          <component
+          <Article
             :ref="'article-' + article.uniqId"
-            :is="articleComponentMap[article.type]"
             :article="article"
             @save="saveArticle"
             @remove="removeArticle"
@@ -69,23 +68,15 @@
 </template>
 
 <script>
-import { API_CODE, ARTICLE_COMPONENT_MAP, ARTICLE_TYPE, PAGE_VERSION_CHECKING_INTERVAL } from '@/common/constants.js'
+import { API_CODE, ARTICLE_TYPE, PAGE_VERSION_CHECKING_INTERVAL } from '@/common/constants.js'
 import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
-import MarkdownArticle from '@/components/Article/MarkdownArticle.vue'
-import RichTextArticle from '@/components/Article/RichTextArticle.vue'
-import AttachmentArticle from '@/components/Article/AttachmentArticle/Index.vue'
-import MindArticle from '@/components/Article/MindArticle.vue'
-import PdfArticle from '@/components/Article/PdfArticle.vue'
+import Article from '@/components/Article/Index.vue';
 import HistoryDialog from '@/components/Dialog/HistoryDialog.vue'
 import * as API from '@/common/API.js'
 
 export default {
   components: {
-    MarkdownArticle,
-    RichTextArticle,
-    AttachmentArticle,
-    MindArticle,
-    PdfArticle,
+    Article,
     HistoryDialog
   },
   mixins: [
@@ -93,7 +84,6 @@ export default {
   ],
   data: function () {
     return {
-      articleComponentMap: ARTICLE_COMPONENT_MAP,
       articleType: ARTICLE_TYPE,
 
       contextmenu: {

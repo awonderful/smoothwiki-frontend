@@ -17,8 +17,7 @@
 
       <v-card-text>
        <v-container>
-          <component
-            :is="articleComponentMap[article.type]"
+          <Article
             :article="article"
 						:useDefaultMenuItems="false"
 						:extraMenuItems="menuItems"
@@ -32,21 +31,12 @@
 </template>
 
 <script>
-import { ARTICLE_COMPONENT_MAP } from '@/common/constants.js'
-import MarkdownArticle from '@/components/Article/MarkdownArticle.vue'
-import RichTextArticle from '@/components/Article/RichTextArticle.vue'
-import AttachmentArticle from '@/components/Article/AttachmentArticle/Index.vue'
-import MindArticle from '@/components/Article/MindArticle.vue'
-import PdfArticle from '@/components/Article/PdfArticle.vue'
+import Article from '@/components/Article/Index.vue'
 
 export default {
 	name: 'article-dialog',
 	components: {
-		MarkdownArticle,
-		RichTextArticle,
-		AttachmentArticle,
-		MindArticle,
-		PdfArticle,
+		Article
 	},
 	props: {
     value: {
@@ -131,8 +121,7 @@ export default {
 	},
 	data: function () {
 		return {
-			isRequesting: false,
-			articleComponentMap: ARTICLE_COMPONENT_MAP,
+			isRequesting: false
 		}
 	},
 	methods: {
