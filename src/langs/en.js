@@ -4,7 +4,7 @@ export default {
   dict: {
     spaceTypeName: {
       [SPACE_TYPE.PERSON]:  'Personal Space',
-      [SPACE_TYPE.GROUP]:   'Group Space',
+      [SPACE_TYPE.GROUP]:   'Team Space',
       [SPACE_TYPE.PROJECT]: 'Poject Space'
     },
     spaceMemberRoleName: {
