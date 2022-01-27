@@ -22,7 +22,8 @@ export default {
     leftDrawer: 'show/hide left drawer',
     rightDrawer: 'show/hide right drawer',
     search: 'search',
-    languages: 'Languages'
+    languages: 'Languages',
+    home: 'home'
   },
   article: {
     buttonTips: {

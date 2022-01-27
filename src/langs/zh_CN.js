@@ -22,7 +22,8 @@ export default {
     leftDrawer: '显示/隐藏左侧边栏',
     rightDrawer: '显示/隐藏右侧边栏',
     search: '搜索',
-    languages: '语言'
+    languages: '语言',
+    home: '主页'
   },
   article: {
     buttonTips: {

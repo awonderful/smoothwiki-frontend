@@ -29,6 +29,14 @@
         </template>
         <span>{{$t('appBar.leftDrawer')}}</span>
       </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn icon v-bind="attrs" v-on="on" :href="homeUrl" target="_blank">
+            <v-icon>mdi-home</v-icon>
+          </v-btn>
+        </template>
+        <span>{{$t('appBar.home')}}</span>
+      </v-tooltip>
       <v-spacer></v-spacer>
       <search></search>
       <viewer></viewer>
@@ -76,7 +84,14 @@ export default {
     return {
       left: null,
       right: null,
+      homeUrl: null,
     }
+  },
+  mounted () {
+    this.homeUrl = this.$router.resolve({
+      name: 'home',
+      params: {}
+    }).href
   }
 }
 </script>
