@@ -6,10 +6,12 @@ import vuetify from './plugins/vuetify'
 import VueI18n from 'vue-i18n'
 import messages from './langs/messages.js'
 import Locale from './common/locale.js'
+import VueCookies from 'vue-cookies'
 // Vue.config.productionTip = false
 
 Vue.use(VueI18n)
 Vue.use(state)
+Vue.use(VueCookies)
 
 const i18n = new VueI18n({
   locale: 'zh_CN',

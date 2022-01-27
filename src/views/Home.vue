@@ -187,7 +187,7 @@ export default {
 .space-card {
   display: flex;
   flex-direction: column;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
   box-sizing: border-box;
 }

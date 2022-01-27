@@ -219,6 +219,12 @@ export default {
       return humanFileSize(bytes, true, 1)
     },
     upload() {
+      this.$refs.uploader.headers = Object.assign(
+        this.$refs.uploader.headers,
+        {
+          'X-XSRF-TOKEN': this.$cookies.get('XSRF-TOKEN')
+        }
+      )
       const input = document.getElementById(this.inputId)
       input.focus()
       input.click()
