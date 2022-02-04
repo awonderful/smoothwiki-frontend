@@ -26,6 +26,10 @@ export const UserState = new Vue({
     },
     getUserStatus () {
       return this.status
+    },
+    clear () {
+      this.status = USER_STATUS.NONE
+      this.user = null
     }
   }
 })

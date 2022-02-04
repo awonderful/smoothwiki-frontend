@@ -224,6 +224,9 @@ export const PageState = new Vue({
       for(const uniqId in articleMap) {
         delete articleMap[uniqId]
       }
+    },
+    clear() {
+      this.pageMap = {}
     }
   }
 })

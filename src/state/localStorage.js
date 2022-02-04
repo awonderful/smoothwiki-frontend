@@ -44,11 +44,13 @@ export const LocalStorage = new Vue({
         }
         this.$set(this.data, key, val)
       }
+    },
+    clear() {
+      window.localStorage.clear()
     }
   },
   created() {
     window.addEventListener("storage", function () {
-      console.log('---window-event-storage--')
       this.loadDataFromLocalStorage()
     }.bind(this))
 

@@ -36,10 +36,10 @@
 											<th class="text-left">
 												{{ $t('article.historyDialog.table.author') }}
 											</th>
-											<th class="text-left">
+											<th class="text-center">
 												{{ $t('article.historyDialog.table.stime') }}
 											</th>
-											<th class="text-left">
+											<th class="text-center">
 												{{ $t('article.historyDialog.table.view') }}
 											</th>
 										</tr>
@@ -51,8 +51,8 @@
 										>
 											<td class="text-left">{{ item.version}}</td>
 											<td class="text-left">{{ item.authorName}}</td>
-											<td class="text-left">{{ item.stime}}</td>
-											<td class="text-left">
+											<td class="text-center">{{ item.stime}}</td>
+											<td class="text-center">
                         <v-btn
                           text
                           color="primary"

@@ -2,6 +2,7 @@ export const API_BASE_URL = ''
 
 export const ATTACHMENT_DOWNLOAD_URL = '/api/attachment/download?forceDownload=1&attachmentId='
 export const ATTACHMENT_SHOW_URL = '/api/attachment/download?attachmentId='
+export const ATTACHMENT_THUMB_100_URL = '/api/attachment/thumbnail?maxWidth=100&maxHeight=100&attachmentId='
 
 export const DEFAULT_LOCALE = 'zh_CN'
 

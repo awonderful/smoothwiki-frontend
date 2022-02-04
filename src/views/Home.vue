@@ -9,9 +9,9 @@
     >
       <v-container>
         <v-row no-gutters>
-          <v-col cols="12" class="d-flex flex-row justify-end">
-          <search></search>
-          <viewer></viewer>
+          <v-col cols="12" class="d-flex flex-row justify-end align-center">
+            <search></search>
+            <viewer></viewer>
           </v-col>
         </v-row>
       </v-container>
@@ -28,8 +28,10 @@
             <v-col 
               :key="space.id" 
               v-for="space of spaces"
-              cols="4"
-              xs="12"
+              cols="6"
+              sm="4"
+              md="3"
+              lg="2"
               xl="1"
             >
               <v-sheet elevation="0" class="card space-card">
@@ -76,8 +78,10 @@
             </v-col>
             <v-col 
               v-if="(parseInt(type) !== spaceTypeDict.PERSON) || spaces.length === 0"
-              cols="4"
-              xs="12"
+              cols="6"
+              sm="4"
+              md="3"
+              lg="2"
               xl="1"
             >
               <v-card elevation="0" class="card create-card" @click="create(parseInt(type))">

@@ -383,3 +383,13 @@ export const search = function (params) {
 
   return axios.request(config)
 }
+
+export const getSystemInfo = function (params) {
+  const config = {
+    url:    '/api/system/info',
+    method: 'GET',
+    params: params
+  }
+
+  return axios.request(config)
+}

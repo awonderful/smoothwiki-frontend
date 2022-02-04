@@ -24,17 +24,11 @@
         </v-col>
       </v-row>
       <v-row v-if="page.isReadOnly === false" justify="center" class="mt-5 mb-3" @contextmenu.stop="doNothing()">
-        <v-col cols="2">
-          <v-btn color="primary" @click="addFreshArticle(articleType.MARKDOWN)">{{ $t('page.articlePage.buttons.markdown') }}</v-btn>
-        </v-col>
-        <v-col cols="2">
-          <v-btn color="primary" @click="addFreshArticle(articleType.RICHTEXT)">{{ $t('page.articlePage.buttons.richText') }}</v-btn>
-        </v-col>
-        <v-col cols="2">
-          <v-btn color="primary" @click="addFreshArticle(articleType.MIND)">{{ $t('page.articlePage.buttons.mind') }}</v-btn>
-        </v-col>
-        <v-col cols="2">
-          <v-btn color="primary" @click="addFreshArticle(articleType.ATTACHMENT)">{{ $t('page.articlePage.buttons.attachment') }}</v-btn>
+        <v-col cols="12" class="d-flex flex-row justify-center">
+          <v-btn color="primary" @click="addFreshArticle(articleType.MARKDOWN)"   class="mx-3">{{ $t('page.articlePage.buttons.markdown') }}</v-btn>
+          <v-btn color="primary" @click="addFreshArticle(articleType.RICHTEXT)"   class="mx-3">{{ $t('page.articlePage.buttons.richText') }}</v-btn>
+          <v-btn color="primary" @click="addFreshArticle(articleType.MIND)"       class="mx-3">{{ $t('page.articlePage.buttons.mind') }}</v-btn>
+          <v-btn color="primary" @click="addFreshArticle(articleType.ATTACHMENT)" class="mx-3">{{ $t('page.articlePage.buttons.attachment') }}</v-btn>
         </v-col>
       </v-row>
     </v-container>

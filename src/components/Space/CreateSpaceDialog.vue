@@ -25,7 +25,7 @@
         <v-container>
           <v-row>
             <v-col cols="12">
-              <v-text-field :label="$t('home.createSpaceDialog.fields.title')" v-model="title"/>
+              <v-text-field :label="$t('home.createSpaceDialog.fields.title')" v-model="title" :disabled="type === SPACE_TYPE.PERSON"/>
             </v-col>
           </v-row>
 
@@ -93,11 +93,25 @@
         othersWrite: false,
 
         isRequesting: false,
+
+        SPACE_TYPE: SPACE_TYPE
+      }
+    },
+    watch: {
+      show: function (val) {
+        if (this.type === SPACE_TYPE.PERSON && val === true) {
+          const viewer = this.$state.user.getUserInfo()
+          this.title = viewer.name;
+        }
       }
     },
     methods: {
       close () {
         this.show = false
+        this.title = ''
+        this.desc  = ''
+        this.othersRead = true
+        this.othersWrite = false
       },
       showAlert (message) {
         this.alertMessage = message
@@ -121,10 +135,6 @@
                          : 0
           })
           this.close()
-          this.title = ''
-          this.desc  = ''
-          //this.othersRead = true
-          //this.othersWrite = false
         } finally {
           this.isRequesting = false
         }

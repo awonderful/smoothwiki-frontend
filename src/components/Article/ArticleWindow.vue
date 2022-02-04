@@ -7,14 +7,14 @@
       <!--title-->
       <input 
         type="text" 
-        class="title-input text-h5 flex-grow-1 font-weight-medium" 
+        class="title-input text-h5 flex-grow-1 flex-shrink-1 font-weight-medium" 
         v-model="clonedTitle" 
         @input="updateTitle" 
         :readonly="!isEditing"
       />
 
       <!--buttons-->
-      <div>
+      <div class="flex-grow-0 flex-shrink-0">
         <v-tooltip
           :key="button.name + (isEditing? '-editing': '')"
           v-for="button of buttons"
@@ -155,6 +155,7 @@ export default {
   .title-input {
     outline: 0;
     border: 0;
+    min-width: 0;
   }
   .button {
     visibility: hidden;

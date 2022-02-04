@@ -43,6 +43,9 @@ export const SpaceState = new Vue({
           space.members.splice(i, 1)
         }
       }
+    },
+    clear () {
+      this.spaceMap = {}
     }
   }
 })

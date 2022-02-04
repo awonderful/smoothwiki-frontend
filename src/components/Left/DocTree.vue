@@ -4,18 +4,18 @@
     class="tree"
     :tree="treeData"
     :dropToMove="false"
-    :fnBeforeContextMenu="beforeContextMenu"
-    :autoHideContextMenu="false"
     :default-attrs="{
       directoryState: 'collapsed',
       style:{
         fontSize: '12px',
         height: '2.1em',
         titleMaxWidth: '-5%', 
-        titleOverflow: 'ellipsis'
+        titleOverflow: 'ellipsis',
+        extraFloatRight: true,
     }}"
     :fnBeforeSelect="beforeSelect"
-    @select="viewPage"
+    @select="select"
+    @deselect="deselect"
     @blur="inputBlur"
     @drop="drop"
     v-if="treeData.length > 0"
@@ -26,43 +26,16 @@
       <v-icon small color="teal" v-else-if="node.hasChild === true && node.directoryState === 'expanded'">mdi-folder-open</v-icon>
       <v-icon small color="teal" v-else>mdi-file-document</v-icon>
     </template>
-    <template v-slot:contextmenu="{node}">
-      <v-menu
-        v-model="contextMenu.show" 
-        elevation="2" 
-        class="contextmenu"
-        fixed
-        :position-x="contextMenu.clientX" 
-        :position-y="contextMenu.clientY">
-        <v-list dense>
-          <v-list-item-group v-model="selectedItem">
-            <v-list-item class="menu-item" @click.prevent="clickContextMenu('create', node)">
-              <v-list-item-icon class="mr-2">
-                <v-icon small>mdi-plus</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title class="text-left font-weight-regular pr-2">{{ $t('docTree.contextMenu.create') }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item class="menu-item" @click="clickContextMenu('rename', node)">
-              <v-list-item-icon class="mr-2">
-                <v-icon small>mdi-pencil</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title class="text-left font-weight-regular pr-2">{{ $t('docTree.contextMenu.rename') }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item class="menu-item" @click="clickContextMenu('remove', node)" v-if="node.__.depth > 1">
-              <v-list-item-icon class="mr-2">
-                <v-icon small>mdi-trash-can-outline</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title class="text-left font-weight-regular pr-2">{{ $t('docTree.contextMenu.remove') }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-item-group>
-        </v-list>
-      </v-menu>
+    <template v-slot:extra="{node}">
+      <v-btn icon x-small class="mr-1" @click="doAction('rename', node)" v-if="node.__.gpos > 0">
+        <v-icon small>mdi-pencil</v-icon>
+      </v-btn>
+      <v-btn icon x-small class="mr-1" @click="doAction('remove', node)" v-if="node.__.gpos > 0">
+        <v-icon small>mdi-trash-can-outline</v-icon>
+      </v-btn>
+      <v-btn icon x-small class="mr-2" @click="doAction('create', node)">
+        <v-icon small>mdi-plus-outline</v-icon>
+      </v-btn>
     </template>
   </TWTree>
 </template>
@@ -166,12 +139,6 @@ export default {
 
       freshIdCounter: 0,
 
-      contextMenu: {
-        pageX: 0,
-        pageY: 0,
-        show: true
-      },
-
       treeVersionCheckingInterval: null
     }
   },
@@ -182,16 +149,7 @@ export default {
       this.freshIdCounter += 1
       return `fresh_new_${this.freshIdCounter}`
     },
-    beforeContextMenu(node, event) {
-      this.contextMenu.pageX = event.pageX
-      this.contextMenu.pageY = event.pageY
-      this.contextMenu.clientX = event.clientX
-      this.contextMenu.clientY = event.clientY
-      if (!this.contextMenu.show) {
-        this.contextMenu.show = true
-      }
-    },
-    async clickContextMenu (action, node) {
+    async doAction (action, node) {
       switch (action) {
         case 'create': {
           const freshId = this.generateFreshId()
@@ -354,6 +312,15 @@ export default {
       }
 
       return true
+    },
+    select (node) {
+      if (this.$state.system.isTouchDevice) {
+        this.$refs.tree.setAttr(node, 'style', 'extraAlwaysVisible', true)
+      }
+      this.viewPage(node)
+    },
+    deselect (node) {
+      this.$refs.tree.setAttr(node, 'style', 'extraAlwaysVisible', false)
     },
     viewPage (node) {
       if (this.nodeId !== node.id) {

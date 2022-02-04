@@ -19,6 +19,7 @@
         startBody:  postData,
         uploadBody: postData,
         finishBody: postData,
+        xsrfTokenFunc: getXsrfToken,
         handler: ChunkUploadHandler,
       }"
       ref           = "uploader">
@@ -35,43 +36,45 @@
       @clickMenu    = "clickMenu"
       ref           = "window">
       <template v-slot:editor>
-        <ul class="attachments">
-          <li class="item" :key="attachment.id" v-for="attachment of editingBody.items">
-            <span class="thumb"><img v-if="attachment.icon !== null" :src="attachment.icon" ></span>
-            <span class="filename"><input type="text" v-model="attachment.filename"/></span>
-            <span class="time">{{ new Date(attachment.ctime).toLocaleDateString(locale) }}</span>
-            <span class="size">{{ attachmentMap.hasOwnProperty(attachment.id) ? humanFileSize(attachmentMap[attachment.id].size) : ''}}</span>
-            <span class="operate">
+        <v-simple-table class="attachments">
+          <tr class="item" :key="attachment.id" v-for="attachment of editingBody.items">
+            <td class="thumb"><img v-if="attachment.icon !== null" :src="attachment.icon" ></td>
+            <td class="filename"><input type="text" v-model="attachment.filename"/></td>
+            <td class="time">{{ new Date(attachment.ctime).toLocaleDateString(locale) }}</td>
+            <td class="size">{{ attachmentMap.hasOwnProperty(attachment.id) ? humanFileSize(attachmentMap[attachment.id].size) : ''}}</td>
+            <td class="operate">
               <v-btn icon dense small @click="removeAttachment(attachment.id)"><v-icon small>mdi-delete-outline</v-icon></v-btn>
-            </span>
-          </li>
-        </ul>
+            </td>
+          </tr>
+        </v-simple-table>
       </template>
       <template v-slot:view>
-        <ul class="attachments">
-          <li class="item" :key="attachment.id" v-for="attachment of items">
-            <span class="thumb">
-              <img v-if="attachment.icon !== null" :src="attachment.icon" >
-            </span>
-            <span class="filename">{{attachment.filename}}</span>
-            <span class="time">{{ new Date(attachment.ctime).toLocaleDateString(locale) }}</span>
-            <span class="size">{{ humanFileSize(attachment.size) }}</span>
-            <span class="operate">
-              <a :href="ATTACHMENT_DOWNLOAD_URL + attachment.id">
-                <v-btn icon dense small><v-icon small>mdi-download</v-icon></v-btn>
-              </a>
-            </span>
-          </li>
-          <li class="item" :key="file.id" v-for="file of uploadingFiles">
-            <div class="progress" :style="{width: file.progress + '%'}">
-            </div>
-            <span class="thumb"> <img v-if="file.thumb" :src="file.thumb" /></span>
-            <span class="filename">{{file.name}}</span>
-            <span class="status"></span>
-            <span class="size">{{humanFileSize(file.size)}}</span>
-            <span class="operate"><v-btn icon dense small><v-icon small>mdi-pause</v-icon></v-btn></span>
-          </li>
-        </ul>
+        <v-simple-table class="attachments">
+          <template v-slot:default>
+            <tr class="item" :key="attachment.id" v-for="attachment of items">
+              <td class="thumb">
+                <img v-if="attachment.icon !== null" :src="attachment.icon" >
+              </td>
+              <td class="filename">{{attachment.filename}}</td>
+              <td class="time">{{ new Date(attachment.ctime).toLocaleDateString(locale) }}</td>
+              <td class="size">{{ humanFileSize(attachment.size) }}</td>
+              <td class="operate">
+                <a :href="ATTACHMENT_DOWNLOAD_URL + attachment.id">
+                  <v-btn icon dense small><v-icon small>mdi-download</v-icon></v-btn>
+                </a>
+              </td>
+            </tr>
+            <tr class="item" :key="file.id" v-for="file of uploadingFiles">
+              <div class="progress" :style="{width: file.progress + '%'}">
+              </div>
+              <td class="thumb"> <img v-if="file.thumb" :src="file.thumb" /></td>
+              <td class="filename">{{file.name}}</td>
+              <td class="status"></td>
+              <td class="size">{{humanFileSize(file.size)}}</td>
+              <td class="operate"><v-btn icon dense small><v-icon small>mdi-pause</v-icon></v-btn></td>
+            </tr>
+          </template>
+        </v-simple-table>
       </template>
     </article-window>
   </div>
@@ -83,7 +86,7 @@ import ArticleWindow from '@/components/Article/ArticleWindow'
 import ChunkUploadHandler from './ChunkUploadHandler'
 import FileUpload from 'vue-upload-component'
 import { humanFileSize, isImageExtension } from '@/common/util.js'
-import { API_BASE_URL, ATTACHMENT_DOWNLOAD_URL, ATTACHMENT_SHOW_URL } from '@/common/constants.js'
+import { API_BASE_URL, ATTACHMENT_DOWNLOAD_URL, ATTACHMENT_SHOW_URL, ATTACHMENT_THUMB_100_URL } from '@/common/constants.js'
 import * as API from '@/common/API.js'
 
 export default {
@@ -170,7 +173,8 @@ export default {
 
       ChunkUploadHandler: ChunkUploadHandler,
       ATTACHMENT_DOWNLOAD_URL: ATTACHMENT_DOWNLOAD_URL,
-      ATTACHMENT_SHOW_URL: ATTACHMENT_SHOW_URL
+      ATTACHMENT_SHOW_URL: ATTACHMENT_SHOW_URL,
+      ATTACHMENT_THUMB_100_URL: ATTACHMENT_THUMB_100_URL,
     }
   },
   methods: {
@@ -222,7 +226,7 @@ export default {
       this.$refs.uploader.headers = Object.assign(
         this.$refs.uploader.headers,
         {
-          'X-XSRF-TOKEN': this.$cookies.get('XSRF-TOKEN')
+          'X-XSRF-TOKEN': this.getXsrfToken()
         }
       )
       const input = document.getElementById(this.inputId)
@@ -327,11 +331,16 @@ export default {
       }
     },
     getAttachmentIcon(attachment) {
-      if (isImageExtension(attachment.extension) && attachment.size < 2 * 1024 * 1024) {
-        return this.ATTACHMENT_SHOW_URL + attachment.id
+      if (isImageExtension(attachment.extension)) {
+        return attachment.size < 1 * 1024 * 1024
+          ? this.ATTACHMENT_SHOW_URL + attachment.id
+          : this.ATTACHMENT_THUMB_100_URL + attachment.id
       }
 
       return null
+    },
+    getXsrfToken() {
+      return this.$cookies.get('XSRF-TOKEN');
     }
   },
   mounted() {
@@ -377,12 +386,6 @@ export default {
   }
   .attachments .item {
     position: relative;
-    border-bottom: 1px solid lightgray;
-    list-style: none;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
     min-height: 2em;
   }
   .attachments .item:nth-child(odd) {
@@ -399,14 +402,14 @@ export default {
     z-index: 0;
     background-color: #bae7ff;
   }
-  .attachments span {
+  .attachments td {
     padding: 0.2em;
     text-align: left;
-    flex-grow: 0;
     z-index: 1;
+    border-bottom: 1px solid lightgray;
   }
   .attachments .thumb {
-    width: 7em;
+    width: 5em;
   }
   .attachments .thumb img {
     width: auto;
@@ -416,7 +419,6 @@ export default {
   }
   .attachments .filename {
     padding-left: 1em;
-    flex-grow: 1;
   }
   .attachments .filename input {
     border: 2px solid #c4c7ce;
@@ -431,14 +433,15 @@ export default {
     border-color: #009688;
   }
   .attachments .time {
-    width: 20em;
+    width: 8em;
     color: gray;
   }
   .attachments .size {
-    width: 10em;
+    width: 7em;
   }
   .attachments .operate {
-    width: 10em;
+    width: 5em;
+    text-align: center;
   }
   .attachments .operate a {
     text-decoration: none;

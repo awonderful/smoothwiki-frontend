@@ -26,6 +26,9 @@ export const TreeState = new Vue({
     },
     setTreeProps(spaceId, category, props) {
       Object.assign(this.treeMap[spaceId][category], props)
+    },
+    clear() {
+      this.treeMap = {}
     }
   }
 })

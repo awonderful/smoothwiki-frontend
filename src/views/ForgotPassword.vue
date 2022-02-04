@@ -4,7 +4,7 @@
     <v-main>
       <v-container fill-height>
         <v-row justify="center" align="center" no-gutters>
-          <v-col cols="8" xl="3">
+          <v-col xl="3" lg="5" md="6" sm="8" cols="12">
             <v-card
               color="white"
               rounded
@@ -129,7 +129,8 @@ export default {
 
 <style scoped>
   .logo {
-    height: 2em;
+    max-width: 100%;
+    max-height: 2em;
   }
   .language-selector-wrapper {
     position: absolute;

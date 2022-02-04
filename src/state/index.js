@@ -10,6 +10,8 @@ import { TreeAction } from './treeAction.js'
 import { UserState } from './user.js'
 import { UserAction } from './userAction.js'
 import { ThemeState } from './theme.js'
+import { SystemState } from './system.js'
+import { SystemAction } from './systemAction.js'
 import { Notify } from './notify.js'
 import { LocalStorage } from './localStorage.js'
 
@@ -27,9 +29,19 @@ export const state = {
       spaceAction:     SpaceAction,
       clipboard:       ClipboardState,
       clipboardAction: ClipboardAction,
+      system:          SystemState,
+      systemAction:    SystemAction,
       globalDialogs:   GlobalDialogState,
       notify:          Notify,
-      LocalStorage:    LocalStorage
+      localStorage:    LocalStorage,
+      clear:           function () {
+        UserState.clear()
+        TreeState.clear()
+        PageState.clear()
+        SpaceState.clear()
+        ClipboardState.clear()
+        LocalStorage.clear()
+      }
     }
   }
 }

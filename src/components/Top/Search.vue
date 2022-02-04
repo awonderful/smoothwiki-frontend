@@ -32,7 +32,8 @@
 		</template>
 
     <v-list 
-			dense 
+			dense
+			class="menu" 
 		>
       <v-list-item-group
         color="primary"
@@ -177,5 +178,8 @@ export default {
 	}
 	.input >>> .v-input__append-inner {
 		margin-top: 5px !important;
+	}
+	.menu {
+		max-width: 100vw;
 	}
 </style>

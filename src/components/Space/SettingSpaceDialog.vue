@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" scrollable max-width="600px" class="dialog">
+  <v-dialog v-model="show" max-width="600px" class="dialog">
     <v-card>
 
       <v-toolbar
@@ -37,7 +37,7 @@
             <v-container>
               <v-row>
                 <v-col cols="12">
-                  <v-text-field :label="$t('home.settingSpaceDialog.info.fields.title')" v-model="info.title"/>
+                  <v-text-field :label="$t('home.settingSpaceDialog.info.fields.title')" v-model="info.title" :disabled="space.type === SPACE_TYPE.PERSON"/>
                 </v-col>
               </v-row>
               <v-row>
@@ -192,7 +192,9 @@
             {role: SPACE_MEMBER_ROLE.ORDINARY, text: this.$t('dict.spaceMemberRoleName.' + SPACE_MEMBER_ROLE.ORDINARY)},
             {role: SPACE_MEMBER_ROLE.ADMIN,    text: this.$t('dict.spaceMemberRoleName.' + SPACE_MEMBER_ROLE.ADMIN)}
           ]
-        }
+        },
+
+        SPACE_TYPE: SPACE_TYPE
       }
     },
     methods: {

@@ -295,7 +295,11 @@ export default class ChunkUploadHandler {
    * Gets the headers of the requests from options
    */
   get headers() {
-    return this.options.headers || {}
+    const headers = this.options.headers || {}
+    if (this.options.xsrfTokenFunc) {
+      headers['X-XSRF-TOKEN'] = this.options.xsrfTokenFunc()
+    }
+    return headers
   }
 
   /**

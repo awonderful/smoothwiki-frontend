@@ -9,7 +9,7 @@
     >
       <v-container>
         <v-row no-gutters>
-          <v-col cols="12" class="d-flex flex-row justify-end">
+          <v-col cols="12" class="d-flex flex-row justify-end align-center">
             <search target="_self"></search>
             <viewer></viewer>
           </v-col>

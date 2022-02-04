@@ -6,7 +6,7 @@
     v-if="userInfo !== null"
   >
     <template v-slot:activator="{ on, attrs }">
-      <span v-bind="attrs" v-on="on">
+      <span v-bind="attrs" v-on="on" class="flex-shrink-0 flex-grow-0">
         {{ userInfo.name }} <v-icon>mdi-menu-down</v-icon>
       </span>
     </template>
@@ -46,6 +46,7 @@ export default {
   methods: {
     async logout () {
       await this.$state.userAction.logout()
+      this.$state.clear()
       this.$router.push({name: 'login'})
     }
   }

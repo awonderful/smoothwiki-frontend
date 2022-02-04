@@ -146,9 +146,6 @@ export const ClipboardState = new Vue({
   },
   created() {
     Notify.$on('EXTERNAL_CLIPBOARD_STATUS_CHANGE', function (event) {
-      console.log('---EXTERNAL_CLIPBOARD_STATUS_CHANGE---')
-      console.log(Date.now())
-      console.log(event)
       if (Date.now() - event.timestamp < 10 * 60 * 1000) {
         this.status = event.data.status
         this.src.nodeId = event.data.src.nodeId
