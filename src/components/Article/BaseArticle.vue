@@ -89,16 +89,19 @@ export default {
     }
   },
   computed: {
+    isFreshNew () {
+      return this.article.id === 0
+    },
     defaultButtons () {
       const fullscreenSwitcher = this.isFullScreen
         ? 'exitFullscreen'
         : 'fullscreen'
 
-      if (this.article.isEditing && this.article.isFreshNew) {
+      if (this.article.isEditing && this.isFreshNew) {
         return [fullscreenSwitcher, 'save', 'remove']
       }
 
-      if (this.article.isEditing && !this.article.isFreshNew) {
+      if (this.article.isEditing && !this.isFreshNew) {
         return [fullscreenSwitcher, 'save', 'exit']
       }
 
@@ -178,13 +181,13 @@ export default {
       return this.article.editingSearch
     },
     hasChanged () {
-      return (this.getEditingTitle() !== this.article.title || this.getEditingBody() !== this.article.body || this.getEditingSearch() !== this.article.search)
+      return (this.getEditingTitle() !== this.article.title || this.getEditingBody() !== this.article.body)
     },
     refresh () {
       this.$state.pageAction.refreshArticle(this.article.spaceId, this.article.nodeId, this.article.uniqId)
     },
     save () {
-      if (this.article.id === 0 || this.hasChanged()) {
+      if (this.isFreshNew || this.hasChanged()) {
          this.setArticleProps({
           editingTitle:  this.getEditingTitle(),
           editingBody:   this.getEditingBody(),
@@ -207,7 +210,29 @@ export default {
       })
     },
     exitEditing () {
-      this.setArticleProps({isEditing: false})
+      if (this.hasChanged()) {
+        this.$state.globalDialogs.showConfirmDialog({
+          title: this.$t('article.discardChangesDialog.title'),
+          desc: this.$t('article.discardChangesDialog.desc'),
+          cancelText: this.$t('article.discardChangesDialog.cancelText'),
+          okText: this.$t('article.discardChangesDialog.okText'),
+          okFunc: function () {
+            this.setArticleProps({
+              editingTitle: this.article.title,
+              editingBody: this.article.body,
+              editingSearch: this.article.search,
+              isEditing: false,
+            })
+            if (typeof this.reload === 'function') {
+              this.reload()
+            }
+          }.bind(this)
+        })
+      } else {
+        this.setArticleProps({
+          isEditing: false
+        })
+      } 
     },
     edit () {
       this.setArticleProps({isEditing: true})

@@ -24,7 +24,7 @@
         </v-col>
       </v-row>
       <v-row v-if="page.isReadOnly === false" justify="center" class="mt-5 mb-3" @contextmenu.stop="doNothing()">
-        <v-col cols="12" class="d-flex flex-row justify-center">
+        <v-col cols="12" class="d-flex flex-row justify-center flex-wrap add-article-buttons-wrapper">
           <v-btn color="primary" @click="addFreshArticle(articleType.MARKDOWN)"   class="mx-3">{{ $t('page.articlePage.buttons.markdown') }}</v-btn>
           <v-btn color="primary" @click="addFreshArticle(articleType.RICHTEXT)"   class="mx-3">{{ $t('page.articlePage.buttons.richText') }}</v-btn>
           <v-btn color="primary" @click="addFreshArticle(articleType.MIND)"       class="mx-3">{{ $t('page.articlePage.buttons.mind') }}</v-btn>
@@ -292,5 +292,9 @@ export default {
   top: 0;
   width: 100%;
   z-index: 999;
+}
+
+.add-article-buttons-wrapper {
+  row-gap: 1em;
 }
 </style>

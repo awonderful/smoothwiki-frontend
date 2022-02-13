@@ -28,7 +28,7 @@
       <v-spacer></v-spacer>
 
       <!--menu-->
-      <v-menu open-on-hover bottom offset-y close-delay="300">
+      <context-menu open-on-hover :close-delay="300">
         <template v-slot:activator="{ on, attrs }">
           <v-btn 
             small 
@@ -46,7 +46,7 @@
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item>
         </v-list>
-      </v-menu>
+      </context-menu>
 
     </v-toolbar>
 
@@ -101,10 +101,15 @@
 
 <script>
 import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
-import TrashDialog from '../Dialog/TrashDialog.vue'
+import TrashDialog from '@/components/Dialog/TrashDialog.vue'
+import ContextMenu from '@/components/Util/ContextMenu.vue'
 
 export default {
-  components: { TrashDialog },
+  components: { 
+    TrashDialog,
+    ContextMenu,
+    ContextMenu,
+  },
   mixins: [ SpaceRouteParamsHandling ],
   computed: {
     isReadOnly () {

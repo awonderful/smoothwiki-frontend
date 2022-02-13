@@ -35,8 +35,8 @@
 </template>
 
 <script>
-import DocTree from './DocTree'
-import TrashTree from './TrashTree'
+import DocTree from './DocTree.vue'
+import TrashTree from './TrashTree.vue'
 
 export default {
   name: 'left',

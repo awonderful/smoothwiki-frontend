@@ -3,7 +3,7 @@
     <article-window
       :isReadOnly   = "article.isReadOnly"
       :isEditing    = "article.isEditing"
-      :isFreshNew   = "article.id === 0"
+      :isFreshNew   = "isFreshNew"
       :isFullScreen = "isFullScreen"
       :title.sync   = "article.editingTitle"
       :buttons      = "buttons"
@@ -32,8 +32,8 @@
 </template>
 
 <script>
-import BaseArticle from './BaseArticle'
-import ArticleWindow from './ArticleWindow'
+import BaseArticle from './BaseArticle.vue'
+import ArticleWindow from './ArticleWindow.vue'
 import MindElixir, { E } from "mind-elixir";
 
 export default {

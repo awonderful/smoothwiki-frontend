@@ -1,5 +1,5 @@
 <template>
-  <v-sheet elevation="0" :class="['pa-2', 'article-container', {'full-screen': isFullScreen}, {'editing': isEditing}]" rounded="lg">
+  <v-sheet elevation="0" :class="['pa-2', 'article-container', {'full-screen': isFullScreen}, {'editing': isEditing}, {'touch-device': $state.system.isTouchDevice}]" rounded="lg">
 
     <!--header begin-->
     <v-toolbar dense flat class="header">
@@ -37,7 +37,7 @@
       </div>
 
       <!--menu-->
-      <v-menu open-on-hover bottom offset-y close-delay="300" v-if="!this.isFreshNew && this.menuItems.length > 0">
+      <context-menu open-on-hover :close-delay="300" v-if="!this.isFreshNew && this.menuItems.length > 0">
         <template v-slot:activator="{ on, attrs }">
           <v-btn 
             small 
@@ -55,7 +55,7 @@
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item>
         </v-list>
-      </v-menu>
+      </context-menu>
 
     </v-toolbar>
     <!--header end-->
@@ -71,7 +71,12 @@
 </template>
 
 <script>
+import ContextMenu from '@/components/Util/ContextMenu.vue';
+
 export default {
+  components: {
+    ContextMenu
+  },
   props: {
     title: {
       type: String,
@@ -109,6 +114,11 @@ export default {
   data: function () {
     return {
       clonedTitle: this.title,
+    }
+  },
+  watch: {
+    title (newVal) {
+      this.clonedTitle = newVal
     }
   },
   methods: {
@@ -177,6 +187,9 @@ export default {
     visibility: visible;
   }
   .article-container:hover .button {
+    visibility: visible;
+  }
+  .article-container.touch-device .button {
     visibility: visible;
   }
   .article-container .body >>> .v-note-wrapper {

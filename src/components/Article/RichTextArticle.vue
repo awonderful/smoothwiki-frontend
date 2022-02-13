@@ -3,7 +3,7 @@
     <article-window
       :isReadOnly   = "article.isReadOnly"
       :isEditing    = "article.isEditing"
-      :isFreshNew   = "article.id === 0"
+      :isFreshNew   = "isFreshNew"
       :isFullScreen = "isFullScreen"
       :title.sync   = "article.editingTitle"
       :buttons      = "buttons"
@@ -83,70 +83,60 @@
           accept="image/*"
           :style="{display: 'none'}" />
        
-        <editor-menu-bar dense :editor="editor" v-slot="{ commands, isActive }">
-          <v-toolbar dense class="toolbar elevation-0">
-              <v-btn
-                dense
-                small
-                :color="item.isActive(isActive) ? 'grey lighten-1': 'white'"
-                v-for="item of menuBarButtons"
-                :key="item.name"
-                :class="[item.name, 'editor-button', 'elevation-0', {'active': item.isActive(isActive)}]"
-                @click="item.exec(commands)">
-                <v-icon small color="grey darken-1">{{item.icon}}</v-icon>
-              </v-btn>
-              <v-menu
-                :offset-y="true"
-                open-on-hover
-                bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    dense
-                    small
-                    v-bind="attrs"
-                    v-on="on"
-                    color="white"
-                    class="editor-button elevation-0">
-                    <v-icon small color="grey darken-1">mdi-image</v-icon>
-                  </v-btn>
-                </template>
-                <v-list>
-                  <v-list-item-group>
-                    <v-list-item @click="showNetworkImageDialog()">
-                      <v-list-item-content>
-                        <v-list-item-title>{{ $t('article.richText.toolbar.insertNetworkImage') }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item @click="showUploadDialog()">
-                      <v-list-item-content>
-                        <v-list-item-title>{{ $t('article.richText.toolbar.uploadLocalImage') }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list-item-group>
-                </v-list>
-              </v-menu>
-              <v-btn
-                dense
-                small
-                color="white"
-                class="editor-button elevation-0"
-                @click="insertTable()">
-                <v-icon small color="grey darken-1">mdi-table-plus</v-icon>
-              </v-btn>
-              <template v-if="isActive.table()">
+        <v-toolbar dense class="toolbar elevation-0">
+          <template v-for="(item, idx) of menuBarButtons">
+            <v-divider
+              :key="item.name + idx"
+              vertical
+              class="divider mx-2"
+              v-if="item.name === 'divider'">
+            </v-divider>
+            <v-menu
+              :offset-y="true"
+              open-on-hover
+              bottom
+              :key="item.name"
+              v-else-if="item.name === 'insertImage'">
+              <template v-slot:activator="{ on, attrs }">
                 <v-btn
                   dense
                   small
+                  v-bind="attrs"
+                  v-on="on"
                   color="white"
-                  v-for="item of menuBarTableButtons"
-                  :key="item.name"
-                  class="editor-button elevation-0"
-                  @click="item.exec(commands)">
-                  <v-icon small color="grey darken-1">{{item.icon}}</v-icon>
+                  class="editor-button elevation-0">
+                  <v-icon small color="grey darken-1">mdi-image</v-icon>
                 </v-btn>
               </template>
-          </v-toolbar>
-        </editor-menu-bar>
+              <v-list>
+                <v-list-item-group>
+                  <v-list-item @click="showNetworkImageDialog()">
+                    <v-list-item-content>
+                      <v-list-item-title>{{ $t('article.richText.toolbar.insertNetworkImage') }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item @click="showUploadDialog()">
+                    <v-list-item-content>
+                      <v-list-item-title>{{ $t('article.richText.toolbar.uploadLocalImage') }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list-item-group>
+              </v-list>
+            </v-menu>
+            <v-btn
+              dense
+              small
+              :color="item.isActive && item.isActive() ? 'grey lighten-1': 'white'"
+              :key="item.name"
+              :class="[item.name, 'editor-button', 'elevation-0', {'active': item.isActive && item.isActive()}]"
+              :disabled="item.isDisabled && item.isDisabled()"
+              @click="item.exec()"
+              v-else>
+              <v-icon small color="grey darken-1">{{typeof item.icon === 'function' ? item.icon() : item.icon}}</v-icon>
+            </v-btn>
+          </template>
+        </v-toolbar>
+        <v-divider></v-divider>
         <editor-content class="content editing" :editor="editor" :spellcheck="false" />
       </template>
       <template v-slot:view>
@@ -156,62 +146,32 @@
   </div>
 </template>
 
-
-
 <script>
-import BaseArticle from '@/components/Article/BaseArticle'
-import ArticleWindow from '@/components/Article/ArticleWindow'
-import javascript from 'highlight.js/lib/languages/javascript'
-import css from 'highlight.js/lib/languages/css'
-import scss from 'highlight.js/lib/languages/scss'
-import php from 'highlight.js/lib/languages/php'
-import java from 'highlight.js/lib/languages/java'
-import go from 'highlight.js/lib/languages/go'
-import bash from 'highlight.js/lib/languages/bash'
-import xml from 'highlight.js/lib/languages/xml'
-import yaml from 'highlight.js/lib/languages/yaml'
-import sql from 'highlight.js/lib/languages/sql'
-import typescript from 'highlight.js/lib/languages/typescript'
-import cpp from 'highlight.js/lib/languages/cpp'
-import csp from 'highlight.js/lib/languages/csp'
-import shell from 'highlight.js/lib/languages/shell'
-import python from 'highlight.js/lib/languages/python'
-import ini from 'highlight.js/lib/languages/ini'
-import json from 'highlight.js/lib/languages/json'
-
+import BaseArticle from '@/components/Article/BaseArticle.vue'
+import ArticleWindow from '@/components/Article/ArticleWindow.vue'
 import { ATTACHMENT_SHOW_URL } from '@/common/constants.js'
-import { Editor, EditorContent, EditorMenuBar } from 'tiptap'
-import {
-  Blockquote,
-  CodeBlock,
-  HardBreak,
-  Heading,
-  OrderedList,
-  BulletList,
-  ListItem,
-  TodoItem,
-  TodoList,
-  Bold,
-  Code,
-  Italic,
-  Link,
-  Table,
-  TableHeader,
-  TableCell,
-  TableRow,
-  Strike,
-  Underline,
-  History,
-  CodeBlockHighlight,
-  Image
-} from 'tiptap-extensions'
+import { Editor, EditorContent, BubbleMenu } from '@tiptap/vue-2'
+import StarterKit from '@tiptap/starter-kit'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import Table from '@tiptap/extension-table'
+import TableHeader from '@tiptap/extension-table-header'
+import TableCell from '@tiptap/extension-table-cell'
+import TableRow from '@tiptap/extension-table-row'
+import Link from '@tiptap/extension-link'
+import Underline from '@tiptap/extension-underline'
+import Image from '@tiptap/extension-image'
+import Subscript from '@tiptap/extension-subscript'
+import Superscript from '@tiptap/extension-superscript'
+import Highlight from '@tiptap/extension-highlight'
+import TaskItem from '@tiptap/extension-task-item'
+import TaskList from '@tiptap/extension-task-list'
+import { lowlight } from 'lowlight'
 
 export default {
   mixins: [BaseArticle],
   components: {
     ArticleWindow,
     EditorContent,
-    EditorMenuBar
   },
   data() {
     return {
@@ -228,259 +188,325 @@ export default {
 
       editor: null,
       extensions: [
-          new Blockquote(),
-          new BulletList(),
-          new CodeBlock(),
-          new HardBreak(),
-          new Heading({ levels: [1, 2, 3] }),
-          new ListItem(),
-          new OrderedList(),
-          new TodoItem(),
-          new TodoList(),
-          new Link({openOnClick: false}),
-          new Bold(),
-          new Code(),
-          new Italic(),
-          new Strike(),
-          new Underline(),
-          new History(),
-          new Table({ resizable: true }),
-          new TableHeader(),
-          new TableCell(),
-          new TableRow(),
-          new Image(),
-          new CodeBlockHighlight({
-            languages: {
-              javascript,
-              typescript,
-              python,
-              css,
-              scss,
-              bash,
-              sql,
-              cpp,
-              csp,
-              php,
-              java,
-              go,
-              xml,
-              yaml,
-              ini,
-              json,
-              shell
-            }
-          })
+          StarterKit.configure({codeBlock: false}),
+          CodeBlockLowlight.configure({lowlight}),
+          Link.configure({openOnClick: false}),
+          Underline,
+          Table,
+          TableHeader,
+          TableCell,
+          TableRow,
+          Image,
+          Subscript,
+          Superscript,
+          Highlight,
+          TaskItem,
+          TaskList,
       ],
       menuBarButtons: [
         {
-          name:     'undo',
-          icon:     'mdi-undo',
-          isActive: function () {
+          name:       'undo',
+          icon:       'mdi-undo',
+          isActive:   () => {
             return false
           },
-          exec:     function (commands) {
-            commands.undo()
+          isDisabled: () => {
+            return !this.editor.can().undo()
+          },
+          exec:       () => {
+            this.editor.chain().focus().undo().run()
           }
         },
         {
-          name:     'redo',
-          icon:     'mdi-redo',
-          isActive: function () {
+          name:      'redo',
+          icon:      'mdi-redo',
+          isActive:  () => {
             return false
           },
-          exec:     function (commands) {
-            commands.redo()
+          isDisabled: () => {
+            return !this.editor.can().redo()
+          },
+          exec:      () => {
+            this.editor.chain().focus().redo().run()
           }
         },
         {
-          name:     'bold',
-          icon:     'mdi-format-bold',
-          isActive: function (isActive) {
-            return isActive.bold()
+          name:      'divider'
+        },
+        {
+          name:      'bold',
+          icon:      'mdi-format-bold',
+          isActive:  () => {
+            return this.editor.isActive('bold')
           },
-          exec:     function (commands) {
-            commands.bold()
+          exec:      () => {
+            this.editor.chain().focus().toggleBold().run()
           }
         },
         {
-          name:     'italic',
-          icon:     'mdi-format-italic',
-          isActive: function (isActive) {
-            return isActive.italic()
+          name:      'italic',
+          icon:      'mdi-format-italic',
+          isActive:  () => {
+            return this.editor.isActive('italic')
           },
-          exec:     function (commands) {
-            commands.italic()
+          exec:      () => {
+            this.editor.chain().focus().toggleItalic().run()
           }
         },
         {
-          name:     'strike',
-          icon:     'mdi-format-strikethrough',
-          isActive: function (isActive) {
-            return isActive.strike()
+          name:      'strike',
+          icon:      'mdi-format-strikethrough',
+          isActive:  () => {
+            return this.editor.isActive('strike')
           },
-          exec:     function (commands) {
-            commands.strike()
+          exec:      () => {
+            this.editor.chain().focus().toggleStrike().run()
           }
         },
         {
-          name:     'underline',
-          icon:     'mdi-format-underline',
-          isActive: function (isActive) {
-            return isActive.underline()
+          name:      'underline',
+          icon:      'mdi-format-underline',
+          isActive:  () => {
+            return this.editor.isActive('underline')
           },
-          exec:     function (commands) {
-            commands.underline()
+          exec:      () => {
+            this.editor.chain().focus().toggleUnderline().run()
           }
         },
         {
-          name:     'heading0',
-          icon:     'mdi-format-header-1',
-          isActive: function (isActive) {
-            return isActive.heading({level: 1})
+          name:      'subscript',
+          icon:      'mdi-format-subscript',
+          isActive:  () => {
+            return this.editor.isActive('subscript')
           },
-          exec:     function (commands) {
-            commands.heading({level: 1})
+          exec:      () => {
+            this.editor.chain().focus().toggleSubscript().run()
           }
         },
         {
-          name:     'heading1',
-          icon:     'mdi-format-header-2',
-          isActive: function (isActive) {
-            return isActive.heading({level: 2})
+          name:      'superscript',
+          icon:      'mdi-format-superscript',
+          isActive:  () => {
+            return this.editor.isActive('superscript')
           },
-          exec:     function (commands) {
-            commands.heading({level: 2})
+          exec:      () => {
+            this.editor.chain().focus().toggleSubscript().run()
           }
         },
         {
-          name:     'heading2',
-          icon:     'mdi-format-header-3',
-          isActive: function (isActive) {
-            return isActive.heading({level: 3})
+          name:      'highlight',
+          icon:      'mdi-format-color-highlight',
+          isActive:  () => {
+            return this.editor.isActive('highlight')
           },
-          exec:     function (commands) {
-            commands.heading({level: 3})
+          exec:      () => {
+            this.editor.chain().focus().toggleHighlight({color: '#ffcc00'}).run()
           }
         },
         {
-          name:     'bulletList',
-          icon:     'mdi-format-list-bulleted',
-          isActive: function (isActive) {
-            return isActive.bullet_list()
+          name:      'heading0',
+          icon:      'mdi-format-header-1',
+          isActive:  () => {
+            return this.editor.isActive('heading', {level: 1})
           },
-          exec:     function (commands) {
-            commands.bullet_list()
+          exec:      () => {
+            this.editor.chain().focus().toggleHeading({level: 1}).run()
           }
         },
         {
-          name:     'orderedList',
-          icon:     'mdi-format-list-numbered',
-          isActive: function (isActive) {
-            return isActive.ordered_list()
+          name:      'heading1',
+          icon:      'mdi-format-header-2',
+          isActive:  () => {
+            return this.editor.isActive('heading', {level: 2})
           },
-          exec:     function (commands) {
-            commands.ordered_list()
+          exec:      () => {
+            this.editor.chain().focus().toggleHeading({level: 2}).run()
           }
         },
         {
-          name:     'blockQuote',
-          icon:     'mdi-format-quote-close',
-          isActive: function (isActive) {
-            return isActive.blockquote()
+          name:      'heading2',
+          icon:      'mdi-format-header-3',
+          isActive:  () => {
+            return this.editor.isActive('heading', {level: 3})
           },
-          exec:     function (commands) {
-            commands.blockquote()
+          exec:      () => {
+            this.editor.chain().focus().toggleHeading({level: 3}).run()
           }
         },
         {
-          name:     'codeBlock',
-          icon:     'mdi-code-tags',
-          isActive: function (isActive) {
-            return isActive.code_block()
+          name:      'divider'
+        },
+        {
+          name:      'bulletList',
+          icon:      'mdi-format-list-bulleted',
+          isActive:  () => {
+            return this.editor.isActive('bulletList')
           },
-          exec:     function (commands) {
-            commands.code_block()
+          exec:      () => {
+            this.editor.chain().focus().toggleBulletList().run()
           }
         },
         {
-          name:     'link',
-          icon:     'mdi-link-variant',
-          isActive: function (isActive) {
-            return isActive.link()
+          name:      'orderedList',
+          icon:      'mdi-format-list-numbered',
+          isActive:  () => {
+            return this.editor.isActive('orderedList')
           },
-          exec:     function () {
+          exec:      () => {
+            this.editor.chain().focus().toggleOrderedList().run()
+          }
+        },
+        {
+          name:      'taskList',
+          icon:      'mdi-format-list-checks',
+          isActive:  () => {
+            return this.editor.isActive('taskList')
+          },
+          exec:      () => {
+            this.editor.chain().focus().toggleTaskList().run()
+          }
+        },
+        {
+          name:      'blockQuote',
+          icon:      'mdi-format-quote-close',
+          isActive:  () => {
+            return this.editor.isActive('blockquote')
+          },
+          exec:      () => {
+            this.editor.chain().focus().toggleBlockquote().run()
+          }
+        },
+        {
+          name:      'codeBlock',
+          icon:      'mdi-code-tags',
+          isActive:  () => {
+            return this.editor.isActive('codeBlock')
+          },
+          exec:      () => {
+            this.editor.chain().focus().toggleCodeBlock().run()
+          }
+        },
+        {
+          name:      'link',
+          icon:      'mdi-link-variant',
+          isActive:  () => {
+            return this.editor.isActive('link')
+          },
+          exec:      () => {
             this.showLinkDialog()
-          }.bind(this)
+          }
         },
         {
-          name:     'unlink',
-          icon:     'mdi-link-variant-off',
-          isActive: function (isActive) {
+          name:      'unlink',
+          icon:      'mdi-link-variant-off',
+          isActive:  () => {
             return false
           },
-          exec:     function (commands) {
-            commands.link({href: ''})
-          }.bind(this)
+          exec:      () => {
+            this.editor.chain().focus().unsetLink().run()
+          }
+        },
+        {
+          name:      'insertImage'
+        },
+        {
+          name:      'divider'
+        },
+        {
+          name:      'insertTable',
+          icon:      'mdi-table-plus',
+          isDisabled: () => {
+            return !this.editor.can().insertTable()
+          },
+          exec:      () => {
+            this.editor.chain().focus().insertTable().run()
+          }
+        },
+        {
+          name:      'deleteTable',
+          icon:      'mdi-table-minus',
+          isDisabled: () => {
+            return !this.editor.can().deleteTable()
+          },
+          exec:      () => {
+            this.editor.chain().focus().deleteTable().run()
+          }
+        },
+        {
+          name:      'addColBefore',
+          icon:      'mdi-table-column-plus-before',
+          isDisabled: () => {
+            return !this.editor.can().addColumnBefore()
+          },
+          exec:      () => {
+            this.editor.chain().focus().addColumnBefore().run()
+          }
+        },
+        {
+          name:      'addColAfter',
+          icon:      'mdi-table-column-plus-after',
+          isDisabled: () => {
+            return !this.editor.can().addColumnAfter()
+          },
+          exec:      () => {
+            this.editor.chain().focus().addColumnAfter().run()
+          }
+        },
+        {
+          name:      'deleteColumn',
+          icon:      'mdi-table-column-remove',
+          isDisabled: () => {
+            return !this.editor.can().deleteColumn()
+          },
+          exec:      () => {
+            this.editor.chain().focus().deleteColumn().run()
+          }
+        },
+        {
+          name:      'addRowBefore',
+          icon:      'mdi-table-row-plus-before',
+          isDisabled: () => {
+            return !this.editor.can().addRowBefore()
+          },
+          exec:      () => {
+            this.editor.chain().focus().addRowBefore().run()
+          }
+        },
+        {
+          name:      'addRowAfter',
+          icon:      'mdi-table-row-plus-after',
+          isDisabled: () => {
+            return !this.editor.can().addRowAfter()
+          },
+          exec:      () => {
+            this.editor.chain().focus().addRowAfter().run()
+          }
+        },
+        {
+          name:      'deleteRow',
+          icon:      'mdi-table-row-remove',
+          isDisabled: () => {
+            return !this.editor.can().deleteRow()
+          },
+          exec:      () => {
+            this.editor.chain().focus().deleteRow().run()
+          }
+        },
+        {
+          name:      'mergeOrSplitCell',
+          icon:      () => {
+            return this.editor.can().splitCell()
+              ? 'mdi-table-split-cell'
+              : 'mdi-table-merge-cells'
+          },
+          isDisabled: () => {
+            return !this.editor.can().mergeCells() && !this.editor.can().splitCell()
+          },
+          exec:      () => {
+            this.editor.chain().focus().mergeOrSplit().run()
+          }
         }
       ],
-      menuBarTableButtons: [
-        {
-          name:     'deleteTable',
-          icon:     'mdi-table-minus',
-          exec:     function (commands) {
-            commands.deleteTable()
-          }
-        },
-        {
-          name:     'addColBefore',
-          icon:     'mdi-table-column-plus-before',
-          exec:     function (commands) {
-            commands.addColumnBefore()
-          }
-        },
-        {
-          name:     'addColAfter',
-          icon:     'mdi-table-column-plus-after',
-          exec:     function (commands) {
-            commands.addColumnAfter()
-          }
-        },
-        {
-          name:     'deleteColumn',
-          icon:     'mdi-table-column-remove',
-          exec:     function (commands) {
-            commands.deleteColumn()
-          }
-        },
-        {
-          name:     'addRowBefore',
-          icon:     'mdi-table-row-plus-before',
-          exec:     function (commands) {
-            commands.addRowBefore()
-          }
-        },
-        {
-          name:     'addRowAfter',
-          icon:     'mdi-table-row-plus-after',
-          exec:     function (commands) {
-            commands.addRowAfter()
-          }
-        },
-        {
-          name:     'deleteRow',
-          icon:     'mdi-table-row-remove',
-          exec:     function (commands) {
-            commands.deleteRow()
-          }
-        },
-        {
-          name:     'toggleCellMerge',
-          icon:     'mdi-table-merge-cells',
-          exec:     function (commands) {
-            commands.toggleCellMerge()
-          }
-        }
-      ]
     }
   },
   computed: {
@@ -493,48 +519,21 @@ export default {
       return this.editor.getHTML()
     },
     getEditingSearch() {
-      let body = this.getEditingBody()
-      let search = body.replace(/<[^>]*>?/gm, '')
-
-      return search
+      return this.editor.getText() 
     },
-
+    reload() {
+      this.editor.chain().setContent(this.article.editingBody).run()
+    },
     //--------------------------link-------------------------
-    linkAround(state, pos) {
-      const $pos = state.doc.resolve(pos)
-
-      const { parent, parentOffset } = $pos;
-      const start = parent.childAfter(parentOffset)
-      if (!start.node) return null
-
-      const link = start.node.marks.find((mark) => mark.type === state.schema.marks.link)
-      if (!link) return null
-
-      let startIndex = $pos.index()
-      let startPos = $pos.start() + start.offset
-      let endIndex = startIndex + 1
-      let endPos = startPos + start.node.nodeSize
-      while (startIndex > 0 && link.isInSet(parent.child(startIndex - 1).marks)) {
-        startIndex -= 1
-        startPos -= parent.child(startIndex).nodeSize
-      }
-      while (endIndex < parent.childCount && link.isInSet(parent.child(endIndex).marks)) {
-        endPos += parent.child(endIndex).nodeSize
-        endIndex += 1
-      }
-      return { from: startPos, to: endPos }
-    },
     showLinkDialog() {
       this.linkDialog.title = ''
       this.linkDialog.url   = ''
-      if (this.editor.isActive.link()) {
-        const around = this.linkAround(this.editor.state, this.editor.selection.from)
-        this.editor.setSelection(around.from, around.to)
-        const attrs = this.editor.getMarkAttrs('link')
-        this.linkDialog.url = attrs.href
+      if (this.editor.isActive('link')) {
+        this.editor.chain().focus().extendMarkRange('link').run()
+        this.linkDialog.url = this.editor.getAttributes('link').href
       }
 
-      const title = this.editor.state.doc.textBetween(this.editor.selection.from, this.editor.selection.to)
+      const title = this.editor.state.doc.textBetween(this.editor.state.selection.from, this.editor.state.selection.to)
       this.linkDialog.title = title
       this.linkDialog.show = true
     },
@@ -544,7 +543,7 @@ export default {
     applyLink() {
       this.hideLinkDialog()
 
-      const selectionTitle = this.editor.state.doc.textBetween(this.editor.selection.from, this.editor.selection.to)
+      const selectionTitle = this.editor.state.doc.textBetween(this.editor.state.selection.from, this.editor.state.selection.to)
       if (this.linkDialog.title !== selectionTitle) {
         const mark = this.editor.schema.marks.link.create({ href: this.linkDialog.url, target: '_blank' })
         const from = this.editor.state.selection.from
@@ -553,13 +552,12 @@ export default {
         transaction.addMark(from, from + this.linkDialog.title.length, mark)
         this.editor.view.dispatch(transaction)
       } else {
-        this.editor.commands.link({href: this.linkDialog.url, target: '_blank'})
+        this.editor.chain().focus().setLink({href: this.linkDialog.url, target: '_blank'}).run()
       }
     },
     unlink() {
-      this.editor.commands.link({href: ''})
+      this.editor.chain().focus().unsetLink().run()
     },
-
 
 
     //--------------------------network image-------------------------
@@ -571,7 +569,7 @@ export default {
       this.networkImageDialog.show = false
     },
     insertNetworkImage () {
-      this.editor.commands.image({src: this.networkImageDialog.url})
+      this.editor.chain().focus().setImage({src: this.networkImageDialog.url}).run()
       this.hideNetworkImageDialog()
     },
 
@@ -585,16 +583,16 @@ export default {
       const input = this.$refs.file
       const res = await this.$state.pageAction.addAttachmentToArticle(this.article.spaceId, this.article.nodeId, this.article.uniqId, input.files[0])
       const url = ATTACHMENT_SHOW_URL + res.data.data.id
-      this.editor.commands.image({src: url})
+      this.editor.chain().focus().setImage({src: url}).run()
     },
 
     //----------------------------table-----------------------------
     insertTable() {
-      this.editor.commands.createTable({
+      this.editor.chain().focus().insertTable({
         rowsCount:     3,
         colsCount:     3,
         withHeaderRow: true
-      })
+      }).run()
     }
   },
   created () {
@@ -627,14 +625,22 @@ export default {
 
 <style scoped>
   .editor-button {
-    min-width: 2em;
+    min-width: 2em !important;
+  }
+  .editor-button.theme--light.v-btn.v-btn--disabled.v-btn--has-bg {
+    background-color: white !important;
+  }
+  .divider {
+    min-height: 50%;
+    position: relative;
+    top: 25%;
   }
   .content {
     text-align: left;
     padding: 8px 25px;
   }
   .content >>> img {
-    max-width: min(100%, 800px);
+    max-width: 100%;
   }
   .content.editing >>> .ProseMirror {
     min-height: 10em;
@@ -773,5 +779,33 @@ export default {
   }
   .toolbar {
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  .toolbar >>> .v-toolbar__content {
+    flex-wrap: wrap;
+  }
+</style>
+
+<style lang="scss">
+  ul[data-type="taskList"] {
+    list-style: none;
+    padding: 0;
+
+    p {
+      margin: 0;
+    }
+
+    li {
+      display: flex;
+
+      > label {
+        flex: 0 0 auto;
+        margin-right: 0.5rem;
+        user-select: none;
+      }
+
+      > div {
+        flex: 1 1 auto;
+      }
+    }
   }
 </style>

@@ -42,7 +42,7 @@
                   {{ item.objectTitle }}
                 </a>
 
-                <div class="search-conent grey--text">
+                <div class="search-content grey--text text--darken-1">
                   <template v-if="item.objectType === SEARCH_OBJECT_TYPE.ARTICLE">
                     {{ item.objectContent }}
                   </template>
@@ -85,6 +85,7 @@
 import GlobalDialogs from '@/components/GlobalDialogs/Index.vue'
 import Viewer from '@/components/Top/Viewer.vue'
 import Search from '@/components/Top/Search.vue'
+import Mark from 'mark.js'
 import GeneralErrorHandling from '@/common/generalErrorHandling.js'
 import { SEARCH_OBJECT_TYPE } from '@/common/constants.js'
 import * as API from '@/common/API.js'
@@ -133,6 +134,7 @@ export default {
     return {
       pageCount: 0,
       items: [],
+      keyword: '',
       SEARCH_OBJECT_TYPE: SEARCH_OBJECT_TYPE
     }
   },
@@ -146,6 +148,7 @@ export default {
         range: this.range
       })
       this.pageCount = rs.data.data.pageCount
+      this.keyword = rs.data.data.keyword
       for (const item of rs.data.data.items) {
         switch (item.objectType) {
           case SEARCH_OBJECT_TYPE.SPACE:
@@ -211,6 +214,28 @@ export default {
         item.path[0].text = item.spaceTitle
       }
       this.items = rs.data.data.items
+      this.$nextTick(() => this.markAndScroll())
+    },
+    markAndScroll () {
+      const titleInstance = new Mark(document.querySelectorAll('.search-title'))
+      titleInstance.mark(this.keyword, {
+        element: 'strong',
+        separateWordSearch: true,
+      })
+
+      const cntInstance = new Mark(document.querySelectorAll('.search-content'))
+      cntInstance.mark(this.keyword, {
+        element: 'strong',
+        separateWordSearch: true,
+      })
+
+      document.querySelectorAll('.search-content').forEach((cnt) => {
+        const strongEl = cnt.querySelector('strong')
+        if (strongEl) {
+          console.log(strongEl.offsetTop)
+          cnt.scrollTop = strongEl.offsetTop
+        }
+      })
     }
   },
   watch: {
@@ -235,6 +260,19 @@ export default {
 
 .search-title:hover {
   text-decoration: underline;
+}
+
+.search-content {
+  max-height: 15em;
+  overflow: hidden;
+}
+
+.search-content >>> strong {
+  color: brown;
+}
+
+.search-title >>> strong {
+  color: brown;
 }
 
 .search-breadcrumbs >>> .search-breadcrumbs-item:not(:hover) a {

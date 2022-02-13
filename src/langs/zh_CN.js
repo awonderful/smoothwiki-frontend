@@ -54,6 +54,12 @@ export default {
         view: '查看'
       }
     },
+    discardChangesDialog: {
+      title: '未保存的文档',
+      desc: '文档尚未保存，放弃修改？',
+      okText: '放弃',
+      cancelText: '取消'
+    },
     richText: {
       toolbar: {
         uploadLocalImage: '上传本地图片',

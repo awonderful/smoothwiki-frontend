@@ -54,6 +54,12 @@ export default {
         view: 'view'
       }
     },
+    discardChangesDialog: {
+      title: 'unsaved document',
+      desc: 'the document has not been saved, discard the changes?',
+      okText: 'discard',
+      cancelText: 'cancel'
+    },
     richText: {
       toolbar: {
         uploadLocalImage: 'upload a local image',

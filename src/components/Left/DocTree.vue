@@ -27,27 +27,55 @@
       <v-icon small color="teal" v-else>mdi-file-document</v-icon>
     </template>
     <template v-slot:extra="{node}">
-      <v-btn icon x-small class="mr-1" @click="doAction('rename', node)" v-if="node.__.gpos > 0">
-        <v-icon small>mdi-pencil</v-icon>
-      </v-btn>
-      <v-btn icon x-small class="mr-1" @click="doAction('remove', node)" v-if="node.__.gpos > 0">
-        <v-icon small>mdi-trash-can-outline</v-icon>
-      </v-btn>
-      <v-btn icon x-small class="mr-2" @click="doAction('create', node)">
-        <v-icon small>mdi-plus-outline</v-icon>
-      </v-btn>
+      <context-menu open-on-hover :close-delay="300">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn 
+            x-small 
+            icon 
+            v-bind="attrs" 
+            v-on="on" 
+            class="button"
+          >
+            <v-icon small>mdi-dots-vertical</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item @click="doAction('create', node)">
+            <v-list-item-icon><v-icon small>mdi-plus</v-icon></v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>{{ $t('docTree.contextMenu.create') }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item @click="doAction('rename', node)">
+            <v-list-item-icon><v-icon small>mdi-pencil</v-icon></v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>{{ $t('docTree.contextMenu.rename') }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item @click="doAction('remove', node)">
+            <v-list-item-icon><v-icon small>mdi-trash-can-outline</v-icon></v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>{{ $t('docTree.contextMenu.remove') }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </context-menu>
     </template>
   </TWTree>
 </template>
 
 <script>
 import TWTree from 'twtree'
+import ContextMenu from '@/components/Util/ContextMenu.vue'
 import { API_CODE, NODE_TYPE, TREE_VERSION_CHECKING_INTERVAL } from '@/common/constants.js'
 import * as API from '@/common/API.js'
 import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
 
 export default {
-  components: { TWTree },
+  components: {
+    TWTree,
+    ContextMenu,
+  },
   mixins: [
     SpaceRouteParamsHandling
   ],

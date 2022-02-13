@@ -36,54 +36,52 @@
       @clickMenu    = "clickMenu"
       ref           = "window">
       <template v-slot:editor>
-        <v-simple-table class="attachments">
-          <tr class="item" :key="attachment.id" v-for="attachment of editingBody.items">
-            <td class="thumb"><img v-if="attachment.icon !== null" :src="attachment.icon" ></td>
-            <td class="filename"><input type="text" v-model="attachment.filename"/></td>
-            <td class="time">{{ new Date(attachment.ctime).toLocaleDateString(locale) }}</td>
-            <td class="size">{{ attachmentMap.hasOwnProperty(attachment.id) ? humanFileSize(attachmentMap[attachment.id].size) : ''}}</td>
-            <td class="operate">
+        <ul class="attachments">
+          <li class="item" :key="attachment.id" v-for="attachment of editingBody.items">
+            <span class="thumb"><img v-if="attachment.icon !== null" :src="attachment.icon" ></span>
+            <span class="filename"><input type="text" v-model="attachment.filename"/></span>
+            <span class="time">{{ new Date(attachment.ctime).toLocaleDateString(locale) }}</span>
+            <span class="size">{{ attachmentMap.hasOwnProperty(attachment.id) ? humanFileSize(attachmentMap[attachment.id].size) : ''}}</span>
+            <span class="operate">
               <v-btn icon dense small @click="removeAttachment(attachment.id)"><v-icon small>mdi-delete-outline</v-icon></v-btn>
-            </td>
-          </tr>
-        </v-simple-table>
+            </span>
+          </li>
+        </ul>
       </template>
       <template v-slot:view>
-        <v-simple-table class="attachments">
-          <template v-slot:default>
-            <tr class="item" :key="attachment.id" v-for="attachment of items">
-              <td class="thumb">
-                <img v-if="attachment.icon !== null" :src="attachment.icon" >
-              </td>
-              <td class="filename">{{attachment.filename}}</td>
-              <td class="time">{{ new Date(attachment.ctime).toLocaleDateString(locale) }}</td>
-              <td class="size">{{ humanFileSize(attachment.size) }}</td>
-              <td class="operate">
-                <a :href="ATTACHMENT_DOWNLOAD_URL + attachment.id">
-                  <v-btn icon dense small><v-icon small>mdi-download</v-icon></v-btn>
-                </a>
-              </td>
-            </tr>
-            <tr class="item" :key="file.id" v-for="file of uploadingFiles">
-              <div class="progress" :style="{width: file.progress + '%'}">
-              </div>
-              <td class="thumb"> <img v-if="file.thumb" :src="file.thumb" /></td>
-              <td class="filename">{{file.name}}</td>
-              <td class="status"></td>
-              <td class="size">{{humanFileSize(file.size)}}</td>
-              <td class="operate"><v-btn icon dense small><v-icon small>mdi-pause</v-icon></v-btn></td>
-            </tr>
-          </template>
-        </v-simple-table>
+        <ul class="attachments">
+          <li class="item" :key="attachment.id" v-for="attachment of items">
+            <span class="thumb">
+              <img v-if="attachment.icon !== null" :src="attachment.icon" >
+            </span>
+            <span class="filename">{{attachment.filename}}</span>
+            <span class="time">{{ new Date(attachment.ctime).toLocaleDateString(locale) }}</span>
+            <span class="size">{{ humanFileSize(attachment.size) }}</span>
+            <span class="operate">
+              <a :href="ATTACHMENT_DOWNLOAD_URL + attachment.id">
+                <v-btn icon dense small><v-icon small>mdi-download</v-icon></v-btn>
+              </a>
+            </span>
+          </li>
+          <li class="item" :key="file.id" v-for="file of uploadingFiles">
+            <div class="progress" :style="{width: file.progress + '%'}">
+            </div>
+            <span class="thumb"> <img v-if="file.thumb" :src="file.thumb" /></span>
+            <span class="filename">{{file.name}}</span>
+            <span class="status"></span>
+            <span class="size">{{humanFileSize(file.size)}}</span>
+            <span class="operate"><v-btn icon dense small><v-icon small>mdi-pause</v-icon></v-btn></span>
+          </li>
+        </ul>
       </template>
     </article-window>
   </div>
 </template>
 
 <script>
-import BaseArticle from '@/components/Article/BaseArticle'
-import ArticleWindow from '@/components/Article/ArticleWindow'
-import ChunkUploadHandler from './ChunkUploadHandler'
+import BaseArticle from '@/components/Article/BaseArticle.vue'
+import ArticleWindow from '@/components/Article/ArticleWindow.vue'
+import ChunkUploadHandler from './ChunkUploadHandler.js'
 import FileUpload from 'vue-upload-component'
 import { humanFileSize, isImageExtension } from '@/common/util.js'
 import { API_BASE_URL, ATTACHMENT_DOWNLOAD_URL, ATTACHMENT_SHOW_URL, ATTACHMENT_THUMB_100_URL } from '@/common/constants.js'
@@ -108,11 +106,11 @@ export default {
           tip:   this.$t('article.attachment.uploadButtonTip')
       }
 
-      if (this.article.isEditing && this.article.isFreshNew) {
+      if (this.article.isEditing && this.isFreshNew) {
         return [fullscreenSwitcher, 'save', 'remove']
       }
 
-      if (this.article.isEditing && !this.article.isFreshNew) {
+      if (this.article.isEditing && !this.isFreshNew) {
         return [fullscreenSwitcher, 'save', 'exit']
       }
 
@@ -383,10 +381,24 @@ export default {
     border-collapse: collapse;
     font-family: "Microsoft YaHei", sans-serif;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 0;
   }
   .attachments .item {
     position: relative;
     min-height: 2em;
+    list-style: none;
+    height: 3em;
+    width: 100%;
+    border-bottom: 1px solid lightgray;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-grow: 0;
+    flex-shrink: 0;
   }
   .attachments .item:nth-child(odd) {
     background-color: #fafafa;
@@ -402,23 +414,25 @@ export default {
     z-index: 0;
     background-color: #bae7ff;
   }
-  .attachments td {
+  .attachments span {
     padding: 0.2em;
     text-align: left;
     z-index: 1;
-    border-bottom: 1px solid lightgray;
   }
   .attachments .thumb {
     width: 5em;
   }
   .attachments .thumb img {
     width: auto;
-    max-width: 5em;
+    max-width: 4em;
     max-height: 3em;
     vertical-align: middle;
   }
   .attachments .filename {
-    padding-left: 1em;
+    flex-grow: 100;
+    flex-shrink: 100;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
   .attachments .filename input {
     border: 2px solid #c4c7ce;
@@ -445,5 +459,75 @@ export default {
   }
   .attachments .operate a {
     text-decoration: none;
+  }
+
+  @media only screen and (min-width: 650px) and (max-width: 800px) {
+    .attachments .operate {
+      width: 3em;
+    }
+
+    .attachments .size {
+      width: 5em;
+    }
+
+    .attachments .time {
+      width: 6em;
+    }
+  }
+
+  @media only screen and (min-width: 320px) and (max-width: 650px) {
+    .attachments .item {
+      display: block;
+      width: 100%;
+      height: 4em;
+      position: relative;
+    }
+
+    .attachments .thumb {
+      height: 4em;
+      width: 4em;
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .attachments .thumb img {
+      width: 4em;
+      height: 4em;
+      object-fit: cover;
+    }
+
+    .attachments .filename {
+      width: calc(100% - 5em);
+      height: 2em;
+      position: absolute;
+      left: 5em;
+      top: 0;
+      white-space: nowrap;
+    }
+
+    .attachments .time {
+      position: absolute;
+      left: 5em;
+      top: 2em;
+    }
+
+    .attachments .size {
+      position: absolute;
+      right: 2em;
+      top: 2em;
+      width: auto;
+    }
+
+    .attachments .operate {
+      position: absolute;
+      right: 0;
+      top: 2em;
+      width: auto;
+    }
   }
 </style>

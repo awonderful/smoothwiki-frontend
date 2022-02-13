@@ -4,6 +4,7 @@
       v-model="left"
       app
       left
+      :disable-route-watcher="true"
       class="drawer"
     >
       <left></left>
