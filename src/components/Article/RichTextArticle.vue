@@ -521,7 +521,7 @@ export default {
     getEditingSearch() {
       return this.editor.getText() 
     },
-    reload() {
+    afterExitEditing() {
       this.editor.chain().setContent(this.article.editingBody).run()
     },
     //--------------------------link-------------------------

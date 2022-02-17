@@ -223,8 +223,8 @@ export default {
               editingSearch: this.article.search,
               isEditing: false,
             })
-            if (typeof this.reload === 'function') {
-              this.reload()
+            if (typeof this.afterExitEditing === 'function') {
+              this.afterExitEditing()
             }
           }.bind(this)
         })
@@ -257,11 +257,9 @@ export default {
     },
     fullscreen () {
       this.hidePageScrollbar()
-      //this.setArticleProps({isFullScreen: true})
       this.isFullScreen = true
     },
     exitFullscreen () {
-      //this.setArticleProps({isFullScreen: false})
       this.isFullScreen = false
       this.$nextTick(function () {
         this.showPageScrollbar()
@@ -273,10 +271,10 @@ export default {
       }
     },
     copy () {
-      this.$state.clipboard.copyArticle(this.article.nodeId, this.article.uniqId)
+      this.$state.clipboard.copyArticles(this.article.nodeId, [this.article.uniqId])
     },
     cut () {
-      this.$state.clipboard.cutArticle(this.article.nodeId, this.article.uniqId)
+      this.$state.clipboard.cutArticles(this.article.nodeId, [this.article.uniqId])
     },
     history () {
       this.$emit('history', this.article.uniqId)

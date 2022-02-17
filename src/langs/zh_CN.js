@@ -91,7 +91,8 @@ export default {
         richText: '+ 富文本',
         markdown: '+ MARKDOWN',
         mind: '+ 脑图',
-        attachment: '+ 附件'
+        attachment: '+ 附件',
+        spreadsheet: '+ 数据表格',
       },
       outdatedAlert: '当前页面内容有更新！',
       refresh: '刷新',

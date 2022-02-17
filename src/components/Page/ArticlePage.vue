@@ -25,10 +25,11 @@
       </v-row>
       <v-row v-if="page.isReadOnly === false" justify="center" class="mt-5 mb-3" @contextmenu.stop="doNothing()">
         <v-col cols="12" class="d-flex flex-row justify-center flex-wrap add-article-buttons-wrapper">
-          <v-btn color="primary" @click="addFreshArticle(articleType.MARKDOWN)"   class="mx-3">{{ $t('page.articlePage.buttons.markdown') }}</v-btn>
-          <v-btn color="primary" @click="addFreshArticle(articleType.RICHTEXT)"   class="mx-3">{{ $t('page.articlePage.buttons.richText') }}</v-btn>
-          <v-btn color="primary" @click="addFreshArticle(articleType.MIND)"       class="mx-3">{{ $t('page.articlePage.buttons.mind') }}</v-btn>
-          <v-btn color="primary" @click="addFreshArticle(articleType.ATTACHMENT)" class="mx-3">{{ $t('page.articlePage.buttons.attachment') }}</v-btn>
+          <v-btn color="primary" @click="addFreshArticle(articleType.MARKDOWN)"    class="mx-3">{{ $t('page.articlePage.buttons.markdown') }}</v-btn>
+          <v-btn color="primary" @click="addFreshArticle(articleType.RICHTEXT)"    class="mx-3">{{ $t('page.articlePage.buttons.richText') }}</v-btn>
+          <v-btn color="primary" @click="addFreshArticle(articleType.MIND)"        class="mx-3">{{ $t('page.articlePage.buttons.mind') }}</v-btn>
+          <v-btn color="primary" @click="addFreshArticle(articleType.SPREADSHEET)" class="mx-3">{{ $t('page.articlePage.buttons.spreadsheet') }}</v-btn>
+          <v-btn color="primary" @click="addFreshArticle(articleType.ATTACHMENT)"  class="mx-3">{{ $t('page.articlePage.buttons.attachment') }}</v-btn>
         </v-col>
       </v-row>
     </v-container>
@@ -200,6 +201,19 @@ export default {
               }),
               search:   '',
               isEditing: false
+          })
+          break
+
+        case ARTICLE_TYPE.SPREADSHEET:
+          this.$state.page.appendArticle(this.nodeId, {
+              spaceId:  this.spaceId,
+              nodeId:   this.nodeId,
+              id:       0,
+              type:     this.articleType.SPREADSHEET,
+              title:    '',
+              body:     JSON.stringify([{}]),
+              search:   '',
+              isEditing: true
           })
           break
       }

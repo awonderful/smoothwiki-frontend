@@ -10,7 +10,7 @@ import ConfirmDialog from './ConfirmDialog.vue'
 import ErrorDialog from './ErrorDialog.vue'
 
 export default {
-  name: 'global-dialogs',
+  name: 'global-dialog',
   components: { ConfirmDialog, ErrorDialog }
 }
 </script>

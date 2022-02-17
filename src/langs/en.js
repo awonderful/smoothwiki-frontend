@@ -89,9 +89,10 @@ export default {
     articlePage: {
       buttons: {
         richText: '+ Rich Text',
-        markdown: '+ MARKDOWN',
+        markdown: '+ Markdown',
         mind: '+ Mind',
-        attachment: '+ Attachment'
+        attachment: '+ Attachment',
+        spreadsheet: '+ Spreadsheet',
       },
       outdatedAlert: 'this page is outdated!',
       refresh: 'refresh',

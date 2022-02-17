@@ -62,7 +62,7 @@
 
     <v-divider class="divider" />
 
-    <div class="body">
+    <div class="body" ref="body">
       <slot name="editor" v-if="isEditing"></slot>
       <slot name="view" v-else></slot>
     </div>
@@ -130,6 +130,12 @@ export default {
     },
     clickMenu (item) {
       this.$emit('clickMenu', item)
+    },
+    getBodyWidth () {
+      return this.$refs.body.clientWidth
+    },
+    getBodyHeight () {
+      return this.$refs.body.clientHeight
     }
   }
 }
@@ -146,6 +152,7 @@ export default {
     top: 0;
     width: 100%;
     height: auto;
+    z-index: 0;
   }
   .header {
     flex-shrink: 0;
@@ -176,7 +183,7 @@ export default {
     height: 100vh;
     left: 0;
     top: 0;
-    z-index: 999;
+    z-index: 200;
     padding: 0 !important;
   }
   .article-container.full-screen .body {

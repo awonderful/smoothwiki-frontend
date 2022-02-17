@@ -53,7 +53,7 @@
       <article-page v-if="nodeId > 0"></article-page>
     </v-main>
 
-    <global-dialogs></global-dialogs>
+    <global-dialog></global-dialog>
 
   </v-app>
 </template>
@@ -64,7 +64,7 @@ import ArticlePage from '@/components/Page/ArticlePage.vue'
 import ArticleList from '@/components/Right/ArticleList.vue'
 import Viewer from '@/components/Top/Viewer.vue'
 import Search from '@/components/Top/Search.vue'
-import GlobalDialogs from '@/components/GlobalDialogs/Index.vue'
+import GlobalDialog from '@/components/GlobalDialog/Index.vue'
 import GeneralErrorHandling from '@/common/generalErrorHandling.js'
 import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
 
@@ -74,7 +74,7 @@ export default {
     ArticlePage, 
     ArticleList, 
     Viewer, 
-    GlobalDialogs,
+    GlobalDialog,
     Search
   },
   mixins: [

@@ -27,15 +27,15 @@ export const ARTICLE_TYPE = {
   MARKDOWN:    2,
   ATTACHMENT:  3,
   MIND:        4,
-  PDF:         5
+  SPREADSHEET: 5,
 }
 
 export const ARTICLE_COMPONENT_MAP = {
-  [ARTICLE_TYPE.RICHTEXT]:   'RichTextArticle',
-  [ARTICLE_TYPE.MARKDOWN]:   'MarkdownArticle',
-  [ARTICLE_TYPE.ATTACHMENT]: 'AttachmentArticle',
-  [ARTICLE_TYPE.MIND]:       'MindArticle',
-  [ARTICLE_TYPE.PDF]:        'PdfArticle'
+  [ARTICLE_TYPE.RICHTEXT]:    'RichTextArticle',
+  [ARTICLE_TYPE.MARKDOWN]:    'MarkdownArticle',
+  [ARTICLE_TYPE.ATTACHMENT]:  'AttachmentArticle',
+  [ARTICLE_TYPE.MIND]:        'MindArticle',
+  [ARTICLE_TYPE.SPREADSHEET]: 'SpreadsheetArticle',
 }
 
 export const PAGE_STATUS = {

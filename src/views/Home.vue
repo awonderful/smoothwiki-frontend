@@ -106,17 +106,17 @@
     <remove-space-dialog v-model="showRemoveSpaceDialog" :space="currentSpace" v-if="currentSpace !== null"/>
     <setting-space-dialog v-model="showSettingSpaceDialog" :space="currentSpace" v-if="currentSpace !== null" />
 
-    <global-dialogs></global-dialogs>
+    <global-dialog></global-dialog>
 
   </v-app>
 </template>
 
 <script>
-import CreateSpaceDialog from '@/components/Space/CreateSpaceDialog.vue'
-import RemoveSpaceDialog from '@/components/Space/RemoveSpaceDialog.vue'
-import SettingSpaceDialog from '@/components/Space/SettingSpaceDialog.vue'
+import CreateSpaceDialog from '@/components/Dialog/CreateSpaceDialog.vue'
+import RemoveSpaceDialog from '@/components/Dialog/RemoveSpaceDialog.vue'
+import SettingSpaceDialog from '@/components/Dialog/SettingSpaceDialog.vue'
 import ContextMenu from '@/components/Util/ContextMenu.vue'
-import GlobalDialogs from '@/components/GlobalDialogs/Index.vue'
+import GlobalDialog from '@/components/GlobalDialog/Index.vue'
 import Viewer from '@/components/Top/Viewer.vue'
 import Search from '@/components/Top/Search.vue'
 import { SPACE_TYPE } from '@/common/constants.js'
@@ -128,7 +128,7 @@ export default {
     RemoveSpaceDialog,
     SettingSpaceDialog,
     ContextMenu,
-    GlobalDialogs,
+    GlobalDialog,
     Viewer,
     Search
   },

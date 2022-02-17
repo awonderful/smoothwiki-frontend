@@ -13,7 +13,9 @@ import MarkdownArticle from '@/components/Article/MarkdownArticle.vue'
 import RichTextArticle from '@/components/Article/RichTextArticle.vue'
 import AttachmentArticle from '@/components/Article/AttachmentArticle/Index.vue'
 import MindArticle from '@/components/Article/MindArticle.vue'
+import SpreadsheetArticle from '@/components/Article/SpreadsheetArticle.vue'
 import PdfArticle from '@/components/Article/PdfArticle.vue'
+
 
 export default {
 	inheritAttrs: false,
@@ -22,7 +24,8 @@ export default {
     RichTextArticle,
     AttachmentArticle,
     MindArticle,
-    PdfArticle
+    PdfArticle,
+    SpreadsheetArticle,
   },
   data: function () {
     return {

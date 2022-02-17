@@ -63,3 +63,11 @@ export const isJsonString = function (str) {
     }
     return true
 }
+
+/**
+ * check if a string is a number
+ */
+export const isNumeric = function (str) {
+  if (typeof str != "string") return false
+  return !isNaN(str) && !isNaN(parseFloat(str))
+}

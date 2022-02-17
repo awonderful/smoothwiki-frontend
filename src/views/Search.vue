@@ -76,13 +76,13 @@
       </v-container>
     </v-main>
 
-    <global-dialogs></global-dialogs>
+    <global-dialog></global-dialog>
 
   </v-app>
 </template>
 
 <script>
-import GlobalDialogs from '@/components/GlobalDialogs/Index.vue'
+import GlobalDialog from '@/components/GlobalDialog/Index.vue'
 import Viewer from '@/components/Top/Viewer.vue'
 import Search from '@/components/Top/Search.vue'
 import Mark from 'mark.js'
@@ -92,7 +92,7 @@ import * as API from '@/common/API.js'
 
 export default {
   components: {
-    GlobalDialogs,
+    GlobalDialog,
     Viewer,
     Search
   },
