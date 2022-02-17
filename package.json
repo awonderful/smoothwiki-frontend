@@ -29,6 +29,7 @@
     "@tiptap/vue-2": "^2.0.0-beta.77",
     "axios": "^0.21.4",
     "core-js": "^3.6.5",
+    "less": "^4.1.2",
     "lowlight": "^2.5.0",
     "mark.js": "^8.11.1",
     "markdown-it-br": "^1.0.0",
@@ -42,7 +43,8 @@
     "vue-router": "^3.2.0",
     "vue-upload-component": "^2.8.20",
     "vuetify": "^2.4.9",
-    "vuex": "^3.4.0"
+    "vuex": "^3.4.0",
+    "x-data-spreadsheet": "^1.1.9"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.5.0",
