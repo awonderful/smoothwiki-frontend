@@ -60,10 +60,80 @@ export default {
       okText: '放弃',
       cancelText: '取消'
     },
+    markdown: {
+      toolbar: {
+        uploadLocalImage: '上传本地图片',
+        insertNetworkImage: '插入网络图片',
+        buttonTips: {
+          undo: '恢复',
+          redo: '重做',
+          bold: '加粗',
+          italic: '倾斜',
+          strike: '删除线',
+          underline: '下划线',
+          subscript: '下标',
+          superscript: '上标',
+          mark: '高光',
+          heading1: '一级标题',
+          heading2: '二级标题',
+          heading3: '三级标题',
+          bulletedList: '符号列表',
+          numberedList: '编号列表',
+          taskList: '任务列表',
+          quote: '引用',
+          codeBlock: '代码',
+          link: '链接',
+          insertTable: '插入表格',
+          preview: '预览',
+        }
+      },
+      insertNetworkImageDialog: {
+        title: '图片',
+        cancel: '取消',
+        ok: '确定',
+      },
+      insertLinkDialog: {
+        title: '链接',
+        cancel: '取消',
+        ok: '确定',
+        titlePlaceHolder: '标题'
+      }
+    },
     richText: {
       toolbar: {
         uploadLocalImage: '上传本地图片',
-        insertNetworkImage: '插入网络图片'
+        insertNetworkImage: '插入网络图片',
+        buttonTips: {
+          undo: '恢复',
+          redo: '重做',
+          bold: '加粗',
+          italic: '倾斜',
+          strike: '删除线',
+          underline: '下划线',
+          subscript: '下标',
+          superscript: '上标',
+          highlight: '高光',
+          heading1: '一级标题',
+          heading2: '二级标题',
+          heading3: '三级标题',
+          bulletedList: '符号列表',
+          numberedList: '编号列表',
+          taskList: '任务列表',
+          quote: '引用',
+          codeBlock: '代码',
+          link: '链接',
+          unlink: '取消链接',
+          insertTable: '插入表格',
+          deleteTable: '删除表格',
+          addColBefore: '在左侧插入列',
+          addColAfter: '在右侧插入列',
+          deleteColumn: '删除列',
+          addRowBefore: '在上方插入行',
+          addRowAfter: '在下方插入行',
+          deleteRow: '删除行',
+          splitCell: '拆分单元格',
+          mergeCells: '合并单元格',
+        }
       },
       insertNetworkImageDialog: {
         title: '图片',

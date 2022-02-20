@@ -60,10 +60,31 @@ export default {
       okText: 'discard',
       cancelText: 'cancel'
     },
-    richText: {
+    markdown: {
       toolbar: {
         uploadLocalImage: 'upload a local image',
-        insertNetworkImage: 'insert a network image'
+        insertNetworkImage: 'insert a network image',
+        buttonTips: {
+          undo: 'Undo',
+          redo: 'Redo',
+          bold: 'Bold',
+          italic: 'Italic',
+          strike: 'Strikethrough',
+          underline: 'Underline',
+          subscript: 'Subscript',
+          superscript: 'Superscript',
+          mark: 'Highlight',
+          heading1: 'Heading 1',
+          heading2: 'Heading 2',
+          heading3: 'Heading 3',
+          bulletedList: 'Bulleted List',
+          numberedList: 'Numbered List',
+          quote: 'Quote',
+          codeBlock: 'Code',
+          link: 'Link',
+          insertTable: 'Insert Table',
+          preview: 'Preview',
+        }
       },
       insertNetworkImageDialog: {
         title: 'image',
@@ -75,7 +96,55 @@ export default {
         cancel: 'cancel',
         ok: 'insert',
         titlePlaceHolder: 'title'
-      }
+      },
+    },
+    richText: {
+      toolbar: {
+        uploadLocalImage: 'upload a local image',
+        insertNetworkImage: 'insert a network image',
+        buttonTips: {
+          undo: 'Undo',
+          redo: 'Redo',
+          bold: 'Bold',
+          italic: 'Italic',
+          strike: 'Strikethrough',
+          underline: 'Underline',
+          subscript: 'Subscript',
+          superscript: 'Superscript',
+          highlight: 'Highlight',
+          heading1: 'Heading 1',
+          heading2: 'Heading 2',
+          heading3: 'Heading 3',
+          bulletedList: 'Bulleted List',
+          numberedList: 'Numbered List',
+          taskList: 'Task List',
+          quote: 'Quote',
+          codeBlock: 'Code',
+          link: 'Link',
+          unlink: 'Unlink',
+          insertTable: 'Insert Table',
+          deleteTable: 'Delete Table',
+          addColBefore: 'Insert Column to the Left',
+          addColAfter: 'Insert Column to the right',
+          deleteColumn: 'Delete Column',
+          addRowBefore: 'Insert Row Above',
+          addRowAfter: 'Insert Row Below',
+          deleteRow: 'Delete Row',
+          splitCell: 'Split Cell',
+          mergeCells: 'Merge Cells',
+        }
+      },
+      insertNetworkImageDialog: {
+        title: 'image',
+        cancel: 'cancel',
+        ok: 'insert',
+      },
+      insertLinkDialog: {
+        title: 'link',
+        cancel: 'cancel',
+        ok: 'insert',
+        titlePlaceHolder: 'title'
+      },
     },
     mind: {
       defaultRootNodeText: 'New Topic'

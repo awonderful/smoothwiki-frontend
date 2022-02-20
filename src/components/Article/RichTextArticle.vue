@@ -123,17 +123,26 @@
                 </v-list-item-group>
               </v-list>
             </v-menu>
-            <v-btn
-              dense
-              small
-              :color="item.isActive && item.isActive() ? 'grey lighten-1': 'white'"
+            <v-tooltip
+              bottom
               :key="item.name"
-              :class="[item.name, 'editor-button', 'elevation-0', {'active': item.isActive && item.isActive()}]"
-              :disabled="item.isDisabled && item.isDisabled()"
-              @click="item.exec()"
               v-else>
-              <v-icon small color="grey darken-1">{{typeof item.icon === 'function' ? item.icon() : item.icon}}</v-icon>
-            </v-btn>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  dense
+                  small
+                  :color="item.isActive && item.isActive() ? 'grey lighten-1': 'white'"
+                  :key="item.name"
+                  :class="[item.name, 'editor-button', 'elevation-0', {'active': item.isActive && item.isActive()}]"
+                  :disabled="item.isDisabled && item.isDisabled()"
+                  @click="item.exec()"
+                  v-bind="attrs"
+                  v-on="on">
+                  <v-icon small color="grey darken-1">{{typeof item.icon === 'function' ? item.icon() : item.icon}}</v-icon>
+                </v-btn>
+              </template>
+              <span>{{ typeof item.tip === 'function' ? item.tip() : $t('article.richText.toolbar.buttonTips.' + item.name)}}</span>
+            </v-tooltip>
           </template>
         </v-toolbar>
         <v-divider></v-divider>
@@ -304,7 +313,7 @@ export default {
           }
         },
         {
-          name:      'heading0',
+          name:      'heading1',
           icon:      'mdi-format-header-1',
           isActive:  () => {
             return this.editor.isActive('heading', {level: 1})
@@ -314,7 +323,7 @@ export default {
           }
         },
         {
-          name:      'heading1',
+          name:      'heading2',
           icon:      'mdi-format-header-2',
           isActive:  () => {
             return this.editor.isActive('heading', {level: 2})
@@ -324,7 +333,7 @@ export default {
           }
         },
         {
-          name:      'heading2',
+          name:      'heading3',
           icon:      'mdi-format-header-3',
           isActive:  () => {
             return this.editor.isActive('heading', {level: 3})
@@ -337,7 +346,7 @@ export default {
           name:      'divider'
         },
         {
-          name:      'bulletList',
+          name:      'bulletedList',
           icon:      'mdi-format-list-bulleted',
           isActive:  () => {
             return this.editor.isActive('bulletList')
@@ -347,7 +356,7 @@ export default {
           }
         },
         {
-          name:      'orderedList',
+          name:      'numberedList',
           icon:      'mdi-format-list-numbered',
           isActive:  () => {
             return this.editor.isActive('orderedList')
@@ -367,7 +376,7 @@ export default {
           }
         },
         {
-          name:      'blockQuote',
+          name:      'quote',
           icon:      'mdi-format-quote-close',
           isActive:  () => {
             return this.editor.isActive('blockquote')
@@ -493,11 +502,16 @@ export default {
           }
         },
         {
-          name:      'mergeOrSplitCell',
+          name:      'mergeOrSplitCells',
           icon:      () => {
             return this.editor.can().splitCell()
               ? 'mdi-table-split-cell'
               : 'mdi-table-merge-cells'
+          },
+          tip:       () => {
+            return this.editor.can().splitCell()
+              ? this.$t('article.richText.toolbar.buttonTips.splitCell')
+              : this.$t('article.richText.toolbar.buttonTips.mergeCells')
           },
           isDisabled: () => {
             return !this.editor.can().mergeCells() && !this.editor.can().splitCell()
