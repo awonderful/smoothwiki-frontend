@@ -4,7 +4,7 @@ export default {
   errorCaptured (err) {
     console.log(err)
 
-    // an api call returned a error code.
+    // an api call returned an error code.
     if (typeof err.wrongCode === 'number') {
       let msg = this.$t('errors.systemError')
       const errorMap = {
@@ -21,6 +21,8 @@ export default {
         message: msg
       })
     }
+
+
 
     //return false
   }

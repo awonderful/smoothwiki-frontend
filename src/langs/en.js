@@ -93,12 +93,25 @@ export default {
         mind: '+ Mind',
         attachment: '+ Attachment',
         spreadsheet: '+ Spreadsheet',
+        importSqlTable: ' Import Database Table Structures',
       },
       outdatedAlert: 'this page is outdated!',
       refresh: 'refresh',
       trashDialog: {
         title: 'TRASH',
         empty: 'EMPTY'
+      },
+      importSqlTableDialog: {
+        title: 'Import Database Table Structures',
+        sqlFieldTitle: 'SQL Create Table Statements',
+        cancel: 'cancel',
+        ok: 'import',
+        markdown: {
+          field: 'Field',
+          type: 'Type',
+          default: 'Default',
+          comment: 'Comment',
+        } 
       }
     }
   },

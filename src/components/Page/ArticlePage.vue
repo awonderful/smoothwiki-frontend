@@ -30,6 +30,7 @@
           <v-btn color="primary" @click="addFreshArticle(articleType.MIND)"        class="mx-3">{{ $t('page.articlePage.buttons.mind') }}</v-btn>
           <v-btn color="primary" @click="addFreshArticle(articleType.SPREADSHEET)" class="mx-3">{{ $t('page.articlePage.buttons.spreadsheet') }}</v-btn>
           <v-btn color="primary" @click="addFreshArticle(articleType.ATTACHMENT)"  class="mx-3">{{ $t('page.articlePage.buttons.attachment') }}</v-btn>
+          <v-btn color="primary" @click="importSqlTable()"                         class="mx-3">{{ $t('page.articlePage.buttons.importSqlTable') }}</v-btn>
         </v-col>
       </v-row>
     </v-container>
@@ -40,6 +41,13 @@
       :nodeId="historyDialog.nodeId"
       :uniqId="historyDialog.uniqId"
     ></history-dialog>
+
+    <import-sql-table-dialog
+      v-model="showImportSqlTableDialog"
+      :spaceId="this.spaceId"
+      :nodeId="this.nodeId"
+    >
+    </import-sql-table-dialog>
 
     <v-menu
       v-model="contextmenu.show"
@@ -67,12 +75,14 @@ import { API_CODE, ARTICLE_TYPE, PAGE_VERSION_CHECKING_INTERVAL } from '@/common
 import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
 import Article from '@/components/Article/Index.vue';
 import HistoryDialog from '@/components/Dialog/HistoryDialog.vue'
+import ImportSqlTableDialog from '@/components/Dialog/ImportSqlTableDialog.vue'
 import * as API from '@/common/API.js'
 
 export default {
   components: {
     Article,
-    HistoryDialog
+    HistoryDialog,
+    ImportSqlTableDialog
   },
   mixins: [
     SpaceRouteParamsHandling
@@ -97,7 +107,9 @@ export default {
         nodeId: 0,
         uniqId: '',
         articleId: 0,
-      }
+      },
+
+      showImportSqlTableDialog: false
     }
   },
   computed: {
@@ -280,6 +292,9 @@ export default {
       } else {
         this.$state.pageAction.pullArticlePage(this.spaceId, this.nodeId)
       }
+    },
+    importSqlTable () {
+      this.showImportSqlTableDialog = true
     }
   }
 }

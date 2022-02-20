@@ -1,15 +1,16 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '@/views/Home.vue'
-import Space from '@/views/Space.vue'
-import Login from '@/views/Login.vue'
-import Register from '@/views/Register.vue'
-import ForgotPassword from '@/views/ForgotPassword.vue'
-import ResetPassword from '@/views/ResetPassword.vue'
-import Search from '@/views/Search.vue'
 import { UserState } from '@/state/user.js'
 import { UserAction } from '@/state/userAction.js'
 import { USER_STATUS } from '@/common/constants.js'
+
+const Home = () => import('@/views/Home.vue')
+const Space = () => import('@/views/Space.vue')
+const Login = () => import('@/views/Login.vue')
+const Register = () => import('@/views/Register.vue')
+const ForgotPassword = () => import('@/views/ForgotPassword.vue')
+const ResetPassword = () => import('@/views/ResetPassword.vue')
+const Search = () => import('@/views/Search.vue')
 
 Vue.use(VueRouter)
 

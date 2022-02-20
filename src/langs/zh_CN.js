@@ -93,12 +93,25 @@ export default {
         mind: '+ 脑图',
         attachment: '+ 附件',
         spreadsheet: '+ 数据表格',
+        importSqlTable: '导入数据库表结构',
       },
       outdatedAlert: '当前页面内容有更新！',
       refresh: '刷新',
       trashDialog: {
         title: '垃圾箱',
         empty: '空'
+      },
+      importSqlTableDialog: {
+        title: '导入数据库表结构',
+        sqlFieldTitle: 'SQL建表语句',
+        cancel: '取消',
+        ok: '导入',
+        markdown: {
+          field: '字段',
+          type: '类型',
+          default: '默认值',
+          comment: '说明'
+        } 
       }
     }
   },

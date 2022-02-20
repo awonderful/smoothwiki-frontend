@@ -46,8 +46,8 @@ import BaseArticle from './BaseArticle.vue'
 import ArticleWindow from './ArticleWindow.vue'
 import Spreadsheet from 'x-data-spreadsheet'
 import { isNumeric } from '@/common/util.js'
-import zh_cn from 'x-data-spreadsheet/dist/locale/zh-cn.js'
-import en from 'x-data-spreadsheet/dist/locale/en.js'
+import 'x-data-spreadsheet/dist/locale/zh-cn.js'
+import 'x-data-spreadsheet/dist/locale/en.js'
 
 export default {
   mixins: [BaseArticle],
