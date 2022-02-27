@@ -82,9 +82,9 @@
 </template>
 
 <script>
-import GlobalDialog from '@/components/GlobalDialog/Index.vue'
-import Viewer from '@/components/Top/Viewer.vue'
-import Search from '@/components/Top/Search.vue'
+import GlobalDialog from '@/components/globalDialogs/Index.vue'
+import Viewer from '@/components/top/Viewer.vue'
+import Search from '@/components/top/Search.vue'
 import Mark from 'mark.js'
 import GeneralErrorHandling from '@/common/generalErrorHandling.js'
 import { SEARCH_OBJECT_TYPE } from '@/common/constants.js'

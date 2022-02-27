@@ -60,10 +60,27 @@ export default {
       okText: 'discard',
       cancelText: 'cancel'
     },
+    widget: {
+      insertLinkDialog: {
+        title: 'link',
+        cancel: 'cancel',
+        ok: 'insert',
+        titleFieldPlaceHolder: 'title'
+      },
+      insertNetworkImageDialog: {
+        title: 'image',
+        cancel: 'cancel',
+        ok: 'insert',
+      },
+      insertTableBoard: {
+        title: 'Insert Table',
+        info: '{row} * {col} table'
+      }
+    },
     markdown: {
       toolbar: {
-        uploadLocalImage: 'upload a local image',
-        insertNetworkImage: 'insert a network image',
+        uploadLocalImage: 'Upload a Local Image',
+        insertNetworkImage: 'Insert a Network Image',
         buttonTips: {
           undo: 'Undo',
           redo: 'Redo',
@@ -84,24 +101,14 @@ export default {
           link: 'Link',
           insertTable: 'Insert Table',
           preview: 'Preview',
+          horizontalRule: 'Horizontal Rule',
         }
-      },
-      insertNetworkImageDialog: {
-        title: 'image',
-        cancel: 'cancel',
-        ok: 'insert',
-      },
-      insertLinkDialog: {
-        title: 'link',
-        cancel: 'cancel',
-        ok: 'insert',
-        titlePlaceHolder: 'title'
       },
     },
     richText: {
       toolbar: {
-        uploadLocalImage: 'upload a local image',
-        insertNetworkImage: 'insert a network image',
+        uploadLocalImage: 'Upload a Local Image',
+        insertNetworkImage: 'Insert a Network Image',
         buttonTips: {
           undo: 'Undo',
           redo: 'Redo',
@@ -132,18 +139,8 @@ export default {
           deleteRow: 'Delete Row',
           splitCell: 'Split Cell',
           mergeCells: 'Merge Cells',
+          horizontalRule: 'Horizontal Rule',
         }
-      },
-      insertNetworkImageDialog: {
-        title: 'image',
-        cancel: 'cancel',
-        ok: 'insert',
-      },
-      insertLinkDialog: {
-        title: 'link',
-        cancel: 'cancel',
-        ok: 'insert',
-        titlePlaceHolder: 'title'
       },
     },
     mind: {

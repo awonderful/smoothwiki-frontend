@@ -1,3 +1,5 @@
+import { e } from "../../dist/assets/vendor.b0cb9eb7"
+
 let uniqIdCounter = 0
 
 export const generateUniqId = function () {
@@ -70,4 +72,27 @@ export const isJsonString = function (str) {
 export const isNumeric = function (str) {
   if (typeof str != "string") return false
   return !isNaN(str) && !isNaN(parseFloat(str))
+}
+
+/**
+ * load script at runtime
+ */
+export const loadScript = function (url, callback) {
+  let script = document.createElement('script');
+  script.src = url;
+  if (typeof callback === 'function') {
+    script.onload = callback
+  }
+
+  document.head.appendChild(script)
+}
+
+/**
+ * escae html
+ */
+export const escapeHtml = function (html) {
+  const el = document.createElement('div')
+  el.innerText = el
+
+  return el.innerHTML
 }

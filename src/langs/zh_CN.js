@@ -60,6 +60,19 @@ export default {
       okText: '放弃',
       cancelText: '取消'
     },
+    widget: {
+      insertNetworkImageDialog: {
+        title: '图片',
+        cancel: '取消',
+        ok: '确定',
+      },
+      insertLinkDialog: {
+        title: '链接',
+        cancel: '取消',
+        ok: '确定',
+        titlePlaceHolder: '标题'
+      }
+    },
     markdown: {
       toolbar: {
         uploadLocalImage: '上传本地图片',
@@ -85,19 +98,9 @@ export default {
           link: '链接',
           insertTable: '插入表格',
           preview: '预览',
+          horizontalRule: '插入水平线',
         }
       },
-      insertNetworkImageDialog: {
-        title: '图片',
-        cancel: '取消',
-        ok: '确定',
-      },
-      insertLinkDialog: {
-        title: '链接',
-        cancel: '取消',
-        ok: '确定',
-        titlePlaceHolder: '标题'
-      }
     },
     richText: {
       toolbar: {
@@ -133,19 +136,9 @@ export default {
           deleteRow: '删除行',
           splitCell: '拆分单元格',
           mergeCells: '合并单元格',
+          horizontalRule: '插入水平线',
         }
       },
-      insertNetworkImageDialog: {
-        title: '图片',
-        cancel: '取消',
-        ok: '确定',
-      },
-      insertLinkDialog: {
-        title: '链接',
-        cancel: '取消',
-        ok: '确定',
-        titlePlaceHolder: '标题'
-      }
     },
     mind: {
       defaultRootNodeText: '新建脑图'

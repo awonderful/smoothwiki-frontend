@@ -59,12 +59,12 @@
 </template>
 
 <script>
-import Left from '@/components/Left/Index.vue'
-import ArticlePage from '@/components/Page/ArticlePage.vue'
-import ArticleList from '@/components/Right/ArticleList.vue'
-import Viewer from '@/components/Top/Viewer.vue'
-import Search from '@/components/Top/Search.vue'
-import GlobalDialog from '@/components/GlobalDialog/Index.vue'
+import Left from '@/components/left/Index.vue'
+import ArticlePage from '@/components/pages/ArticlePage.vue'
+import ArticleList from '@/components/right/ArticleList.vue'
+import Viewer from '@/components/top/Viewer.vue'
+import Search from '@/components/top/Search.vue'
+import GlobalDialog from '@/components/globalDialogs/Index.vue'
 import GeneralErrorHandling from '@/common/generalErrorHandling.js'
 import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
 

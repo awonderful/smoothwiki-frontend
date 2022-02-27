@@ -112,13 +112,13 @@
 </template>
 
 <script>
-import CreateSpaceDialog from '@/components/Dialog/CreateSpaceDialog.vue'
-import RemoveSpaceDialog from '@/components/Dialog/RemoveSpaceDialog.vue'
-import SettingSpaceDialog from '@/components/Dialog/SettingSpaceDialog.vue'
-import ContextMenu from '@/components/Util/ContextMenu.vue'
-import GlobalDialog from '@/components/GlobalDialog/Index.vue'
-import Viewer from '@/components/Top/Viewer.vue'
-import Search from '@/components/Top/Search.vue'
+import CreateSpaceDialog from '@/components/dialogs/CreateSpaceDialog.vue'
+import RemoveSpaceDialog from '@/components/dialogs/RemoveSpaceDialog.vue'
+import SettingSpaceDialog from '@/components/dialogs/SettingSpaceDialog.vue'
+import ContextMenu from '@/components/utils/ContextMenu.vue'
+import GlobalDialog from '@/components/globalDialogs/Index.vue'
+import Viewer from '@/components/top/Viewer.vue'
+import Search from '@/components/top/Search.vue'
 import { SPACE_TYPE } from '@/common/constants.js'
 import GeneralErrorHandling from '@/common/generalErrorHandling.js'
 
