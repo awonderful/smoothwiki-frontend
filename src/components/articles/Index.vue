@@ -10,7 +10,7 @@
 <script>
 import { ARTICLE_COMPONENT_MAP } from '@/common/constants.js'
 import MarkdownArticle from './MarkdownArticle.vue'
-import RichTextArticle from './RichTextArticle.vue'
+import RichTextArticle from './RichTextArticle/Index.vue'
 import AttachmentArticle from './AttachmentArticle/Index.vue'
 import MindArticle from './MindArticle.vue'
 import SpreadsheetArticle from './SpreadsheetArticle.vue'

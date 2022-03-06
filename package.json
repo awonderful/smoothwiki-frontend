@@ -51,6 +51,7 @@
     "mysql-tokenizer": "^1.0.7",
     "twtree": "^3.6.0",
     "vue": "^2.6.11",
+    "vue-affix": "^0.5.2",
     "vue-axios": "^3.4.0",
     "vue-cookies": "^1.7.4",
     "vue-i18n": "^8.22.1",

@@ -1,5 +1,3 @@
-import { e } from "../../dist/assets/vendor.b0cb9eb7"
-
 let uniqIdCounter = 0
 
 export const generateUniqId = function () {
@@ -92,7 +90,7 @@ export const loadScript = function (url, callback) {
  */
 export const escapeHtml = function (html) {
   const el = document.createElement('div')
-  el.innerText = el
+  el.innerText = html
 
   return el.innerHTML
 }

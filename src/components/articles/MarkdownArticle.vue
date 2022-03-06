@@ -8,6 +8,7 @@
       :title.sync   = "article.editingTitle"
       :buttons      = "buttons"
       :menuItems    = "menuItems"
+      :containerId  = "containerId"
       @clickButton  = "clickButton"
       @clickMenu    = "clickMenu"
       ref           = "window"
@@ -40,6 +41,8 @@
 
         <classic-editor-layout
           :isFullScreen="isFullScreen"
+          :enableAffixToolbar="article.isEditing && !isFullScreen"
+          :containerId="containerId"
           :forceHeight="true">
 
           <!-- -------------------editor toolbar begins------------------------ -->
@@ -147,7 +150,7 @@
                       @click="clickToolbarButton(item)"
                       v-bind="attrs"
                       v-on="on">
-                      <v-icon small color="grey darken-1">{{item.icon}}</v-icon>
+                      <v-icon small color="grey darken-1">{{typeof item.icon === 'function' ? item.icon() : item.icon}}</v-icon>
                     </v-btn>
                   </template>
                   <span>{{ $t('article.markdown.toolbar.buttonTips.' + item.name)}}</span>
@@ -162,10 +165,17 @@
 
 
           <template v-slot:classic-editor-body>
-            <div class="editor-body white">
-              <div class="left" :id="textareaId">
+            <div :class="['editor-body', 'white', {'preview': preview}]">
+              <div
+                :id="textareaId"
+                class="left"
+                ref="left">
               </div>
-              <div class="right show-content pa-2" ref="preview" v-html="html">
+              <div
+                class="right show-content pa-2"
+                ref="right"
+                v-html="html"
+                v-show="preview">
               </div> 
             </div>
           </template>
@@ -175,10 +185,9 @@
 
       <template v-slot:view>
         <div
-          class="viewer show-content pa-2"
           :id="viewerId"
-          v-html="html"
-        >
+          class="viewer show-content pa-2"
+          v-html="html">
         </div>
       </template>
 
@@ -197,10 +206,12 @@ import ClassicEditorLayout from './widgets/ClassicEditorLayout.vue'
 import { ATTACHMENT_SHOW_URL } from '@/common/constants.js'
 import CodeMirror from 'codemirror'
 import 'codemirror/mode/markdown/markdown.js'
+import 'codemirror/addon/runmode/runmode.js'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/idea.css'
 import 'codemirror/addon/scroll/simplescrollbars.js'
 import 'codemirror/addon/scroll/simplescrollbars.css'
+import '@/assets/vscode-dark.css'
 import MarkdownIt from 'markdown-it'
 import sup from 'markdown-it-sup'
 import sub from 'markdown-it-sub'
@@ -212,7 +223,6 @@ import deflist from 'markdown-it-deflist'
 import image from 'markdown-it-images-preview'
 import emoji from 'markdown-it-emoji'
 import linkAttr from 'markdown-it-link-attributes'
-import { generateUniqId, escapeHtml } from '@/common/util.js'
 
 const modeImportMap = {
   puppet:       () => import('codemirror/mode/puppet/puppet.js'),
@@ -339,52 +349,6 @@ const modeImportMap = {
 }
 
 
-const markdown = new MarkdownIt({
-  breaks: true,
-  highlight: function (str, lang) {
-    const info = CodeMirror.findModeByName(lang) || CodeMirror.findModeByExtension(lang)
-    if (lang && info) {
-      const mode = info.mode
-      if (!CodeMirror.modes[mode] && modeImportMap[mode]) {
-        const id = generateUniqId()
-        modeImportMap[mode]().then(() => {
-          setTimeout(() => {
-            CodeMirror.runMode(str, mode, document.getElementById(id))
-          })
-        })
-        return `<pre id="${id}"><code>${escapeHtml(str)}</code></pre>`;
-      }
-      const el = document.createElement('div')
-      CodeMirror.runMode(str, mode, el)
-      return `<pre class="cm-s-default">${el.outerHTML}</pre>`;
-    }
-
-    return `<pre data-lang="${lang}"><code>${str}</code></pre>`;
-  }
-})
-.use(linkAttr, {
-  attrs: {
-    target: "_blank",
-    rel: "noopener",
-  }
-})
-.use(sup)
-.use(sub)
-.use(ins)
-.use(br)
-.use(mark)
-.use(katex)
-.use(deflist)
-.use(image)
-.use(emoji)
-
-markdown.renderer.rules.emoji = function(token, idx) {
-  const symbol = token[idx].markup
-  return isValidSymbol(symbol)
-         ? `<img class="emoji" src="/symbol/${token[idx].markup}.png">`
-         : `:${symbol}:`
-}
-
 export default {
   mixins: [BaseArticle],
   components: {
@@ -400,7 +364,10 @@ export default {
       return this.$i18n.locale.replace('_', '-')
     },
     html () {
-      return markdown.render(this.article.editingBody)
+      this.reRender
+      return this.markdown !== null
+             ? this.markdown.render(this.article.editingBody)
+             : ''
     },
     isEditing () {
       return this.article.isEditing
@@ -410,32 +377,11 @@ export default {
     return {
       viewerId: `${this.article.uniqId}_viewer`,
       textareaId: `${this.article.uniqId}_textarea`,
-      codeMirrorEditor: null,
-      xssOptions: {
-        whiteList: {
-          br: []
-        }
-      },
-      externalLink: {
-        markdown_css: function() {
-          return '/markdown/github-markdown.min.css'
-        },
-        hljs_js: function() {
-          return '/highlightjs/highlight.min.js'
-        },
-        hljs_css: function(css) {
-          return '/highlightjs/styles/' + css + '.min.css'
-        },
-        hljs_lang: function(lang) {
-          return '/highlightjs/languages/' + lang + '.min.js'
-        },
-        katex_js: function() {
-          return '/katex/katex.min.js'
-        },
-        katex_css: function() {
-          return '/katex/katex.min.css'
-        }
-      },
+      markdown: null,
+      loadingModes: 0,
+      reRender: 0,
+      preview: true,
+      leftScrollTop: 0,
       linkDialog: {
         show: false,
         title: '',
@@ -565,10 +511,62 @@ export default {
         },
         {
           name: 'preview',
-          icon: 'mdi-book-open-outline',
+          icon: () => {
+            return this.preview
+                   ? 'mdi-eye-off-outline'
+                   : 'mdi-eye-outline'
+          },
+          exec: () => {
+            this.preview = !this.preview
+          }
         }
       ]
     }
+  },
+  created () {
+    this.markdown = new MarkdownIt({
+      breaks: true,
+      highlight: function (str, lang) {
+        const mode = CodeMirror.findModeByName(lang) || CodeMirror.findModeByExtension(lang)
+        const mime = mode && mode.mime
+                  ? mode.mime
+                  : 'text/plain'
+
+        if (lang && mode && !CodeMirror.modes[mode.mode] && modeImportMap[mode.mode]) {
+          this.loadingModes += 1
+          modeImportMap[mode.mode]().then(() => {
+            this.loadingModes -= 1
+          })
+        }
+
+        const el = document.createElement('div')
+        CodeMirror.runMode(str, mime, el)
+        return `<pre class="cm-s-vscode-dark">${el.outerHTML}</pre>`;
+      }.bind(this)
+    })
+    .use(linkAttr, {
+      attrs: {
+        target: "_blank",
+        rel: "noopener noreferrer nofollow",
+      }
+    })
+    .use(sup)
+    .use(sub)
+    .use(ins)
+    .use(br)
+    .use(mark)
+    .use(katex)
+    .use(deflist)
+    .use(image)
+    .use(emoji)
+
+    this.markdown.renderer.rules.emoji = function(token, idx) {
+      const symbol = token[idx].markup
+      return isValidSymbol(symbol)
+            ? `<img class="emoji" src="/symbol/${token[idx].markup}.png">`
+            : `:${symbol}:`
+    }
+
   },
   watch: {
     isEditing: {
@@ -589,11 +587,34 @@ export default {
             }.bind(this))
             this.codeMirrorEditor.on('scroll', function () {
               const leftScrollInfo = this.codeMirrorEditor.getScrollInfo()
-              const rightScrollHeight = this.$refs.preview.scrollHeight
-              this.$refs.preview.scrollTop = rightScrollHeight * leftScrollInfo.top / leftScrollInfo.height
+              const leftScrollOffset = leftScrollInfo.top - this.leftScrollTop
+              const rightScrollHeight = this.$refs.right.scrollHeight
+              const rightScrollTop = this.$refs.right.scrollTop
+              this.$refs.right.scrollTop = rightScrollTop + (rightScrollHeight * leftScrollOffset / leftScrollInfo.height)
+              this.leftScrollTop = leftScrollInfo.top
+            }.bind(this))
+            this.codeMirrorEditor.on('paste', function (instance, event) {
+              if(event.clipboardData && event.clipboardData.items) {
+                for (const item of event.clipboardData.items) {
+                  if (item.type.indexOf("image") >= 0) {
+                    const file = item.getAsFile();
+                    this.addImage(file)
+                  }
+                }
+              }
             }.bind(this))
           }.bind(this))
         }
+      }
+    },
+    loadingModes (val) {
+      if (val === 0) {
+        setTimeout(function() {
+          this.reRender += 1
+          if (this.article.isEditing) {
+            this.codeMirrorEditor.setOption('mode', 'markdown')
+          }
+        }.bind(this), 100)
       }
     },
     isFullScreen (val) {
@@ -601,17 +622,21 @@ export default {
         this.$nextTick(() => {
           this.codeMirrorEditor.setSize('100%', '100%')
         })
+      } else if (!val && this.article.isEditing) {
+        this.$nextTick(() => {
+          this.codeMirrorEditor.setSize('100%', 'auto')
+        })
       }
     }
   },
   methods: {
-    async addImage(pos, file) {
+    async addImage(file) {
       const res = await this.$state.pageAction.addAttachmentToArticle(this.article.spaceId, this.article.nodeId, this.article.uniqId, file)
       const url = ATTACHMENT_SHOW_URL + res.data.data.id
-      this.$refs.editor.$img2Url(pos, url)
+      this.insertText(`![](${url})`)
     },
     getEditingSearch() {
-      return this.$refs.preview.innerText
+      return this.$refs.right.innerText
     },
     clickToolbarButton (item) {
       const selection = this.codeMirrorEditor.getSelection()
@@ -722,16 +747,21 @@ export default {
 }
 
 .editor-body .left {
+  width: 100%;
+  height: 100%;
+}
+
+.editor-body.preview .left {
   width: 50%;
   height: 100%;
 }
 
-.editor-body .right {
+.editor-body.preview .right {
   width: 50%;
   border-left: 1px solid rgba(0, 0, 0, 0.12);
   scrollbar-width: thin;
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .editor-body >>> .CodeMirror-overlayscroll-vertical {
@@ -779,29 +809,51 @@ export default {
   overflow-y: scroll;
 }
 
+.show-content {
+  font-size: 16px;
+  letter-spacing: 0.2px;
+}
+
 .show-content >>> table {
-  border-collapse: collapse;
   border-spacing: 0;
-  display: block;
   width: auto;
   overflow: auto;
   word-break: normal;
   word-break: keep-all;
+  margin: 1.75em 0;
+  border: 1px solid teal;
+  border-radius: 0.45em;
+  border-collapse: separate;
+  font-size: 0.85em;
+  overflow: hidden;
 }
 
-.show-content >>> table thead {
-  background-color: teal;
-  color: white;
+.show-content >>> table th {
+  background-color: #eaf3f3;
+  color: teal;
   font-weight: bold;
+  text-align: left;
 }
 
 .show-content >>> td, .show-content >>> th {
   padding: 0.5em 1em;
-  border: 1px solid #dee2e6;
+  border: 0;
 }
 
 .show-content >>> tr:nth-child(2n) {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: #0000000d;
+}
+
+.show-content >>> tr td:not(:last-child) {
+  border-right: 1px solid lightgray;
+}
+
+.show-content >>> tr th:not(:last-child) {
+  border-right: 1px solid lightgray;
+}
+
+.show-content >>> tr:hover td {
+  background-color: #eaf3f3;
 }
 
 .show-content >>> img {
@@ -818,13 +870,95 @@ export default {
 }
 
 .show-content >>> pre {
-  padding: 1em;
+  font-family: 'Droid Sans Mono', 'monospace', monospace;
+  padding: 1em 1.5em;
   overflow: auto;
-  font-size: 85%;
+  font-size: 0.85em;
   line-height: 1.45em;
-  background-color: #f6f8fa;
+  background-color: #1e1e1e;
   border-radius: 0.45em;
-  margin-bottom: 1em;
+  margin: 1.75em 0;
+  color: #e9e9e9;
+}
+
+.show-content >>> :not(pre) > code {
+  font-family: 'Droid Sans Mono', 'monospace', monospace;
+  font-size: 0.85em;
+  background-color: #f1f1f1;
+  color: #476582;
+  padding: .15em .5em;
+  border-radius: 0.25em;
+}
+
+.show-content >>> a {
+  color: teal;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.show-content >>> a:hover {
+  text-decoration: underline;
+}
+
+.show-content >>> a > code {
+  color: #476582;
+  text-decoration: none;
+}
+
+.show-content >>> p {
+  line-height: 1.6em;
+  letter-spacing: 0.2px;
+}
+
+.show-content >>> strong {
+  color: saddlebrown;
+  font-weight: bold;
+}
+
+.show-content >>> mark {
+  padding: 0.15em 0.5em;
+}
+
+.show-content >>> blockquote {
+  margin: 2em 0;
+  padding-left: 20px;
+  border-left: 4px solid teal;
+}
+
+.show-content >>> h1 {
+  margin: 0 0 3rem;
+  font-size: 2.4em;
+  line-height: 1.4em;
+  font-weight: 600;
+}
+
+.show-content >>> h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 2.8em 0 0.8em;
+  padding-bottom: 0.7em;
+  border-bottom: 1px solid #ddd;
+}
+
+.show-content >>> h3 {
+  font-size: 1.2em;
+  font-weight: 600;
+  margin: 3rem 0 1.25rem 0;
+}
+
+.show-content >>> h4 {
+  font-size: 1em;
+  margin: 1em 0;
+}
+
+.show-content >>> h5 {
+  font-size: 0.85em;
+  margin: 1em 0;
+}
+
+.show-content >>> h6 {
+  font-size: 0.7em;
+  margin: 1em 0;
 }
 
 .editor-button {

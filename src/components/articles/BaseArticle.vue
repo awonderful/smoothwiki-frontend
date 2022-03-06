@@ -28,6 +28,7 @@ export default {
   },
   data: function () {
     return {
+      containerId: `article_container_${this.article.uniqId}`,
       isFullScreen: false,
       fullscreenVars: {
         htmlOverflow: null,

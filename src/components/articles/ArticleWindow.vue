@@ -1,5 +1,15 @@
 <template>
-  <v-sheet elevation="0" :class="['pa-2', 'article-container', {'full-screen': isFullScreen}, {'editing': isEditing}, {'touch-device': $state.system.isTouchDevice}]" rounded="lg">
+  <v-sheet 
+    elevation="0"
+    rounded="lg"
+    :id="containerId"
+    :class="[
+      'pa-2',
+      'article-container',
+      {'full-screen': isFullScreen},
+      {'editing': isEditing},
+      {'touch-device': $state.system.isTouchDevice}
+    ]">
 
     <!--header begin-->
     <v-toolbar dense flat class="header">
@@ -72,6 +82,7 @@
 
 <script>
 import ContextMenu from '@/components/utils/ContextMenu.vue';
+import { generateUniqId } from '@/common/util.js';
 
 export default {
   components: {
@@ -110,6 +121,12 @@ export default {
         return []
       }
     },
+    containerId: {
+      type: String,
+      default: function () {
+        return generateUniqId()
+      }
+    }
   },
   data: function () {
     return {
