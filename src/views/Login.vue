@@ -55,6 +55,7 @@
                       :error-messages="passwordErrorMessages"
                       @focus="clearPasswordError()"
                       @input="clearError()"
+                      @keyup.enter="login()" 
                     >
                     </v-text-field>
                   </v-col>
@@ -103,10 +104,9 @@
 <script>
 
 import { API_CODE, USER_STATUS } from '@/common/constants.js'
+import { getQueryParams } from '@/common/util.js'
 
 export default {
-  computed: {
-  },
   data: function() {
     return {
       email: '',
@@ -165,7 +165,12 @@ export default {
           password: this.password,
           remember: this.remember === true ? 'on': 'off'
         })
-        this.$router.push({name: 'home'})
+        const from = getQueryParams(window.location.href, 'from')
+        if (from) {
+          window.location.href = from
+        } else {
+          this.$router.push({name: 'home'})
+        }
       } catch (err) {
         this.$state.user.setUserStatus(USER_STATUS.NOT_LOGGED_IN)
         if (err.wrongCode === API_CODE.INVALID_PARAM) {

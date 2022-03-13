@@ -84,7 +84,7 @@ export default {
         buttonTips: {
           undo: 'Undo',
           redo: 'Redo',
-          bold: 'Bold',
+          bold: 'Strong',
           italic: 'Italic',
           strike: 'Strikethrough',
           underline: 'Underline',
@@ -100,7 +100,8 @@ export default {
           codeBlock: 'Code',
           link: 'Link',
           insertTable: 'Insert Table',
-          preview: 'Preview',
+          openPreview: 'Open Preview',
+          closePreview: 'Close Preview',
           horizontalRule: 'Horizontal Rule',
         }
       },
@@ -112,7 +113,7 @@ export default {
         buttonTips: {
           undo: 'Undo',
           redo: 'Redo',
-          bold: 'Bold',
+          bold: 'Strong',
           italic: 'Italic',
           strike: 'Strikethrough',
           underline: 'Underline',

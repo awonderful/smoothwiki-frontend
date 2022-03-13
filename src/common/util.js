@@ -94,3 +94,15 @@ export const escapeHtml = function (html) {
 
   return el.innerHTML
 }
+
+/**
+ * get query params from url
+ */
+export const getQueryParams = function (url, param) {
+  param = param.replace(/[\[\]]/g, '\\$&');
+  const regex = new RegExp('[?&]' + param + '(=([^&#]*)|&|#|$)');
+  const results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}

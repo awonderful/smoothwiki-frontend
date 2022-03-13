@@ -153,7 +153,7 @@
                       <v-icon small color="grey darken-1">{{typeof item.icon === 'function' ? item.icon() : item.icon}}</v-icon>
                     </v-btn>
                   </template>
-                  <span>{{ $t('article.markdown.toolbar.buttonTips.' + item.name)}}</span>
+                  <span>{{ typeof item.tip === 'function' ? item.tip() : $t('article.markdown.toolbar.buttonTips.' + item.name)}}</span>
                 </v-tooltip>
               </template>
             </v-toolbar>
@@ -518,6 +518,11 @@ export default {
           },
           exec: () => {
             this.preview = !this.preview
+          },
+          tip: () => {
+            return this.preview
+                   ? this.$t('article.markdown.toolbar.buttonTips.closePreview')
+                   : this.$t('article.markdown.toolbar.buttonTips.openPreview')
           }
         }
       ]
@@ -838,6 +843,8 @@ export default {
 .show-content >>> td, .show-content >>> th {
   padding: 0.5em 1em;
   border: 0;
+  height: 2em;
+  min-width: 4em;
 }
 
 .show-content >>> tr:nth-child(2n) {
@@ -925,11 +932,17 @@ export default {
   border-left: 4px solid teal;
 }
 
+.show-content >>> ul {
+  margin: 0.5em 0;
+}
+
 .show-content >>> h1 {
   margin: 0 0 3rem;
   font-size: 2.4em;
   line-height: 1.4em;
   font-weight: 600;
+  padding-bottom: 0.7em;
+  border-bottom: 2px solid #ddd;
 }
 
 .show-content >>> h2 {
@@ -959,6 +972,11 @@ export default {
 .show-content >>> h6 {
   font-size: 0.7em;
   margin: 1em 0;
+}
+
+.show-content >>> hr {
+  border-left: 0;
+  border-right: 0;
 }
 
 .editor-button {

@@ -90,7 +90,12 @@ router.beforeEach(async (to, from, next) => {
       await UserAction.pullUserInfo()
     }
     if (UserState.getUserStatus() === USER_STATUS.NOT_LOGGED_IN) {
-      next({name: 'login'})
+      next({
+        name: 'login',
+        query: {
+          from: window.location.href,
+        },
+      })
     } else {
       next()
     }

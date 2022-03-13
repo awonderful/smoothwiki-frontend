@@ -80,7 +80,7 @@ export default {
         buttonTips: {
           undo: '恢复',
           redo: '重做',
-          bold: '加粗',
+          bold: '强调',
           italic: '倾斜',
           strike: '删除线',
           underline: '下划线',
@@ -97,7 +97,8 @@ export default {
           codeBlock: '代码',
           link: '链接',
           insertTable: '插入表格',
-          preview: '预览',
+          openPreview: '预览',
+          closePreivew: '关闭预览',
           horizontalRule: '插入水平线',
         }
       },
@@ -109,7 +110,7 @@ export default {
         buttonTips: {
           undo: '恢复',
           redo: '重做',
-          bold: '加粗',
+          bold: '强调',
           italic: '倾斜',
           strike: '删除线',
           underline: '下划线',

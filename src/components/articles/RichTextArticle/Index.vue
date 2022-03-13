@@ -236,7 +236,7 @@ export default {
           CodeBlockLowlight.configure({lowlight}),
           Link.configure({openOnClick: false}),
           Underline,
-          Table,
+          Table.configure({resizable: true}),
           TableHeader,
           TableCell,
           TableRow,
@@ -651,7 +651,6 @@ export default {
       this.editor.chain().focus().insertTable({
         rows: row,
         cols: col,
-        resizable: true,
         withHeaderRow: true,
       }).run()
     },
@@ -667,22 +666,20 @@ export default {
   created () {
     this.editor = new Editor({
       extensions: this.extensions,
-      content: this.article.editingBody
+      content: this.article.editingBody,
+      editable: this.article.isEditing,
     })
   },
   watch: {
-    isEditing: {
-      immediate: true,
-      handler (newVal) {
-        if (this.editor === null) {
-          return
-        }
+    isEditing (newVal) {
+      if (this.editor === null) {
+        return
+      }
 
-        if (newVal) {
-          this.editor.setOptions({editable: true, autoFocus: true})
-        } else {
-          this.editor.setOptions({editable: false, autoFocus: false})
-        }
+      if (newVal) {
+        this.editor.setOptions({editable: true, autoFocus: true})
+      } else {
+        this.editor.setOptions({editable: false, autoFocus: false})
       }
     }
   },
@@ -707,16 +704,20 @@ export default {
   }
   .content {
     text-align: left;
-    padding: 8px 25px;
+    padding: 8px;
+    font-size: 16px;
+    letter-spacing: 0.2px;
   }
-  .content >>> img {
+  .content >>> .ProseMirror img {
     max-width: 100%;
   }
-  .content >>> img[data-is-symbol] {
+  .content >>> .ProseMirror img[data-is-symbol] {
     width: 1em;
     height: 1em;
+    padding: 0;
+    margin: 0;
+    border: 0;
   }
-
   .content.editing >>> .ProseMirror {
     min-height: 10em;
   }
@@ -726,36 +727,83 @@ export default {
   .content >>> .ProseMirror:focus {
     outline-width: 0;
   }
-  .content >>> .ProseMirror table {
-    border-collapse: collapse;
-    width: auto;
-    table-layout: fixed;
+  .content >>> .ProseMirror a {
+    color: teal;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .content >>> .ProseMirror a:hover {
+    text-decoration: underline;
+  }
+  .content >>> .ProseMirror ul {
+    margin: 0.5em 0;
+  }
+  .content >>> .ProseMirror li p {
     margin: 0;
+  }
+  .content >>> .ProseMirror ul[data-type="taskList"] {
+    list-style: none;
+    padding: 0;
+  }
+  .content >>> .ProseMirror ul[data-type="tasklist"] li {
+    display: flex;
+  }
+  .content >>> .ProseMirror ul[data-type="tasklist"] li > label {
+    flex: 0 0 auto;
+    margin-right: 0.5rem;
+    user-select: none;
+  }
+  .content >>> .ProseMirror ul[data-type="tasklist"] li > div {
+    flex: 1 1 auto;
+  }
+  .content >>> .ProseMirror h1 {
+    margin: 0 0 3rem;
+    font-size: 2.4em;
+    line-height: 1.4em;
+    font-weight: 600;
+    padding-bottom: 0.7em;
+    border-bottom: 2px solid #ddd;
+  }
+  .content >>> .ProseMirror h2 {
+    font-size: 1.5em;
+    font-weight: 600;
+    margin: 2.8em 0 0.8em;
+    padding-bottom: 0.7em;
+    border-bottom: 1px solid #ddd;
+  }
+  .content >>> .ProseMirror h3 {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin: 3rem 0 1.25rem 0;
+  }
+  .content >>> .ProseMirror h4 {
+    font-size: 1em;
+    margin: 1em 0;
+  }
+  .content >>> .ProseMirror h5 {
+    font-size: 0.85em;
+    margin: 1em 0;
+  }
+  .content >>> .ProseMirror h6 {
+    font-size: 0.7em;
+    margin: 1em 0;
+  }
+  .content >>> .ProseMirror hr {
+    border-left: 0;
+    border-right: 0;
+  }
+  .content >>> .ProseMirror table {
+    border-spacing: 0;
+    width: auto;
+    overflow: auto;
+    word-break: normal;
+    word-break: keep-all;
+    margin: 1.75em 0;
+    border: 1px solid teal;
+    border-radius: 0.45em;
+    border-collapse: separate;
+    font-size: 0.85em;
     overflow: hidden;
-  }
-  .content >>> .ProseMirror table td {
-    border: 1px solid lightgray;
-    padding: 0 0.5em;
-    height: 2em;
-    vertical-align: middle;
-    box-sizing: border-box;
-    position: relative;
-  }
-  .content >>> .ProseMirror table th {
-    border: 1px solid lightgray;
-    font-weight: bold;
-    min-width: 5em;
-    height: 2em;
-    padding: 0 0.5em;
-    vertical-align: middle;
-    box-sizing: border-box;
-    position: relative;
-  }
-  .content >>> .ProseMirror table td > * {
-    margin-bottom: 0;
-  }
-  .content >>> .ProseMirror table th > * {
-    margin-bottom: 0;
   }
   .content >>> .ProseMirror table .selectedCell:after {
     z-index: 2;
@@ -773,43 +821,89 @@ export default {
     background-color: #adf;
     pointer-events: none;
   }
+  .content >>> .ProseMirror table th {
+    background-color: #eaf3f3;
+    padding: 0.5em 1em;
+    color: teal;
+    font-weight: bold;
+    text-align: left;
+    vertical-align: middle;
+    box-sizing: border-box;
+    position: relative;
+    border: 0;
+    height: 2em;
+    min-width: 4em;
+  }
+
+  .content >>> .ProseMirror table td {
+    padding: 0.5em 1em;
+    border: 0;
+    height: 2em;
+    vertical-align: middle;
+    box-sizing: border-box;
+    position: relative;
+  }
+  .content >>> .ProseMirror table td > * {
+    margin-bottom: 0;
+  }
+  .content >>> .ProseMirror table th > * {
+    margin-bottom: 0;
+  }
+  .content >>> .ProseMirror table tr:nth-child(2n-1) {
+    background-color: #0000000d;
+  }
+
+  .content >>> .ProseMirror table tr td:not(:last-child) {
+    border-right: 1px solid lightgray;
+  }
+
+  .content >>> .ProseMirror table tr th:not(:last-child) {
+    border-right: 1px solid lightgray;
+  }
+
+  .content >>> .ProseMirror table tr:hover td {
+    background-color: #eaf3f3;
+  }
   content >>> .ProseMirror .resize-cursor {
     cursor: ew-resize;
     cursor: col-resize;
   }
   
   .content >>> .ProseMirror blockquote {
-    border-left: 3px solid rgba(0,0,0,.1);
-    color: rgba(0,0,0,.8);
-    padding-left: .8rem;
-    font-style: italic;
+    margin: 2em 0;
+    padding-left: 20px;
+    border-left: 4px solid teal;
   }
   .content >>> .ProseMirror blockquote p {
     margin: 0;
   }
   .content >>> .ProseMirror pre {
-    padding: 0.7rem 1rem;
-    border-radius: 5px;
-    background: black;
-    color: white;
-    font-size: 0.8rem;
-    overflow-x: auto;
+    padding: 1em 1.5em;
+    overflow: auto;
+    background-color: #1e1e1e;
+    border-radius: 0.45em;
+    margin: 1.75em 0;
   }
   .content >>> .ProseMirror pre code {
-    display: block;
-    background: black;
-    color: white;
-    font-size: 0.8rem;
+    font-family: 'Droid Sans Mono', 'monospace', monospace;
+    font-size: 0.85em;
+    line-height: 1.45em;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    color: #e9e9e9;
   }
-  .content >>> .ProseMirror p code {
-      padding: 0.2rem 0.4rem;
-      border-radius: 5px;
-      font-size: 0.8rem;
-      font-weight: bold;
-      background: rgba(0, 0, 0, 0.1);
-      color: rgba(0, 0, 0, 0.8);
+  .content >>> .ProseMirror :not(pre) > code {
+    font-family: 'Droid Sans Mono', 'monospace', monospace;
+    font-size: 0.85em;
+    background-color: #f1f1f1;
+    color: #476582;
+    padding: .15em .5em;
+    border-radius: 0.25em;
   }
-
+  .content >>> .ProseMirror .ProseMirror-selectednode {
+    outline: 1px dashed teal;
+  }
   .content >>> .ProseMirror code .hljs-variable,
   .content >>> .ProseMirror code .hljs-template-variable,
   .content >>> .ProseMirror code .hljs-attribute,

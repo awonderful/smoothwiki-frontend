@@ -111,6 +111,7 @@ export default {
     padding: 0;
     margin: 0;
     border: 0;
+    overflow: auto;
   }
   .classic-editor .classic-editor-toolbar .cover {
     display: none;
