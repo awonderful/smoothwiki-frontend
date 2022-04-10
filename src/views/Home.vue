@@ -24,7 +24,7 @@
               {{ $t('dict.spaceTypeName.' + type) }}
             </v-subheader>
 
-            <v-row :key="'type_spaces_' + type">
+            <v-row :key="'type_spaces_' + type" style="position: relative;">
               <v-col 
                 :key="space.id" 
                 v-for="space of spaces"
@@ -50,20 +50,20 @@
                         small
                         class="menu-btn"
                       >
-                        <v-icon small>{{$vuetify.breakpoint.xs? 'mdi-dots-vertical' : 'mdi-dots-horizontal'}}</v-icon>
+                        <v-icon small>{{$vuetify.breakpoint.xs? mdiDotsVertical : mdiDotsHorizontal}}</v-icon>
                       </v-btn>
                     </template>
 
                     <v-list dense>
                       <v-list-item-group>
                         <v-list-item @click="remove(space)">
-                          <v-list-item-icon><v-icon small>mdi-trash-can-outline</v-icon></v-list-item-icon>
+                          <v-list-item-icon><v-icon small>{{mdiTrashCanOutline}}</v-icon></v-list-item-icon>
                           <v-list-item-content>
                             <v-list-item-title>{{$t('home.spaceMenu.remove')}}</v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
                         <v-list-item @click="setting(space)">
-                          <v-list-item-icon><v-icon small>mdi-cog-outline</v-icon></v-list-item-icon>
+                          <v-list-item-icon><v-icon small>{{mdiCogOutline}}</v-icon></v-list-item-icon>
                           <v-list-item-content>
                             <v-list-item-title>{{$t('home.spaceMenu.settings')}}</v-list-item-title>
                           </v-list-item-content>
@@ -87,8 +87,8 @@
                 :class="{'py-1': $vuetify.breakpoint.xs}"
               >
                 <v-card elevation="0" class="card create-card" @click="create(parseInt(type))">
-                  <v-btn icon x-large>
-                    <v-icon color="secondary lighten-2" size="3em">mdi-plus</v-icon>
+                  <v-btn icon :x-large="!$vuetify.breakpoint.xs">
+                    <v-icon color="secondary lighten-2" :x-large="!$vuetify.breakpoint.xs">{{mdiPlus}}</v-icon>
                   </v-btn>
                 </v-card>
               </v-col>
@@ -121,6 +121,14 @@ import Viewer from '@/components/top/Viewer.vue'
 import Search from '@/components/top/Search.vue'
 import { SPACE_TYPE } from '@/common/constants.js'
 import GeneralErrorHandling from '@/common/generalErrorHandling.js'
+import {
+  mdiDotsVertical,
+  mdiDotsHorizontal,
+  mdiTrashCanOutline,
+  mdiCogOutline,
+  mdiPlus,
+} from '@mdi/js'
+
 
 export default {
   components: {
@@ -154,6 +162,12 @@ export default {
   },
   data: function() {
     return {
+      mdiDotsVertical,
+      mdiDotsHorizontal,
+      mdiTrashCanOutline,
+      mdiCogOutline,
+      mdiPlus,
+
       currentSpace: null,
       createSpaceType: SPACE_TYPE.PROJECT,
 
@@ -214,7 +228,7 @@ export default {
 .non-phone-device .space-card:hover .space-img-wrapper {
   background-color: lightgrey;
 }
-.create-card {
+.non-phone-device .create-card {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -239,6 +253,15 @@ export default {
 
 .phone-device .card {
   min-height: 3em;
+}
+.phone-device .create-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  right: 1.5em;
+  top: -4em;
+  color: rgba(0, 0, 0, 0.6);
 }
 .phone-device .space-card {
   height: 3em;

@@ -9,7 +9,7 @@
         <span class="headline"> {{ $t('article.widget.insertNetworkImageDialog.title') }} </span>
         <v-spacer></v-spacer>
         <v-btn icon dense elevation="0" @click="hide()">
-          <v-icon>mdi-close</v-icon>
+          <v-icon>{{mdiClose}}</v-icon>
         </v-btn>
       </v-card-title>
       <v-card-text>
@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import { mdiClose } from '@mdi/js'
+
 export default {
   props: {
     value: {
@@ -45,6 +47,11 @@ export default {
       type: String,
       required: false,
       default: '',
+    }
+  },
+  data: function () {
+    return {
+      mdiClose,
     }
   },
   methods: {

@@ -43,7 +43,7 @@
             <span class="time">{{ new Date(attachment.ctime).toLocaleDateString(locale) }}</span>
             <span class="size">{{ attachmentMap.hasOwnProperty(attachment.id) ? humanFileSize(attachmentMap[attachment.id].size) : ''}}</span>
             <span class="operate">
-              <v-btn icon dense small @click="removeAttachment(attachment.id)"><v-icon small>mdi-delete-outline</v-icon></v-btn>
+              <v-btn icon dense small @click="removeAttachment(attachment.id)"><v-icon small>{{mdiDeleteOutline}}</v-icon></v-btn>
             </span>
           </li>
         </ul>
@@ -59,7 +59,7 @@
             <span class="size">{{ humanFileSize(attachment.size) }}</span>
             <span class="operate">
               <a :href="ATTACHMENT_DOWNLOAD_URL + attachment.id">
-                <v-btn icon dense small><v-icon small>mdi-download</v-icon></v-btn>
+                <v-btn icon dense small><v-icon>{{mdiDownload}}</v-icon></v-btn>
               </a>
             </span>
           </li>
@@ -70,7 +70,7 @@
             <span class="filename">{{file.name}}</span>
             <span class="status"></span>
             <span class="size">{{humanFileSize(file.size)}}</span>
-            <span class="operate"><v-btn icon dense small><v-icon small>mdi-pause</v-icon></v-btn></span>
+            <span class="operate"><v-btn icon dense small><v-icon small>{{mdiPause}}</v-icon></v-btn></span>
           </li>
         </ul>
       </template>
@@ -86,6 +86,12 @@ import FileUpload from 'vue-upload-component'
 import { humanFileSize, isImageExtension } from '@/common/util.js'
 import { API_BASE_URL, ATTACHMENT_DOWNLOAD_URL, ATTACHMENT_SHOW_URL, ATTACHMENT_THUMB_100_URL } from '@/common/constants.js'
 import * as API from '@/common/API.js'
+import {
+  mdiDeleteOutline,
+  mdiDownload,
+  mdiPause,
+  mdiUpload,
+} from '@mdi/js'
 
 export default {
   mixins: [BaseArticle],
@@ -102,7 +108,7 @@ export default {
       const upload = {
           name:  'upload',
           title: 'upload',
-          icon:  'mdi-upload',
+          icon:  mdiUpload,
           tip:   this.$t('article.attachment.uploadButtonTip')
       }
 
@@ -160,6 +166,10 @@ export default {
   },
   data: function () {
     return {
+      mdiDeleteOutline,
+      mdiDownload,
+      mdiPause,
+
       uploadUrl: `${API_BASE_URL}/api/attachment/upload`,
       uploadChunkUrl: `${API_BASE_URL}/api/attachment/upload/chunk`,
       editingBody: {items:[]},

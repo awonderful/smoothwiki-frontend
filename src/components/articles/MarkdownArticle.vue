@@ -201,7 +201,7 @@ import ArticleWindow from './ArticleWindow.vue'
 import InsertLinkDialog from './widgets/InsertLinkDialog.vue'
 import InsertNetworkImageDialog from './widgets/InsertNetworkImageDialog.vue'
 import InsertTableBoard from './widgets/InsertTableBoard.vue'
-import InsertSymbolBoard, { isValidSymbol } from './widgets/InsertSymbolBoard.vue'
+import InsertSymbolBoard, { isValidSymbol, SYMBOLS } from './widgets/InsertSymbolBoard.vue'
 import ClassicEditorLayout from './widgets/ClassicEditorLayout.vue'
 import { ATTACHMENT_SHOW_URL } from '@/common/constants.js'
 import CodeMirror from 'codemirror'
@@ -221,8 +221,34 @@ import mark from 'markdown-it-mark'
 import katex from 'markdown-it-katex-external'
 import deflist from 'markdown-it-deflist'
 import image from 'markdown-it-images-preview'
-import emoji from 'markdown-it-emoji'
+import emoji from 'markdown-it-emoji/bare.js'
 import linkAttr from 'markdown-it-link-attributes'
+
+import {
+  mdiUndo,
+  mdiRedo,
+  mdiFormatBold,
+  mdiFormatItalic,
+  mdiFormatStrikethrough,
+  mdiFormatUnderline,
+  mdiFormatSubscript,
+  mdiFormatSuperscript,
+  mdiFormatColorHighlight,
+  mdiFormatHeader1,
+  mdiFormatHeader2,
+  mdiFormatHeader3,
+  mdiFormatListBulleted,
+  mdiFormatListNumbered,
+  mdiFormatQuoteClose,
+  mdiCodeTags,
+  mdiLinkVariant,
+  mdiImage,
+  mdiCopyright,
+  mdiMinus,
+  mdiTablePlus,
+  mdiEyeOffOutline,
+  mdiEyeOutline,
+} from '@mdi/js'
 
 const modeImportMap = {
   puppet:       () => import('codemirror/mode/puppet/puppet.js'),
@@ -394,14 +420,14 @@ export default {
       toolbarButtons: [
         {
           name: 'undo',
-          icon: 'mdi-undo',
+          icon: mdiUndo,
           exec: () => {
             this.codeMirrorEditor.undo()
           },
         },
         {
           name: 'redo',
-          icon: 'mdi-redo',
+          icon: mdiRedo,
           exec: () => {
             this.codeMirrorEditor.redo()
           },
@@ -411,52 +437,52 @@ export default {
         },
         {
           name: 'bold',
-          icon: 'mdi-format-bold',
+          icon: mdiFormatBold,
           text: '**<-->**',
         },
         {
           name: 'italic',
-          icon: 'mdi-format-italic',
+          icon: mdiFormatItalic,
           text: '*<-->*'
         },
         {
           name: 'strike',
-          icon: 'mdi-format-strikethrough',
+          icon: mdiFormatStrikethrough,
           text: '~~<-->~~',
         },
         {
           name: 'underline',
-          icon: 'mdi-format-underline',
+          icon: mdiFormatUnderline,
           text: '++<-->++',
         },
         {
           name: 'subscript',
-          icon: 'mdi-format-subscript',
+          icon: mdiFormatSubscript,
           text: '~<-->~',
         },
         {
           name: 'superscript',
-          icon: 'mdi-format-superscript',
+          icon: mdiFormatSuperscript,
           text: '^<-->^',
         },
         {
           name: 'mark',
-          icon: 'mdi-format-color-highlight',
+          icon: mdiFormatColorHighlight,
           text: '==<-->==',
         },
         {
           name: 'heading1',
-          icon: 'mdi-format-header-1',
+          icon: mdiFormatHeader1,
           text: '# <-->',
         },
         {
           name: 'heading2',
-          icon: 'mdi-format-header-2',
+          icon: mdiFormatHeader2,
           text: '## <-->',
         },
         {
           name: 'heading3',
-          icon: 'mdi-format-header-3',
+          icon: mdiFormatHeader3,
           text: '### <-->',
         },
         {
@@ -464,47 +490,47 @@ export default {
         },
         {
           name: 'bulletedList',
-          icon: 'mdi-format-list-bulleted',
+          icon: mdiFormatListBulleted,
           text: '- <-->',
         },
         {
           name: 'numberedList',
-          icon: 'mdi-format-list-numbered',
+          icon: mdiFormatListNumbered,
           text: '1. <-->',
         },
         {
           name: 'quote',
-          icon: 'mdi-format-quote-close',
+          icon: mdiFormatQuoteClose,
           text: '> <-->',
         },
         {
           name: 'codeBlock',
-          icon: 'mdi-code-tags',
+          icon: mdiCodeTags,
           text: '```language\n<-->\n```',
         },
         {
           name: 'link',
-          icon: 'mdi-link-variant',
+          icon: mdiLinkVariant,
           exec: () => {
             this.showLinkDialog()
           }
         },
         {
           name: 'insertImage',
-          icon: 'mdi-image',
+          icon: mdiImage,
         },
         {
           name: 'insertSymbol',
-          icon: 'mdi-copyright',
+          icon: mdiCopyright,
         },
         {
           name: 'horizontalRule',
-          icon: 'mdi-minus',
+          icon: mdiMinus,
           text: '---\n',
         },
         {
           name: 'insertTable',
-          icon: 'mdi-table-plus',
+          icon: mdiTablePlus,
         },
         {
           name:  'spacer'
@@ -513,8 +539,8 @@ export default {
           name: 'preview',
           icon: () => {
             return this.preview
-                   ? 'mdi-eye-off-outline'
-                   : 'mdi-eye-outline'
+                   ? mdiEyeOffOutline
+                   : mdiEyeOutline
           },
           exec: () => {
             this.preview = !this.preview
@@ -563,7 +589,9 @@ export default {
     .use(katex)
     .use(deflist)
     .use(image)
-    .use(emoji)
+    .use(emoji, {
+      defs: Object.fromEntries(SYMBOLS.map(item => [item, '']))
+    })
 
     this.markdown.renderer.rules.emoji = function(token, idx) {
       const symbol = token[idx].markup

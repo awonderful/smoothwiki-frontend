@@ -11,7 +11,7 @@
         </v-toolbar-title>
         <v-spacer/>
         <v-btn icon @click="close()">
-          <v-icon>mdi-close</v-icon>
+          <v-icon>{{mdiClose}}</v-icon>
         </v-btn>
       </v-toolbar>
 
@@ -53,6 +53,7 @@
 <script>
   import getTablesFromCreateStatements from '@/common/sql.js'
   import { ARTICLE_TYPE } from '@/common/constants.js'
+  import { mdiClose } from '@mdi/js'
 
   export default {
     name: 'import-sql-table-dialog',
@@ -82,6 +83,8 @@
     },
     data: function () {
       return {
+        mdiClose,
+
         sql: '',
         placeholder: 'CREATE TABLE `tableA` (\n'
                       + '  `id` bigint unsigned NOT NULL AUTO_INCREMENT,\n'

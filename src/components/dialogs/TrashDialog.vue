@@ -11,7 +11,7 @@
         </v-toolbar-title>
         <v-spacer/>
         <v-btn icon @click="close()">
-          <v-icon>mdi-close</v-icon>
+          <v-icon>{{mdiClose}}</v-icon>
         </v-btn>
       </v-toolbar>
 
@@ -40,6 +40,7 @@
 <script>
 import Article from '@/components/articles/Index.vue'
 import { generateUniqId } from '@/common/util'
+import { mdiClose, mdiContentCopy } from '@mdi/js'
 
 export default {
 	name: 'article-dialog',
@@ -97,7 +98,7 @@ export default {
 				{
           name:  'copy',
           title: this.$t('article.menus.copy'),
-          icon:  'mdi-content-copy',
+          icon:  mdiContentCopy,
 					action: function (article) {
 						this.$state.clipboard.copyTrashArticle(this.nodeId, article.id)
 					}.bind(this)
@@ -107,7 +108,6 @@ export default {
 	},
 	watch: {
 		show (val) {
-			console.log(`----show-----${val}------`)
 			if (val === true) {
 				const page = this.$state.page.getPage(this.nodeId)
 
@@ -119,6 +119,8 @@ export default {
 	},
 	data: function () {
 		return {
+			mdiClose,
+
 			isRequesting: false
 		}
 	},

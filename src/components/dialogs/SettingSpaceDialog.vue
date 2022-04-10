@@ -11,7 +11,7 @@
         </v-toolbar-title>
         <v-spacer/>
         <v-btn icon @click="close()">
-          <v-icon>mdi-close</v-icon>
+          <v-icon>{{mdiClose}}</v-icon>
         </v-btn>
 
         <template v-slot:extension>
@@ -93,7 +93,7 @@
                     <td> {{ $t('dict.spaceMemberRoleName.' + member.role) }} </td>
                     <td>
                       <v-btn icon small @click="removeSpaceMember(member.uid)">
-                        <v-icon small>mdi-trash-can-outline</v-icon>
+                        <v-icon small>{{mdiTrashCanOutline}}</v-icon>
                       </v-btn>
                     </td>
                   </tr>
@@ -116,7 +116,7 @@
               </v-col>
               <v-col cols="1">
                 <v-btn icon @click="addSpaceMember()">
-                  <v-icon>mdi-plus</v-icon>
+                  <v-icon>{{mdiPlus}}</v-icon>
                 </v-btn>
               </v-col>
             </v-row>
@@ -135,95 +135,100 @@
 </template>
 
 <script>
-  import { SPACE_TYPE, SPACE_MEMBER_ROLE } from '@/common/constants.js'
+import { SPACE_TYPE, SPACE_MEMBER_ROLE } from '@/common/constants.js'
+import { mdiClose, mdiTrashCanOutline, mdiPlus } from '@mdi/js'
 
-  export default {
-    name: 'setting-space-dialog',
-    props: {
-      value: {
-        type: Boolean,
-        required: true
-      },
-      space: {
-        type: Object,
-        required: true
-      }
+export default {
+  name: 'setting-space-dialog',
+  props: {
+    value: {
+      type: Boolean,
+      required: true
     },
-    computed: {
-      show: {
-        get () {
-          return this.value
-        },
-        set (val) {
-          this.$emit('input', val)
-        }
-      }
-    },
-    watch: {
-      space: {
-        deep: true,
-        immediate: true,
-        handler: function (newVal) {
-          this.info.title       = newVal.title
-          this.info.desc        = newVal.desc
-          this.info.othersRead  = newVal.othersRead === 1
-          this.info.othersWrite = newVal.othersWrite === 1
-          if (newVal.members.length === 0) {
-            this.$state.spaceAction.refreshSpaceMembers(newVal.id)
-          }
-        }
-      }
-    },
-    data: function () {
-      return {
-        tab: null,
-
-        info: {
-          title: '',
-          desc: '',
-          othersRead: false,
-          othersWrite: false,
-        },
-
-        addMember: {
-          email: '',
-          role: SPACE_MEMBER_ROLE.ORDINARY,
-          roles: [
-            {role: SPACE_MEMBER_ROLE.ORDINARY, text: this.$t('dict.spaceMemberRoleName.' + SPACE_MEMBER_ROLE.ORDINARY)},
-            {role: SPACE_MEMBER_ROLE.ADMIN,    text: this.$t('dict.spaceMemberRoleName.' + SPACE_MEMBER_ROLE.ADMIN)}
-          ]
-        },
-
-        SPACE_TYPE: SPACE_TYPE
-      }
-    },
-    methods: {
-      close () {
-        this.show = false
+    space: {
+      type: Object,
+      required: true
+    }
+  },
+  computed: {
+    show: {
+      get () {
+        return this.value
       },
-      async saveSpaceInfo () {
-        await this.$state.spaceAction.updateSpace(this.space.id, {
-          title:       this.info.title,
-          desc:        this.info.desc,
-          othersRead:  this.info.othersRead === true
-                        ? 1
-                        : 0,
-          othersWrite: this.info.othersWrite === true
-                        ? 1
-                        : 0
-        })
-        this.close()
-      },
-      async removeSpaceMember (uid) {
-        await this.$state.spaceAction.removeSpaceMember(this.space.id, uid)
-      },
-      async addSpaceMember () {
-        await this.$state.spaceAction.addSpaceMember(this.space.id, this.addMember.email, this.addMember.role)
-        this.addMember.email = ''
-        this.addMember.role = SPACE_MEMBER_ROLE.ORDINARY
+      set (val) {
+        this.$emit('input', val)
       }
     }
+  },
+  watch: {
+    space: {
+      deep: true,
+      immediate: true,
+      handler: function (newVal) {
+        this.info.title       = newVal.title
+        this.info.desc        = newVal.desc
+        this.info.othersRead  = newVal.othersRead === 1
+        this.info.othersWrite = newVal.othersWrite === 1
+        if (newVal.members.length === 0) {
+          this.$state.spaceAction.refreshSpaceMembers(newVal.id)
+        }
+      }
+    }
+  },
+  data: function () {
+    return {
+      mdiClose,
+      mdiTrashCanOutline,
+      mdiPlus,
+
+      tab: null,
+
+      info: {
+        title: '',
+        desc: '',
+        othersRead: false,
+        othersWrite: false,
+      },
+
+      addMember: {
+        email: '',
+        role: SPACE_MEMBER_ROLE.ORDINARY,
+        roles: [
+          {role: SPACE_MEMBER_ROLE.ORDINARY, text: this.$t('dict.spaceMemberRoleName.' + SPACE_MEMBER_ROLE.ORDINARY)},
+          {role: SPACE_MEMBER_ROLE.ADMIN,    text: this.$t('dict.spaceMemberRoleName.' + SPACE_MEMBER_ROLE.ADMIN)}
+        ]
+      },
+
+      SPACE_TYPE: SPACE_TYPE
+    }
+  },
+  methods: {
+    close () {
+      this.show = false
+    },
+    async saveSpaceInfo () {
+      await this.$state.spaceAction.updateSpace(this.space.id, {
+        title:       this.info.title,
+        desc:        this.info.desc,
+        othersRead:  this.info.othersRead === true
+                      ? 1
+                      : 0,
+        othersWrite: this.info.othersWrite === true
+                      ? 1
+                      : 0
+      })
+      this.close()
+    },
+    async removeSpaceMember (uid) {
+      await this.$state.spaceAction.removeSpaceMember(this.space.id, uid)
+    },
+    async addSpaceMember () {
+      await this.$state.spaceAction.addSpaceMember(this.space.id, this.addMember.email, this.addMember.role)
+      this.addMember.email = ''
+      this.addMember.role = SPACE_MEMBER_ROLE.ORDINARY
+    }
   }
+}
 </script>
 
 <style scoped>

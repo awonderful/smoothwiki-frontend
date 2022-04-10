@@ -1,4 +1,3 @@
-import '@mdi/font/css/materialdesignicons.css'
 import Vue from 'vue'
 import Vuetify, {
   VAlert,
@@ -100,6 +99,6 @@ Vue.use(Vuetify, {
 
 export default new Vuetify({
   icons: {
-    iconfont: 'mdi', 
+    iconfont: 'mdiSvg', 
   },
 })

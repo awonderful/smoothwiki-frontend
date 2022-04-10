@@ -142,6 +142,23 @@ export const ClipboardState = new Vue({
       this.src.articles.splice(0, this.src.articles.length, ...articles)
 
       this.sendExternalNotification()
+    },
+    isPastable (nodeId) {
+      const page = PageState.getPage(nodeId)
+
+      if (!page || page.isReadOnly) {
+        return false
+      }
+
+      if (this.status === CLIPBOARD_STATUS.COPY_ARTICLES) {
+        return true
+      }
+
+      if (this.status === CLIPBOARD_STATUS.CUT_ARTICLES && this.articles.length > 0 && this.articles[0].spaceId === page.spaceId) {
+        return true
+      }
+
+      return false
     }
   },
   created() {

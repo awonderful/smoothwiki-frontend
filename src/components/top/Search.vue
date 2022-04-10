@@ -18,7 +18,7 @@
 				rounded
 				outlined
 				hide-details
-				append-icon="mdi-magnify"
+				:append-icon="mdiMagnify"
 				autocomplete="off"
 				v-model="keyword"
 				:label="$t('search.component.placeholder')"
@@ -39,7 +39,7 @@
         color="primary"
       >
         <v-list-item @click="search('space')" v-if="this.spaceId > 0">
-					<v-icon small color="grey" class="mr-2">mdi-magnify</v-icon>
+					<v-icon small color="grey" class="mr-2">{{mdiMagnify}}</v-icon>
           <v-list-item-title>
 						{{ keyword }}
 					</v-list-item-title>
@@ -50,7 +50,7 @@
 					>
 						{{ $t('search.component.dropdown.thisSpace') }}
 						<v-icon right x-small>
-							mdi-keyboard-return
+							{{mdiKeyboardReturn}}
 						</v-icon>
 					</v-btn>
         </v-list-item>
@@ -58,7 +58,7 @@
 				<v-divider></v-divider>
 
         <v-list-item @click="search('user')">
-					<v-icon small color="grey" class="mr-2">mdi-magnify</v-icon>
+					<v-icon small color="grey" class="mr-2">{{mdiMagnify}}</v-icon>
           <v-list-item-title>
 						{{ keyword }}
 					</v-list-item-title>
@@ -69,7 +69,7 @@
 					>
 						{{ $t('search.component.dropdown.thisUser') }}
 						<v-icon right>
-							mdi-keyboard-return
+							{{mdiKeyboardReturn}}
 						</v-icon>
 					</v-btn>
         </v-list-item>
@@ -77,7 +77,7 @@
 				<v-divider></v-divider>
 
         <v-list-item @click="search('site')">
-					<v-icon small color="grey" class="mr-2">mdi-magnify</v-icon>
+					<v-icon small color="grey" class="mr-2">{{mdiMagnify}}</v-icon>
           <v-list-item-title>
 						{{ keyword }}
 					</v-list-item-title>
@@ -88,7 +88,7 @@
 					>
 						{{ $t('search.component.dropdown.wholeSite') }}
 						<v-icon right>
-							mdi-keyboard-return
+							{{mdiKeyboardReturn}}
 						</v-icon>
 					</v-btn>
         </v-list-item>
@@ -99,6 +99,8 @@
 </template>
 
 <script>
+import { mdiMagnify, mdiKeyboardReturn } from '@mdi/js'
+
 export default {
   props: {
 		value: {
@@ -121,8 +123,11 @@ export default {
 	},
   data: function () {
     return {
+			mdiMagnify,
+			mdiKeyboardReturn,
+
       keyword: '',
-			isDropdownVisible: false
+			isDropdownVisible: false,
     }
   },
   methods: {

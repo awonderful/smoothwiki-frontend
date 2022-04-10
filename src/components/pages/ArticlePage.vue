@@ -30,6 +30,7 @@
           <v-btn color="primary" @click="addFreshArticle(articleType.MIND)"        class="mx-3">{{ $t('page.articlePage.buttons.mind') }}</v-btn>
           <v-btn color="primary" @click="addFreshArticle(articleType.SPREADSHEET)" class="mx-3">{{ $t('page.articlePage.buttons.spreadsheet') }}</v-btn>
           <v-btn color="primary" @click="addFreshArticle(articleType.ATTACHMENT)"  class="mx-3">{{ $t('page.articlePage.buttons.attachment') }}</v-btn>
+          <v-btn color="primary" @click="addFreshArticle(articleType.GRAPH)"       class="mx-3">{{ $t('page.articlePage.buttons.graph') }}</v-btn>
           <v-btn color="primary" @click="importSqlTable()"                         class="mx-3">{{ $t('page.articlePage.buttons.importSqlTable') }}</v-btn>
         </v-col>
       </v-row>
@@ -60,7 +61,7 @@
         <v-list-item-group>
           <v-list-item :disabled="!isPastable" @click="paste()">
             <v-list-item-icon>
-              <v-icon>mdi-content-paste</v-icon>
+              <v-icon>{{mdiContentPaste}}</v-icon>
             </v-list-item-icon>
             <v-list-item-title>粘贴</v-list-item-title>
           </v-list-item>
@@ -76,7 +77,7 @@ import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
 import Article from '@/components/articles/Index.vue';
 import HistoryDialog from '@/components/dialogs/HistoryDialog.vue'
 import ImportSqlTableDialog from '@/components/dialogs/ImportSqlTableDialog.vue'
-import * as API from '@/common/API.js'
+import { mdiContentPaste } from '@mdi/js'
 
 export default {
   components: {
@@ -89,6 +90,8 @@ export default {
   ],
   data: function () {
     return {
+      mdiContentPaste,
+
       articleType: ARTICLE_TYPE,
 
       contextmenu: {
@@ -206,7 +209,7 @@ export default {
               spaceId:  this.spaceId,
               nodeId:   this.nodeId,
               id:       0,
-              type:     this.articleType.ATTACHMENT,
+              type:     ARTICLE_TYPE.ATTACHMENT,
               title:    this.$t('article.attachment.defaultTitle'),
               body:     JSON.stringify({
                 items: []
@@ -221,9 +224,22 @@ export default {
               spaceId:  this.spaceId,
               nodeId:   this.nodeId,
               id:       0,
-              type:     this.articleType.SPREADSHEET,
+              type:     ARTICLE_TYPE.SPREADSHEET,
               title:    '',
               body:     JSON.stringify([{}]),
+              search:   '',
+              isEditing: true
+          })
+          break
+
+        case ARTICLE_TYPE.GRAPH:
+          this.$state.page.appendArticle(this.nodeId, {
+              spaceId:  this.spaceId,
+              nodeId:   this.nodeId,
+              id:       0,
+              type:     ARTICLE_TYPE.GRAPH,
+              title:    '',
+              body:     '',
               search:   '',
               isEditing: true
           })

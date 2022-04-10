@@ -10,7 +10,7 @@
         dense
         flat
         hide-details
-        append-icon="mdi-magnify"
+        :append-icon="mdiMagnify"
         v-model="keyword"
         :label="$t('left.search')"
         @input="search()"
@@ -37,12 +37,15 @@
 <script>
 import DocTree from './DocTree.vue'
 import TrashTree from './TrashTree.vue'
+import { mdiMagnify } from '@mdi/js'
 
 export default {
   name: 'left',
   components: { DocTree, TrashTree },
   data: function () {
     return {
+      mdiMagnify,
+
       keyword: ''
     }
   },

@@ -13,7 +13,7 @@
 
 <script>
 
-const SYMBOLS = [
+export const SYMBOLS = [
   'heavy_check_mark', 'x', 'question', 'exclamation', 'no_entry_sign', 'no_entry', 'warning', 'information_source', 
 
   'moneybag', 'heavy_dollar_sign', 'e-mail', 'envelope', 'link', 'paperclip', 'registered', 'tm', 'copyright', 

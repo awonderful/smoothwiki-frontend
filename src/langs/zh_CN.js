@@ -70,7 +70,11 @@ export default {
         title: '链接',
         cancel: '取消',
         ok: '确定',
-        titlePlaceHolder: '标题'
+        titleFieldPlaceHolder: '标题',
+      },
+      insertTableBoard: {
+        title: '插入表格',
+        info: '{row}行 {col}列'
       }
     },
     markdown: {
@@ -98,7 +102,7 @@ export default {
           link: '链接',
           insertTable: '插入表格',
           openPreview: '预览',
-          closePreivew: '关闭预览',
+          closePreview: '关闭预览',
           horizontalRule: '插入水平线',
         }
       },
@@ -157,6 +161,7 @@ export default {
         mind: '+ 脑图',
         attachment: '+ 附件',
         spreadsheet: '+ 数据表格',
+        graph: '+ 图形',
         importSqlTable: '导入数据库表结构',
       },
       outdatedAlert: '当前页面内容有更新！',

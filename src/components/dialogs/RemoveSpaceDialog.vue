@@ -7,7 +7,7 @@
         </v-toolbar-title>
         <v-spacer/>
         <v-btn icon @click="close()">
-          <v-icon>mdi-close</v-icon>
+          <v-icon>{{mdiClose}}</v-icon>
         </v-btn>
       </v-toolbar>
 
@@ -32,36 +32,43 @@
 </template>
 
 <script>
-  export default {
-    name: 'remove-space-dialog',
-    props: {
-      value: {
-        type: Boolean,
-        required: true
-      },
-      space: {
-        type: Object,
-        required: true
-      }
+import { mdiClose } from '@mdi/js'
+
+export default {
+  name: 'remove-space-dialog',
+  props: {
+    value: {
+      type: Boolean,
+      required: true
     },
-    computed: {
-      show: {
-        get () {
-          return this.value
-        },
-        set (val) {
-          this.$emit('input', val)
-        }
-      }
-    },
-    methods: {
-      close () {
-        this.show = false
+    space: {
+      type: Object,
+      required: true
+    }
+  },
+  computed: {
+    show: {
+      get () {
+        return this.value
       },
-      async remove () {
-        await this.$state.spaceAction.removeSpace(this.space.id)
-        this.close()
+      set (val) {
+        this.$emit('input', val)
       }
     }
+  },
+  data: function () {
+    return {
+      mdiClose,
+    }
+  },
+  methods: {
+    close () {
+      this.show = false
+    },
+    async remove () {
+      await this.$state.spaceAction.removeSpace(this.space.id)
+      this.close()
+    }
   }
+}
 </script>

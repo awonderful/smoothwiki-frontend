@@ -33,7 +33,7 @@
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on" :href="homeUrl" target="_blank">
-            <v-icon>mdi-home</v-icon>
+            <v-icon>{{mdiHome}}</v-icon>
           </v-btn>
         </template>
         <span>{{$t('appBar.home')}}</span>
@@ -59,6 +59,8 @@
 </template>
 
 <script>
+import { mdiHome } from '@mdi/js'
+
 import Left from '@/components/left/Index.vue'
 import ArticlePage from '@/components/pages/ArticlePage.vue'
 import ArticleList from '@/components/right/ArticleList.vue'
@@ -83,6 +85,8 @@ export default {
   ],
   data: function () {
     return {
+      mdiHome,
+
       left: null,
       right: null,
       homeUrl: null,

@@ -1,4 +1,16 @@
 <script>
+import {
+  mdiHistory,
+  mdiContentCopy,
+  mdiContentCut,
+  mdiContentSaveOutline,
+  mdiPencil,
+  mdiFullscreen,
+  mdiFullscreenExit,
+  mdiLocationExit,
+  mdiTrashCanOutline,
+} from '@mdi/js'
+
 export default {
   props: {
     article: {
@@ -41,49 +53,49 @@ export default {
         history: {
           name:  'history',
           title: this.$t('article.menus.history'),
-          icon:  'mdi-history',
+          icon:  mdiHistory,
         },
         copy: {
           name:  'copy',
           title: this.$t('article.menus.copy'),
-          icon:  'mdi-content-copy',
+          icon:  mdiContentCopy,
         },
         cut: {
           name:  'cut',
           title: this.$t('article.menus.cut'),
-          icon:  'mdi-content-cut',
+          icon:  mdiContentCut,
         }
       },
 
       buttonMap: {
         edit: {
           name: 'edit',
-          icon: 'mdi-pencil',
+          icon: mdiPencil,
           tip:  this.$t('article.buttonTips.edit')
         },
         save: {
           name: 'save',
-          icon: 'mdi-content-save-outline',
+          icon: mdiContentSaveOutline,
           tip:  this.$t('article.buttonTips.save')
         },
         fullscreen: {
           name: 'fullscreen',
-          icon: 'mdi-fullscreen',
+          icon: mdiFullscreen,
           tip:  this.$t('article.buttonTips.fullscreen')
         },
         exitFullscreen: {
           name: 'exitFullscreen',
-          icon: 'mdi-fullscreen-exit',
+          icon: mdiFullscreenExit,
           tip:  this.$t('article.buttonTips.exitFullscreen')
         },
         exit: {
           name: 'exit',
-          icon: 'mdi-location-exit',
+          icon: mdiLocationExit,
           tip:  this.$t('article.buttonTips.exit')
         },
         remove: {
           name: 'remove',
-          icon: 'mdi-trash-can-outline',
+          icon: mdiTrashCanOutline,
           tip:  this.$t('article.buttonTips.remove')
         }
       }

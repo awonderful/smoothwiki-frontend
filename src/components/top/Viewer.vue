@@ -7,7 +7,7 @@
   >
     <template v-slot:activator="{ on, attrs }">
       <span v-bind="attrs" v-on="on" class="flex-shrink-0 flex-grow-0">
-        {{ userInfo.name }} <v-icon>mdi-menu-down</v-icon>
+        {{ userInfo.name }} <v-icon>{{mdiMenuDown}}</v-icon>
       </span>
     </template>
 
@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import { mdiMenuDown } from '@mdi/js'
 
 export default {
   props: {
@@ -40,6 +41,8 @@ export default {
   },
   data: function () {
     return {
+      mdiMenuDown,
+
       selectMenu: 0
     }
   },

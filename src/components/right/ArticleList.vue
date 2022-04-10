@@ -37,7 +37,7 @@
             v-on="on" 
             class="button"
           >
-            <v-icon small>mdi-dots-vertical</v-icon>
+            <v-icon small>{{mdiDotsVertical}}</v-icon>
           </v-btn>
         </template>
         <v-list>
@@ -83,7 +83,7 @@
           >
             <v-list-item-content>
               <v-list-item-title :style="{'text-indent': (article.level * 2) + 'em'}">
-                <v-icon>mdi-circle-small</v-icon> &nbsp;&nbsp; {{article.editingTitle}}
+                <v-icon>{{mdiCircleSmall}}</v-icon> &nbsp;&nbsp; {{article.editingTitle}}
               </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -103,6 +103,17 @@
 import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
 import TrashDialog from '@/components/dialogs/TrashDialog.vue'
 import ContextMenu from '@/components/utils/ContextMenu.vue'
+import {
+  mdiDotsVertical,
+  mdiCircleSmall,
+  mdiContentCopy,
+  mdiContentCut,
+  mdiContentPaste,
+  mdiArrowLeft,
+  mdiArrowRight,
+  mdiTrashCanOutline,
+  mdiFilePdfBox,
+} from '@mdi/js'
 
 export default {
   components: { 
@@ -151,7 +162,7 @@ export default {
         buttons.push(this.buttonMap.cut)
       }
 
-      if (this.$state.clipboard.hasAnArticle === true) {
+      if (this.$state.clipboard.isPastable(this.nodeId)) {
         buttons.push(this.buttonMap.paste)
       }
 
@@ -167,6 +178,9 @@ export default {
   },
   data: function() {
     return {
+      mdiDotsVertical,
+      mdiCircleSmall,
+
       dragAndDrop: {
         status:      0,
         dragArticle: null,
@@ -188,27 +202,27 @@ export default {
         copy: {
           name: 'copy',
           tip: this.$t('articleList.buttons.copy'),
-          icon: 'mdi-content-copy'
+          icon: mdiContentCopy,
         },
         cut: {
           name: 'cut',
           tip: this.$t('articleList.buttons.cut'),
-          icon: 'mdi-content-cut'
+          icon: mdiContentCut,
         },
         paste: {
           name: 'paste',
           tip: this.$t('articleList.buttons.paste'),
-          icon: 'mdi-content-paste'
+          icon: mdiContentPaste,
         },
         decIndent: {
           name: 'decIndent',
           tip: this.$t('articleList.buttons.decIndent'),
-          icon: 'mdi-arrow-left'
+          icon: mdiArrowLeft,
         },
         incIndent: {
           name: 'incIndent',
           tip: this.$t('articleList.buttons.incIndent'),
-          icon: 'mdi-arrow-right'
+          icon: mdiArrowRight,
         }
       },
 
@@ -216,12 +230,12 @@ export default {
         trash: {
           name:  'trash',
           title: this.$t('articleList.menus.trash'),
-          icon:  'mdi-trash-can-outline',
+          icon:  mdiTrashCanOutline,
         },
         exportPdf: {
           name:  'exportPdf',
           title: this.$t('articleList.menus.exportPdf'),
-          icon:  'mdi-file-pdf-box',
+          icon:  mdiFilePdfBox,
         }
       }
     }

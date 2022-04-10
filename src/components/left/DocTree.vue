@@ -21,10 +21,10 @@
     v-if="treeData.length > 0"
   >
     <template v-slot:icon="{node}">
-      <v-icon small color="green" v-if="node.__.parent === null">mdi-pine-tree</v-icon>
-      <v-icon small color="teal" v-else-if="node.hasChild === true && node.directoryState === 'collapsed'">mdi-folder</v-icon>
-      <v-icon small color="teal" v-else-if="node.hasChild === true && node.directoryState === 'expanded'">mdi-folder-open</v-icon>
-      <v-icon small color="teal" v-else>mdi-file-document</v-icon>
+      <v-icon small color="green" v-if="node.__.parent === null">{{mdiPineTree}}</v-icon>
+      <v-icon small color="teal" v-else-if="node.hasChild === true && node.directoryState === 'collapsed'">{{mdiFolder}}</v-icon>
+      <v-icon small color="teal" v-else-if="node.hasChild === true && node.directoryState === 'expanded'">{{mdiFolderOpen}}</v-icon>
+      <v-icon small color="teal" v-else>{{mdiFile}}</v-icon>
     </template>
     <template v-slot:extra="{node}">
       <context-menu open-on-hover :close-delay="300">
@@ -36,24 +36,24 @@
             v-on="on" 
             class="button"
           >
-            <v-icon small>mdi-dots-vertical</v-icon>
+            <v-icon small>{{mdiDotsVertical}}</v-icon>
           </v-btn>
         </template>
         <v-list>
           <v-list-item @click="doAction('create', node)">
-            <v-list-item-icon><v-icon small>mdi-plus</v-icon></v-list-item-icon>
+            <v-list-item-icon><v-icon small>{{mdiPlus}}</v-icon></v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title>{{ $t('docTree.contextMenu.create') }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item @click="doAction('rename', node)">
-            <v-list-item-icon><v-icon small>mdi-pencil</v-icon></v-list-item-icon>
+            <v-list-item-icon><v-icon small>{{mdiPencil}}</v-icon></v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title>{{ $t('docTree.contextMenu.rename') }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item @click="doAction('remove', node)">
-            <v-list-item-icon><v-icon small>mdi-trash-can-outline</v-icon></v-list-item-icon>
+            <v-list-item-icon><v-icon small>{{mdiTrashCanOutline}}</v-icon></v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title>{{ $t('docTree.contextMenu.remove') }}</v-list-item-title>
             </v-list-item-content>
@@ -70,6 +70,16 @@ import ContextMenu from '@/components/utils/ContextMenu.vue'
 import { API_CODE, NODE_TYPE, TREE_VERSION_CHECKING_INTERVAL } from '@/common/constants.js'
 import * as API from '@/common/API.js'
 import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
+import {
+  mdiPineTree,
+  mdiFolder,
+  mdiFolderOpen,
+  mdiFile,
+  mdiPlus,
+  mdiPencil,
+  mdiTrashCanOutline,
+  mdiDotsVertical,
+} from '@mdi/js'
 
 export default {
   components: {
@@ -162,6 +172,15 @@ export default {
   },
   data: function () {
     return {
+      mdiPineTree,
+      mdiFolder,
+      mdiFolderOpen,
+      mdiFile,
+      mdiPlus,
+      mdiPencil,
+      mdiTrashCanOutline,
+      mdiDotsVertical,
+      
       treeId: 1,
       selectedItem: null,
 

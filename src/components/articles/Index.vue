@@ -9,13 +9,12 @@
 
 <script>
 import { ARTICLE_COMPONENT_MAP } from '@/common/constants.js'
-import MarkdownArticle from './MarkdownArticle.vue'
-import RichTextArticle from './RichTextArticle/Index.vue'
-import AttachmentArticle from './AttachmentArticle/Index.vue'
-import MindArticle from './MindArticle.vue'
-import SpreadsheetArticle from './SpreadsheetArticle.vue'
-import PdfArticle from './PdfArticle.vue'
-
+const MarkdownArticle = () => import('./MarkdownArticle.vue')
+const RichTextArticle = () => import('./RichTextArticle/Index.vue')
+const AttachmentArticle = () => import('./AttachmentArticle/Index.vue')
+const MindArticle = () => import('./MindArticle.vue')
+const SpreadsheetArticle = () => import('./SpreadsheetArticle.vue')
+const GraphArticle = () => import('./GraphArticle.vue')
 
 export default {
 	inheritAttrs: false,
@@ -24,8 +23,8 @@ export default {
     RichTextArticle,
     AttachmentArticle,
     MindArticle,
-    PdfArticle,
     SpreadsheetArticle,
+		GraphArticle,
   },
   data: function () {
     return {

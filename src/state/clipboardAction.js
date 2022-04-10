@@ -20,7 +20,7 @@ export const ClipboardAction = new Vue({
             const oldArticle = ClipboardState.src.articles[i]
 
             let newArticle = {
-              spaceId:       oldArticle.spaceId,
+              spaceId:       page.spaceId,
               nodeId:        nodeId,
               uniqId:        generateUniqId(),
               id:            0,
@@ -39,7 +39,7 @@ export const ClipboardAction = new Vue({
 
             PageState.insertArticle(nodeId, order + i, newArticle)
             if (oldArticle.id !== 0 && oldArticle.isEditing === false) {
-              await PageAction.saveArticle(oldArticle.spaceId, nodeId, newArticle.uniqId)
+              await PageAction.saveArticle(page.spaceId, nodeId, newArticle.uniqId)
             }
           }
           ClipboardState.clear()

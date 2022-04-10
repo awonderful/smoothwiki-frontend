@@ -24,7 +24,7 @@
             <v-sheet elevation="0" class="d-flex flex-column mb-2">
                 <v-breadcrumbs :items="item.path" class="search-breadcrumbs pa-0">
                   <template v-slot:divider>
-                    <v-icon>mdi-chevron-right</v-icon>
+                    <v-icon>{{mdiChevronRight}}</v-icon>
                   </template>
                   <template v-slot:item="{ item }">
                     <v-breadcrumbs-item
@@ -89,6 +89,7 @@ import Mark from 'mark.js'
 import GeneralErrorHandling from '@/common/generalErrorHandling.js'
 import { SEARCH_OBJECT_TYPE } from '@/common/constants.js'
 import * as API from '@/common/API.js'
+import { mdiChevronRight } from '@mdi/js'
 
 export default {
   components: {
@@ -132,6 +133,8 @@ export default {
   },
   data: function() {
     return {
+      mdiChevronRight,
+
       pageCount: 0,
       items: [],
       keyword: '',

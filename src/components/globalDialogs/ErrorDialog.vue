@@ -5,18 +5,25 @@
     :multi-line="true"
     centered
   >
-    <v-icon color="error">mdi-alert</v-icon>
+    <v-icon color="error">{{mdiAlert}}</v-icon>
     {{dialog.message}}
   </v-snackbar>
 </template>
 
 <script>
-  export default {
-    name: 'global-error-dialog',
-    computed: {
-      dialog () {
-        return this.$state.globalDialogs.errorDialog
-      }
+import { mdiAlert } from '@mdi/js'
+
+export default {
+  name: 'global-error-dialog',
+  computed: {
+    dialog () {
+      return this.$state.globalDialogs.errorDialog
+    }
+  },
+  data: function () {
+    return {
+      mdiAlert,
     }
   }
+}
 </script>

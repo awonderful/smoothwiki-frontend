@@ -150,6 +150,36 @@ export default {
     attachment: {
       defaultTitle: 'attachment',
       uploadButtonTip: 'upload'
+    },
+    apiMock: {
+      response: {
+        typeFieldLabel: 'type',
+        type: {
+          timeout: 'Timeout',
+          networkError: 'Network Error',
+          customData: 'Custom Data',
+        },
+        dataType: {
+          json: 'JSON',
+          xml: 'XML',
+        },
+        httpStatusCode: {
+          200: 'OK',
+          301: 'Moved Permanently',
+          302: 'Found',
+          307: 'Temporary Redirect',
+          308: 'Permanent Redirect',
+          400: 'Bad Request',
+          401: 'Unauthorized',
+          402: 'PaymentRequired',
+          403: 'Forbidden',
+          404: 'Not Found',
+          405: 'Method Not Allowed',
+          500: 'Internal Server Error',
+          502: 'Bad Gateway',
+          503: 'Service Unavailable',
+        }
+      }
     }
   },
   page: {
@@ -160,6 +190,7 @@ export default {
         mind: '+ Mind',
         attachment: '+ Attachment',
         spreadsheet: '+ Spreadsheet',
+        graph: '+ Graph',
         importSqlTable: ' Import Database Table Structures',
       },
       outdatedAlert: 'this page is outdated!',

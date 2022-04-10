@@ -11,7 +11,7 @@
         </v-toolbar-title>
         <v-spacer/>
         <v-btn icon @click="close()">
-          <v-icon>mdi-close</v-icon>
+          <v-icon>{{mdiClose}}</v-icon>
         </v-btn>
       </v-toolbar>
 
@@ -77,6 +77,8 @@
 
 <script>
 import ArticleDialog from './ArticleDialog.vue'
+import { mdiClose } from '@mdi/js'
+
 export default {
   components: { ArticleDialog },
   name: 'article-history-dialog',
@@ -123,6 +125,8 @@ export default {
   },
   data: function () {
     return {
+      mdiClose,
+
       isRequesting: false,
       view: {
         isDialogVisible: false,

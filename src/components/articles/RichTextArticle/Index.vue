@@ -72,7 +72,7 @@
                       v-on="on"
                       color="white"
                       class="editor-button elevation-0">
-                      <v-icon small color="grey darken-1">mdi-image</v-icon>
+                      <v-icon small color="grey darken-1">{{item.icon}}</v-icon>
                     </v-btn>
                   </template>
                   <v-list>
@@ -164,7 +164,7 @@
 
           <!-- editor body -->
           <template v-slot:classic-editor-body>
-            <editor-content class="content editing" :editor="editor" :spellcheck="false" />
+            <editor-content class="content editing" :editor="editor" :spellcheck="false" @paste="handlePasteEvent($event)" />
           </template>
 
         </classic-editor-layout>
@@ -205,6 +205,40 @@ import TaskList from '@tiptap/extension-task-list'
 //import Image from '@tiptap/extension-image'
 import EnhancedImage from './EnhancedImage.js'
 import { lowlight } from 'lowlight'
+import {
+  mdiUndo,
+  mdiRedo,
+  mdiFormatBold,
+  mdiFormatItalic,
+  mdiFormatStrikethrough,
+  mdiFormatUnderline,
+  mdiFormatSubscript,
+  mdiFormatSuperscript,
+  mdiFormatColorHighlight,
+  mdiFormatHeader1,
+  mdiFormatHeader2,
+  mdiFormatHeader3,
+  mdiFormatListBulleted,
+  mdiFormatListNumbered,
+  mdiFormatListChecks,
+  mdiFormatQuoteClose,
+  mdiCodeTags,
+  mdiImage,
+  mdiLinkVariant,
+  mdiLinkVariantOff,
+  mdiMinus,
+  mdiCopyright,
+  mdiTablePlus,
+  mdiTableMinus,
+  mdiTableColumnPlusBefore,
+  mdiTableColumnPlusAfter,
+  mdiTableColumnRemove,
+  mdiTableRowPlusBefore,
+  mdiTableRowPlusAfter,
+  mdiTableRowRemove,
+  mdiTableSplitCell,
+  mdiTableMergeCells,
+} from '@mdi/js'
 
 export default {
   mixins: [BaseArticle],
@@ -250,7 +284,7 @@ export default {
       menuBarButtons: [
         {
           name:       'undo',
-          icon:       'mdi-undo',
+          icon:       mdiUndo,
           isActive:   () => {
             return false
           },
@@ -263,7 +297,7 @@ export default {
         },
         {
           name:      'redo',
-          icon:      'mdi-redo',
+          icon:      mdiRedo,
           isActive:  () => {
             return false
           },
@@ -279,7 +313,7 @@ export default {
         },
         {
           name:      'bold',
-          icon:      'mdi-format-bold',
+          icon:      mdiFormatBold,
           isActive:  () => {
             return this.editor.isActive('bold')
           },
@@ -289,7 +323,7 @@ export default {
         },
         {
           name:      'italic',
-          icon:      'mdi-format-italic',
+          icon:      mdiFormatItalic,
           isActive:  () => {
             return this.editor.isActive('italic')
           },
@@ -299,7 +333,7 @@ export default {
         },
         {
           name:      'strike',
-          icon:      'mdi-format-strikethrough',
+          icon:      mdiFormatStrikethrough,
           isActive:  () => {
             return this.editor.isActive('strike')
           },
@@ -309,7 +343,7 @@ export default {
         },
         {
           name:      'underline',
-          icon:      'mdi-format-underline',
+          icon:      mdiFormatUnderline,
           isActive:  () => {
             return this.editor.isActive('underline')
           },
@@ -319,7 +353,7 @@ export default {
         },
         {
           name:      'subscript',
-          icon:      'mdi-format-subscript',
+          icon:      mdiFormatSubscript,
           isActive:  () => {
             return this.editor.isActive('subscript')
           },
@@ -329,7 +363,7 @@ export default {
         },
         {
           name:      'superscript',
-          icon:      'mdi-format-superscript',
+          icon:      mdiFormatSuperscript,
           isActive:  () => {
             return this.editor.isActive('superscript')
           },
@@ -339,7 +373,7 @@ export default {
         },
         {
           name:      'highlight',
-          icon:      'mdi-format-color-highlight',
+          icon:      mdiFormatColorHighlight,
           isActive:  () => {
             return this.editor.isActive('highlight')
           },
@@ -349,7 +383,7 @@ export default {
         },
         {
           name:      'heading1',
-          icon:      'mdi-format-header-1',
+          icon:      mdiFormatHeader1,
           isActive:  () => {
             return this.editor.isActive('heading', {level: 1})
           },
@@ -359,7 +393,7 @@ export default {
         },
         {
           name:      'heading2',
-          icon:      'mdi-format-header-2',
+          icon:      mdiFormatHeader2,
           isActive:  () => {
             return this.editor.isActive('heading', {level: 2})
           },
@@ -369,7 +403,7 @@ export default {
         },
         {
           name:      'heading3',
-          icon:      'mdi-format-header-3',
+          icon:      mdiFormatHeader3,
           isActive:  () => {
             return this.editor.isActive('heading', {level: 3})
           },
@@ -382,7 +416,7 @@ export default {
         },
         {
           name:      'bulletedList',
-          icon:      'mdi-format-list-bulleted',
+          icon:      mdiFormatListBulleted,
           isActive:  () => {
             return this.editor.isActive('bulletList')
           },
@@ -392,7 +426,7 @@ export default {
         },
         {
           name:      'numberedList',
-          icon:      'mdi-format-list-numbered',
+          icon:      mdiFormatListNumbered,
           isActive:  () => {
             return this.editor.isActive('orderedList')
           },
@@ -402,7 +436,7 @@ export default {
         },
         {
           name:      'taskList',
-          icon:      'mdi-format-list-checks',
+          icon:      mdiFormatListChecks,
           isActive:  () => {
             return this.editor.isActive('taskList')
           },
@@ -412,7 +446,7 @@ export default {
         },
         {
           name:      'quote',
-          icon:      'mdi-format-quote-close',
+          icon:      mdiFormatQuoteClose,
           isActive:  () => {
             return this.editor.isActive('blockquote')
           },
@@ -422,7 +456,7 @@ export default {
         },
         {
           name:      'codeBlock',
-          icon:      'mdi-code-tags',
+          icon:      mdiCodeTags,
           isActive:  () => {
             return this.editor.isActive('codeBlock')
           },
@@ -432,7 +466,7 @@ export default {
         },
         {
           name:      'link',
-          icon:      'mdi-link-variant',
+          icon:      mdiLinkVariant,
           isActive:  () => {
             return this.editor.isActive('link')
           },
@@ -442,7 +476,7 @@ export default {
         },
         {
           name:      'unlink',
-          icon:      'mdi-link-variant-off',
+          icon:      mdiLinkVariantOff,
           isActive:  () => {
             return false
           },
@@ -451,18 +485,19 @@ export default {
           }
         },
         {
-          name:      'insertImage'
+          name:      'insertImage',
+          icon:      mdiImage,
         },
         {
           name:      'horizontalRule',
-          icon:      'mdi-minus',
+          icon:      mdiMinus,
           exec:      () => {
             this.editor.chain().focus().setHorizontalRule().run()
           }
         },
         {
           name:      'insertSymbol',
-          icon:      'mdi-copyright',
+          icon:      mdiCopyright,
           isActive:  () => {
             return false
           }
@@ -472,14 +507,14 @@ export default {
         },
         {
           name:      'insertTable',
-          icon:      'mdi-table-plus',
+          icon:      mdiTablePlus,
           isDisabled: () => {
             return !this.editor.can().insertTable()
           }
         },
         {
           name:      'deleteTable',
-          icon:      'mdi-table-minus',
+          icon:      mdiTableMinus,
           isDisabled: () => {
             return !this.editor.can().deleteTable()
           },
@@ -489,7 +524,7 @@ export default {
         },
         {
           name:      'addColBefore',
-          icon:      'mdi-table-column-plus-before',
+          icon:      mdiTableColumnPlusBefore,
           isDisabled: () => {
             return !this.editor.can().addColumnBefore()
           },
@@ -499,7 +534,7 @@ export default {
         },
         {
           name:      'addColAfter',
-          icon:      'mdi-table-column-plus-after',
+          icon:      mdiTableColumnPlusAfter,
           isDisabled: () => {
             return !this.editor.can().addColumnAfter()
           },
@@ -509,7 +544,7 @@ export default {
         },
         {
           name:      'deleteColumn',
-          icon:      'mdi-table-column-remove',
+          icon:      mdiTableColumnRemove,
           isDisabled: () => {
             return !this.editor.can().deleteColumn()
           },
@@ -519,7 +554,7 @@ export default {
         },
         {
           name:      'addRowBefore',
-          icon:      'mdi-table-row-plus-before',
+          icon:      mdiTableRowPlusBefore,
           isDisabled: () => {
             return !this.editor.can().addRowBefore()
           },
@@ -529,7 +564,7 @@ export default {
         },
         {
           name:      'addRowAfter',
-          icon:      'mdi-table-row-plus-after',
+          icon:      mdiTableRowPlusAfter,
           isDisabled: () => {
             return !this.editor.can().addRowAfter()
           },
@@ -539,7 +574,7 @@ export default {
         },
         {
           name:      'deleteRow',
-          icon:      'mdi-table-row-remove',
+          icon:      mdiTableRowRemove,
           isDisabled: () => {
             return !this.editor.can().deleteRow()
           },
@@ -551,8 +586,8 @@ export default {
           name:      'mergeOrSplitCells',
           icon:      () => {
             return this.editor.can().splitCell()
-              ? 'mdi-table-split-cell'
-              : 'mdi-table-merge-cells'
+              ? mdiTableSplitCell
+              : mdiTableMergeCells
           },
           tip:       () => {
             return this.editor.can().splitCell()
@@ -583,6 +618,11 @@ export default {
     },
     afterExitEditing() {
       this.editor.chain().setContent(this.article.editingBody).run()
+    },
+    async addImage(file) {
+      const res = await this.$state.pageAction.addAttachmentToArticle(this.article.spaceId, this.article.nodeId, this.article.uniqId, file)
+      const url = ATTACHMENT_SHOW_URL + res.data.data.id
+      this.editor.chain().focus().setImage({src: url}).run()
     },
     //--------------------------link-------------------------
     showLinkDialog() {
@@ -639,11 +679,22 @@ export default {
       input.focus()
       input.click()
     },
-    async uploadLocalImage() {
+    uploadLocalImage() {
       const input = this.$refs.file
-      const res = await this.$state.pageAction.addAttachmentToArticle(this.article.spaceId, this.article.nodeId, this.article.uniqId, input.files[0])
-      const url = ATTACHMENT_SHOW_URL + res.data.data.id
-      this.editor.chain().focus().setImage({src: url}).run()
+      this.addImage(input.files[0])
+    },
+
+    //------------------------paste an image------------------------
+    handlePasteEvent (view, event, slice) {
+      if(event.clipboardData && event.clipboardData.items) {
+        for (const item of event.clipboardData.items) {
+          if (item.type.indexOf("image") >= 0) {
+            const file = item.getAsFile();
+            this.addImage(file)
+            return true
+          }
+        }
+      }
     },
 
     //----------------------------table-----------------------------
@@ -668,6 +719,9 @@ export default {
       extensions: this.extensions,
       content: this.article.editingBody,
       editable: this.article.isEditing,
+      editorProps: {
+        handlePaste: this.handlePasteEvent 
+      },
     })
   },
   watch: {

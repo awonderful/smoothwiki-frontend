@@ -56,7 +56,7 @@
             v-on="on" 
             class="button"
           >
-            <v-icon small>mdi-dots-vertical</v-icon>
+            <v-icon small>{{mdiDotsVertical}}</v-icon>
           </v-btn>
         </template>
         <v-list>
@@ -81,8 +81,9 @@
 </template>
 
 <script>
-import ContextMenu from '@/components/utils/ContextMenu.vue';
-import { generateUniqId } from '@/common/util.js';
+import ContextMenu from '@/components/utils/ContextMenu.vue'
+import { generateUniqId } from '@/common/util.js'
+import { mdiDotsVertical } from '@mdi/js'
 
 export default {
   components: {
@@ -130,6 +131,8 @@ export default {
   },
   data: function () {
     return {
+      mdiDotsVertical,
+
       clonedTitle: this.title,
     }
   },

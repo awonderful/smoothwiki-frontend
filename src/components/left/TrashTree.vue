@@ -16,14 +16,14 @@
     @deselect="deselect"
   >
     <template v-slot:icon="{node}">
-      <v-icon small color="brown" v-if="node.__.parent === null">mdi-trash-can</v-icon>
-      <v-icon small color="brown lighten-2" v-else-if="node.hasChild === true && node.directoryState === 'collapsed'">mdi-folder</v-icon>
-      <v-icon small color="brown lighten-2" v-else-if="node.hasChild === true && node.directoryState === 'expanded'">mdi-folder-open</v-icon>
-      <v-icon small color="brown lighten-2" v-else>mdi-file</v-icon>
+      <v-icon small color="brown" v-if="node.__.parent === null">{{mdiTrashCan}}</v-icon>
+      <v-icon small color="brown lighten-2" v-else-if="node.hasChild === true && node.directoryState === 'collapsed'">{{mdiFolder}}</v-icon>
+      <v-icon small color="brown lighten-2" v-else-if="node.hasChild === true && node.directoryState === 'expanded'">{{mdiFolderOpen}}</v-icon>
+      <v-icon small color="brown lighten-2" v-else>{{mdiFile}}</v-icon>
     </template>
     <template v-slot:extra="{node}">
       <v-btn icon x-small class="mr-2" @click="doAction('restore', node)" v-if="node.__.gpos > 0">
-        <v-icon small>mdi-delete-off-outline</v-icon>
+        <v-icon small>{{mdiDeleteOffOutline}}</v-icon>
       </v-btn>
     </template>
   </TWTree>
@@ -33,6 +33,13 @@
 import TWTree from 'twtree'
 import * as API from '@/common/API.js'
 import SpaceRouteParamsHandling from '@/common/spaceRouteParamsHandling.js'
+import {
+  mdiTrashCan,
+  mdiFolder,
+  mdiFolderOpen,
+  mdiFile,
+  mdiDeleteOffOutline,
+} from '@mdi/js'
 
 export default {
   components: { TWTree },
@@ -123,6 +130,12 @@ export default {
   },
   data: function () {
     return {
+      mdiTrashCan,
+      mdiFolder,
+      mdiFolderOpen,
+      mdiFile,
+      mdiDeleteOffOutline,
+
       treeId: 1,
       selectedItem: null,
     }

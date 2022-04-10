@@ -28,6 +28,7 @@ export const ARTICLE_TYPE = {
   ATTACHMENT:  3,
   MIND:        4,
   SPREADSHEET: 5,
+  GRAPH:       6,
 }
 
 export const ARTICLE_COMPONENT_MAP = {
@@ -36,6 +37,7 @@ export const ARTICLE_COMPONENT_MAP = {
   [ARTICLE_TYPE.ATTACHMENT]:  'AttachmentArticle',
   [ARTICLE_TYPE.MIND]:        'MindArticle',
   [ARTICLE_TYPE.SPREADSHEET]: 'SpreadsheetArticle',
+  [ARTICLE_TYPE.GRAPH]:       'GraphArticle',
 }
 
 export const PAGE_STATUS = {
